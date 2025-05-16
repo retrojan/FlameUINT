@@ -8,6 +8,7 @@ local currentGameId = game.PlaceId
 -- Таблица соответствия ID игр и URL скриптов
 local gameScripts = {
     [18550498098] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/guidefight.lua", --Guide Boss Fight
+    [6403373529] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/slapbattles.lua",
 }
 
 -- Проверяем, есть ли скрипт для текущей игры

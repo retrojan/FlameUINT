@@ -248,7 +248,19 @@ local FPSLabel = Tabs.Other:AddParagraph({
         end
     })
 
-
+    Tabs.Other:AddButton({
+        Title = "Infinity Yield",
+        Description = "Activates Infinity Yield",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+            
+            Fluent:Notify({
+                Title = "FlyGUIV3",
+                Content = "Successfully activated!",
+                Duration = 2
+            })
+        end
+    })
 
 
 

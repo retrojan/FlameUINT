@@ -26,74 +26,78 @@ local Window = Fluent:CreateWindow({
 
 local Tabs = {
     Main = Window:AddTab({Title = "Main", Icon = "home"}),
-    Teleport = Window:AddTab({Title = "Teleport", Icon = "list"}),
-    Other = Window:AddTab({Title = "Other", Icon = "settings"})
+    Teleport = Window:AddTab({Title = "Teleport", Icon = "map-pin"}),
+    antiafk = Window:AddTab({Title = "Anti-Afk", Icon = "list"}),
+    Other = Window:AddTab({Title = "Other", Icon = "settings"}),
+    Farm = Window:AddTab({Title = "Farm", Icon = "list"})
 }
 
-
--- Add to your existing script
-local ESpamSection = Tabs.Main:AddSection("E-Spam")
-
--- Declare variables at higher scope first
-local ESpamIntervalSlider = nil
+local ESpamSection = Tabs.Main:AddSection("E-Spam Turbo")
 local ESpamConnection = nil
-
--- Toggle must reference the slider object properly
-local ESpamToggle = ESpamSection:AddToggle("ESpamEnabled", {
-    Title = "Enable E-Spam",
-    Default = false,
-    Callback = function(Value)
-        if Value then
-            StartESpam()
-        else
-            StopESpam()
-        end
-    end
-})
-
--- Initialize slider with proper reference
-ESpamIntervalSlider = ESpamSection:AddSlider("ESpamInterval", {
-    Title = "Spam interval: 0.5s",
-    Min = 0.1,
-    Max = 5,
-    Default = 0.5,
-    Rounding = 1,
-    Callback = function(Value)
-        if ESpamIntervalSlider then -- Safety check
-            pcall(function() -- Protected call
-                ESpamIntervalSlider:SetTitle("Spam interval: "..Value.."s")
-            end)
-        end
-    end
-})
+local VirtualInput = game:GetService("VirtualInputManager")
 
 local function PressE()
     pcall(function()
-        local VirtualInput = game:GetService("VirtualInputManager")
         VirtualInput:SendKeyEvent(true, Enum.KeyCode.E, false, game)
-        task.wait(0.05)
+        task.wait(0.02)
         VirtualInput:SendKeyEvent(false, Enum.KeyCode.E, false, game)
     end)
 end
 
-function StartESpam()
-    if ESpamConnection then return end
-    
-    local interval = ESpamIntervalSlider and ESpamIntervalSlider.Value or 0.5
+local function StartESpam()
+    if ESpamConnection then
+        ESpamConnection:Disconnect()
+    end
     
     ESpamConnection = RunService.Heartbeat:Connect(function()
         PressE()
-        task.wait(interval)
+        task.wait(0.1)
     end)
     
     Fluent:Notify({
-        Title = "E-Spam Enabled",
-        Content = "Spamming E every "..interval.." seconds",
+        Title = "E-Spam Turbo Enabled",
+        Content = "Ultra-fast E spamming (0.1s interval)",
         Duration = 3
     })
 end
 
-function StopESpam()
+local TeleportSection = Tabs.Teleport:AddSection("Arena")
+
+TeleportSection:AddButton({
+    Title = "TP to Arena Plate",
+    Description = "Teleport to the arena plate",
+    Callback = function()
+        local character = player.Character
+        local arenaPlate = workspace:FindFirstChild("Arena"):FindFirstChild("Plate")
+        
+        if not arenaPlate then
+            Fluent:Notify({
+                Title = "Ошибка",
+                Content = "Arena Plate не найдена!",
+                Duration = 3
+            })
+            return
+        end
+        
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            local position = arenaPlate.Position + Vector3.new(0, 5, 0)
+            character.HumanoidRootPart.CFrame = CFrame.new(position)
+            Fluent:Notify({
+                Title = "Успех",
+                Content = "Телепортирован на Arena Plate!",
+                Duration = 3
+            })
+        else
+            Fluent:Notify({
+                Title = "Ошибка",
+                Content = "Персонаж не найден!",
+                Duration = 3
+            })
+        end
+    end
+})
+
+local function StopESpam()
     if ESpamConnection then
         ESpamConnection:Disconnect()
         ESpamConnection = nil
@@ -105,39 +109,180 @@ function StopESpam()
         Duration = 3
     })
 end
-local AFKSECT = Tabs.Teleport:AddSection("Afk/Safe")
 
--- Add this to your Teleport tab section
-local TeleportButtons = Tabs.Teleport:AddSection("Retro/Admin")
-
--- Retro Start Location
-TeleportButtons:AddButton({
-    Title = "Retro Start",
-    Description = "Teleport to Retro Start location",
-    Callback = function()
-        TeleportToPosition(Vector3.new(-16875.28, -3.35, 4777.20))
+ESpamSection:AddToggle("ESpamTurboEnabled", {
+    Title = "Enable Turbo E-Spam",
+    Description = "Spams E every 0.1 seconds",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            StartESpam()
+        else
+            StopESpam()
+        end
     end
 })
 
--- Admin Location
-TeleportButtons:AddButton({
-    Title = "Admin Button",
-    Description = "Teleport to Admin Button location",
+local KeypadSection = Tabs.Main:AddSection("Keypad Tools")
+local keypad = nil
+local keypadDetected = false
+local teleportPart = nil
+local DetectButton = nil
+
+local function UpdateButton(title, desc)
+    pcall(function()
+        if DetectButton then
+            DetectButton:SetTitle(title)
+            DetectButton:SetDescription(desc or "")
+        end
+    end)
+end
+
+DetectButton = KeypadSection:AddButton({
+    Title = "Поиск кейпада",
+    Description = "Ищет кейпад в workspace",
     Callback = function()
-        TeleportToPosition(Vector3.new(-16967.21, 797.60, 4907.06))
+        keypad = workspace:FindFirstChild("Keypad")
+        
+        if keypad then
+            keypadDetected = true
+            UpdateButton("Кейпад: DETECTED", "Кейпад найден в workspace")
+            
+            if not teleportPart then
+                teleportPart = Instance.new("Part")
+                teleportPart.Name = "KeypadTeleportSpot"
+                teleportPart.Size = Vector3.new(4, 1, 4)
+                teleportPart.Anchored = true
+                teleportPart.CanCollide = true
+                teleportPart.Transparency = 0.5
+                teleportPart.Color = Color3.fromRGB(0, 255, 0)
+                teleportPart.Position = keypad.Position + Vector3.new(0, 0, -5)
+                teleportPart.Parent = workspace
+            end
+            
+            Fluent:Notify({
+                Title = "Кейпад найден",
+                Content = "Кейпад успешно обнаружен",
+                Duration = 3
+            })
+        else
+            keypadDetected = false
+            UpdateButton("Поиск кейпада", "Кейпад не найден")
+            Fluent:Notify({
+                Title = "Ошибка",
+                Content = "Кейпад не найден в workspace",
+                Duration = 3
+            })
+        end
     end
 })
 
--- Retro Win Location
-TeleportButtons:AddButton({
-    Title = "Retro Win",
-    Description = "Teleport to Retro Win location",
+KeypadSection:AddButton({
+    Title = "Узнать код",
+    Description = "Рассчитывает код для кейпада",
     Callback = function()
-        TeleportToPosition(Vector3.new(-27784.59, 168.14, 4832.77))
+        if not keypadDetected then
+            Fluent:Notify({
+                Title = "Ошибка",
+                Content = "Сначала найдите кейпад",
+                Duration = 3
+            })
+            return
+        end
+        
+        local playerCount = #game:GetService("Players"):GetPlayers()
+        local code = playerCount * 25 + 1100 - 7
+        
+        Fluent:Notify({
+            Title = "Код кейпада",
+            Content = "Расчетный код: "..tostring(code),
+            Duration = 5
+        })
     end
 })
 
--- Universal teleport function
+KeypadSection:AddButton({
+    Title = "Телепорт к кейпаду",
+    Description = "Телепортирует вас к кейпаду",
+    Callback = function()
+        if not keypadDetected or not keypad or not keypad.Parent then
+            Fluent:Notify({
+                Title = "Ошибка",
+                Content = "Сначала найдите кейпад",
+                Duration = 3
+            })
+            return
+        end
+
+        local keypadPart = keypad:FindFirstChildWhichIsA("BasePart") or keypad.PrimaryPart
+        if not keypadPart then
+            Fluent:Notify({
+                Title = "Ошибка",
+                Content = "Не найдена основная часть кейпада",
+                Duration = 3
+            })
+            return
+        end
+
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart", 5)
+        if not humanoidRootPart then
+            Fluent:Notify({
+                Title = "Ошибка",
+                Content = "HumanoidRootPart не найден",
+                Duration = 3
+            })
+            return
+        end
+
+        local targetPosition
+        if teleportPart and teleportPart.Parent then
+            targetPosition = teleportPart.Position + Vector3.new(0, 3, 0)
+        else
+            targetPosition = keypadPart.Position + Vector3.new(0, 5, -5)
+        end
+
+        pcall(function()
+            humanoidRootPart.CFrame = CFrame.new(targetPosition)
+            
+            task.wait(0.1)
+            if (humanoidRootPart.Position - targetPosition).Magnitude > 10 then
+                Fluent:Notify({
+                    Title = "Ошибка",
+                    Content = "Телепортация не удалась",
+                    Duration = 3
+                })
+                return
+            end
+            
+            Fluent:Notify({
+                Title = "Телепортация",
+                Content = "Вы успешно телепортированы к кейпаду",
+                Duration = 3
+            })
+        end)
+    end
+})
+
+task.spawn(function()
+    task.wait(2)
+    pcall(function()
+        keypad = workspace:FindFirstChild("Keypad")
+        if keypad and DetectButton then
+            keypadDetected = true
+            UpdateButton("Кейпад: DETECTED", "Кейпад найден автоматически")
+        end
+    end)
+end)
+
+
+
+
+local Locations = loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/locations.lua"))()
+local TeleportSection = Tabs.Teleport:AddSection("Islands Teleport")
+local AFKSECT = Tabs.Teleport:AddSection("Afk")
 function TeleportToPosition(position)
     local character = game.Players.LocalPlayer.Character
     if character then
@@ -165,20 +310,139 @@ function TeleportToPosition(position)
     end
 end
 
-
-
-
-
-do
-    Fluent:Notify({
-        Title = "Slap Battles",
-        Content = "Script successfully loaded!",
-        Duration = 5
+for name, position in pairs(Locations) do
+    TeleportSection:AddButton({
+        Title = name,
+        Description = string.format("X: %.2f, Y: %.2f, Z: %.2f", position.X, position.Y, position.Z),
+        Callback = function()
+            TeleportToPosition(position)
+        end
     })
+end
+-- Секция для анти-AFK
+local AntiAFKSection = Tabs.antiafk:AddSection("Анти-AFK (WASD)")
 
+-- Переменные
+local AntiAFK_Enabled = false
+local AntiAFK_Thread = nil
+local MovementInterval = 2 -- Интервал между движениями (секунды)
+local MovementDuration = 0.2 -- Длительность нажатия клавиш (секунды)
+
+-- Список клавиш для имитации ходьбы
+local MovementKeys = {
+    Enum.KeyCode.W,
+    Enum.KeyCode.A,
+    Enum.KeyCode.S,
+    Enum.KeyCode.D
+}
+
+-- Функция для нажатия клавиш
+local function SimulateMovement()
+    local randomKey = MovementKeys[math.random(1, #MovementKeys)]
+    
+    -- Нажимаем клавишу
+    VirtualInput:SendKeyEvent(true, randomKey, false, game)
+    task.wait(MovementDuration)
+    
+    -- Отпускаем клавишу
+    VirtualInput:SendKeyEvent(false, randomKey, false, game)
+end
+
+-- Запуск анти-AFK
+local function StartAntiAFK()
+    if AntiAFK_Thread then return end
+    
+    AntiAFK_Thread = task.spawn(function()
+        while AntiAFK_Enabled do
+            SimulateMovement()
+            task.wait(MovementInterval)
+        end
+        AntiAFK_Thread = nil
+    end)
+    
+    Fluent:Notify({
+        Title = "Анти-AFK",
+        Content = "Имитация движения включена (WASD)",
+        Duration = 3
+    })
+end
+
+-- Остановка анти-AFK
+local function StopAntiAFK()
+    if AntiAFK_Thread then
+        task.cancel(AntiAFK_Thread)
+        AntiAFK_Thread = nil
+        
+        -- Отпускаем все клавиши на случай, если одна была зажата
+        for _, key in ipairs(MovementKeys) do
+            VirtualInput:SendKeyEvent(false, key, false, game)
+        end
+    end
+    
+    Fluent:Notify({
+        Title = "Анти-AFK",
+        Content = "Имитация движения отключена",
+        Duration = 3
+    })
+end
+
+-- Добавляем тоггл
+AntiAFKSection:AddToggle("AntiAFK_Toggle", {
+    Title = "Включить анти-AFK (WASD)",
+    Default = false,
+    Callback = function(Value)
+        AntiAFK_Enabled = Value
+        if Value then
+            StartAntiAFK()
+        else
+            StopAntiAFK()
+        end
+    end
+})
+
+-- Опционально: Добавляем настройки интервала
+AntiAFKSection:AddSlider("MovementIntervalSlider", {
+    Title = "Интервал движений: " .. MovementInterval .. " сек",
+    Min = 1,
+    Max = 10,
+    Default = MovementInterval,
+    Rounding = 1,
+    Callback = function(Value)
+        MovementInterval = Value
+    end
+})TeleportSection:AddButton({
+    Title = "Copy All Coordinates",
+    Description = "Copy all locations to clipboard",
+    Callback = function()
+        local text = ""
+        for name, pos in pairs(Locations) do
+            text = text .. string.format("%s = Vector3.new(%.2f, %.2f, %.2f)\n", name, pos.X, pos.Y, pos.Z)
+        end
+        
+        if setclipboard then
+            setclipboard(text)
+            Fluent:Notify({
+                Title = "Copied!",
+                Content = "All coordinates copied to clipboard",
+                Duration = 3
+            })
+        else
+            Fluent:Notify({
+                Title = "Error",
+                Content = "Clipboard function not available",
+                Duration = 3
+            })
+        end
+    end
+})
+
+Fluent:Notify({
+    Title = "Slap Battles",
+    Content = "Script successfully loaded!",
+    Duration = 5
+})
 
 local createdParts = {
-    safeZone = nil,
     afkZone = {
         floor = nil,
         walls = {}
@@ -327,54 +591,31 @@ local FPSLabel = Tabs.Other:AddParagraph({
     Content = "Frames per second"
 })
 
-    Tabs.Other:AddButton({
-        Title = "FlyGUIV3",
-        Description = "Activates FlyGuiV3 (Flight Script)",
-        Callback = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-            
-            Fluent:Notify({
-                Title = "FlyGUIV3",
-                Content = "Successfully activated!",
-                Duration = 2
-            })
-        end
-    })
-    Tabs.Other:AddButton({
-        Title = "Infinity Yield",
-        Description = "Activates Infinity Yield",
-        Callback = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-            
-            Fluent:Notify({
-                Title = "FlyGUIV3",
-                Content = "Successfully activated!",
-                Duration = 2
-            })
-        end
-    })
-
-local function GetFPSColor(fps)
-    if fps >= 120 then
-        return Color3.fromRGB(255, 0, 255)
-    elseif fps >= 60 then
-        return Color3.fromRGB(85, 255, 85)
-    elseif fps >= 30 then
-        return Color3.fromRGB(255, 255, 85)
-    else
-        return Color3.fromRGB(255, 85, 85)
+Tabs.Other:AddButton({
+    Title = "FlyGUIV3",
+    Description = "Activates FlyGuiV3 (Flight Script)",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+        Fluent:Notify({
+            Title = "FlyGUIV3",
+            Content = "Successfully activated!",
+            Duration = 2
+        })
     end
-end
+})
 
-local function GetPingColor(ping)
-    if ping < 100 then
-        return Color3.fromRGB(85, 255, 85)
-    elseif ping < 200 then
-        return Color3.fromRGB(255, 255, 85)
-    else
-        return Color3.fromRGB(255, 85, 85)
+Tabs.Other:AddButton({
+    Title = "Infinity Yield",
+    Description = "Activates Infinity Yield",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+        Fluent:Notify({
+            Title = "FlyGUIV3",
+            Content = "Successfully activated!",
+            Duration = 2
+        })
     end
-end
+})
 
 local LastTick = tick()
 local FrameCount = 0
@@ -405,17 +646,12 @@ while true do
     UpdatePing()
     task.wait(0.5)
 end
-end
 
-Window:SelectTab(1)
 
-do
-    SaveManager:SetLibrary(Fluent)
-    InterfaceManager:SetLibrary(Fluent)
-    
-    SaveManager:IgnoreThemeSettings()
-    InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-    SaveManager:BuildConfigSection(Tabs.Settings)
-end
 
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+SaveManager:IgnoreThemeSettings()
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings)
 SaveManager:LoadAutoloadConfig()

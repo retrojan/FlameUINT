@@ -8,5 +8,5 @@ local Locations = {
     ["Cube of death Island"] = Vector3.new(-208.20, -5.28, 4.44),
     ["Brazil"] = Vector3.new(-926.19, 306.32, -2.58),
     ["Legal Safe Spot"] = Vector3.new(295.62, 10.74, 216.37),
-    ["Legal Danger Safe Slapple"] = Vector3.new(-426.32, 97.87, -35.86)
+    ["Legal Danger Saafe Slapple"] = Vector3.new(-426.32, 97.87, -35.86)
 }

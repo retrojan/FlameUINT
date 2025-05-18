@@ -5,7 +5,7 @@ local player = game:GetService("Players").LocalPlayer
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
-if game.PlaceId ~= 6403373529 then
+if game.PlaceId ~= 6403373529 and game.PlaceId ~= 9015014224 then
     Fluent:Notify({
         Title = "Error!",
         Content = "This script is for Slap Battles",

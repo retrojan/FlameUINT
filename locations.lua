@@ -8,5 +8,6 @@ return {
     ["Cube of death Island"] = Vector3.new(-208.20, -5.28, 4.44),
     ["Brazil"] = Vector3.new(-926.19, 306.32, -2.58),
     ["Legal Safe Spot"] = Vector3.new(295.62, 10.74, 216.37),
-    ["Legal Danger Safe Slapple"] = Vector3.new(-426.32, 97.87, -35.86)
+    ["Legal Danger Safe Slapple"] = Vector3.new(-426.32, 97.87, -35.86),
+    ["Slender Postiton"] = Vector3.new(122.83, 255.30, 1.49),
 }

@@ -28,7 +28,7 @@ end
 
 -- Создание окна
 local Window = Fluent:CreateWindow({
-    Title = "Hexa",
+    Title = placeName,
     SubTitle = "by FlameUINT Hub",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),

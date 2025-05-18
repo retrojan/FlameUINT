@@ -4,7 +4,8 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 local player = game:GetService("Players").LocalPlayer
 local UIS = game:GetService("UserInputService")
 
-
+local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
+local placeName = placeInfo.Name or "Unknown"  
 
 
 if game.PlaceId ~= 18550498098 then
@@ -84,7 +85,7 @@ end
 
 -- Создаем окно Fluent
 local Window = Fluent:CreateWindow({
-    Title = "The Guide Boss",
+    Title = placeName,
     SubTitle = "by FlameUINT Hub",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),

@@ -4,7 +4,9 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 local player = game:GetService("Players").LocalPlayer
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-
+-- Получаем информацию о месте игры
+local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
+local placeName = placeInfo.Name or "Unknow"  -- Используем "Slap Battles" как запасной вариант
 if game.PlaceId ~= 6403373529 and game.PlaceId ~= 9015014224 then
     Fluent:Notify({
         Title = "Error!",
@@ -15,7 +17,7 @@ if game.PlaceId ~= 6403373529 and game.PlaceId ~= 9015014224 then
 end
 
 local Window = Fluent:CreateWindow({
-    Title = "Slap Battles",
+    Title = placeName,
     SubTitle = "by FlameUINT Hub",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
@@ -25,14 +27,120 @@ local Window = Fluent:CreateWindow({
 })
 
 local Tabs = {
-    Main = Window:AddTab({Title = "Main", Icon = "home"}),
+    
+    Main = Window:AddTab({Title = "Main", Icon = "code"}),
     Teleport = Window:AddTab({Title = "Teleport", Icon = "map-pin"}),
-    antiafk = Window:AddTab({Title = "Anti-Afk", Icon = "list"}),
-    Other = Window:AddTab({Title = "Other", Icon = "settings"}),
-    Farm = Window:AddTab({Title = "Farm", Icon = "list"})
+    antiafk = Window:AddTab({Title = "Anti-Afk", Icon = "flag"}),
+    antihelp = Window:AddTab({Title = "Anti", Icon = "shield"}),
+    Farm = Window:AddTab({Title = "Farm (BETA)", Icon = "hand"}),
+    Visual = Window:AddTab({Title = "Visual", Icon = "eye"}),
+    Other = Window:AddTab({Title = "Other", Icon = "code"}),
 }
 
-local ESpamSection = Tabs.Main:AddSection("E-Spam Turbo")
+
+
+
+-- Создаем секцию (например, "Void Protection")
+local AntiSection = Tabs.antihelp:AddSection("Anti")
+
+
+
+-- Anti Ragdoll
+local AntiRagdollToggle = AntiSection:AddToggle("AntiRagdoll", {
+    Title = "Anti Ragdoll",
+    Description = "Prevents ragdoll effect on your character",
+    Default = false,
+    Callback = function(state)
+        getgenv().AntiRagdollEnabled = state
+        
+        -- Wait for character if needed
+        if not game.Players.LocalPlayer.Character then
+            game.Players.LocalPlayer.CharacterAdded:Wait()
+        end
+        local character = game.Players.LocalPlayer.Character
+
+        -- Main loop
+        coroutine.wrap(function()
+            while getgenv().AntiRagdollEnabled and character do
+                -- Safe check for Ragdolled value
+                local ragdollValue = character:FindFirstChild("Ragdolled")
+                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                
+                if ragdollValue and ragdollValue.Value and humanoid and humanoid.Health > 0 then
+                    -- Anchor torso parts
+                    local torso = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
+                    local root = character:FindFirstChild("HumanoidRootPart")
+                    
+                    if torso then torso.Anchored = true end
+                    if root then root.Anchored = true end
+                    
+                    -- Wait until ragdoll ends
+                    repeat
+                        task.wait()
+                        ragdollValue = character:FindFirstChild("Ragdolled")
+                    until not getgenv().AntiRagdollEnabled or not ragdollValue or not ragdollValue.Value or not character
+                    
+                    -- Unanchor when done
+                    if character then
+                        if torso and torso.Parent then torso.Anchored = false end
+                        if root and root.Parent then root.Anchored = false end
+                    end
+                end
+                task.wait(0.1)
+            end
+            
+            -- Cleanup when disabled
+            if character then
+                local torso = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
+                local root = character:FindFirstChild("HumanoidRootPart")
+                if torso then torso.Anchored = false end
+                if root then root.Anchored = false end
+            end
+        end)()
+    end
+})
+
+-- Connection for character changes
+game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
+    if getgenv().AntiRagdollEnabled then
+        -- Reapply the effect if enabled
+        AntiRagdollToggle:Set(true)
+    end
+end)
+
+
+
+
+
+
+
+-- Добавляем AntiVoid Toggle внутрь этой секции
+AntiSection:AddToggle("AntiVoid", {
+    Title = "Enable AntiVoid",
+    Description = "Spawns a large platform to prevent falling into the void.",
+    Default = false,
+    Callback = function(State)
+        if State then
+            -- Создаем платформу, если включено
+            local Platform = Instance.new("Part")
+            Platform.Name = "AntiVoidPlatform"
+            Platform.Size = Vector3.new(3000, 2, 3000)
+            Platform.Position = Vector3.new(0, -10, 0) -- X=0, Y=3, Z=0 (центр карты)
+            Platform.Anchored = true
+            Platform.Transparency = 0.5
+            Platform.CanCollide = true
+            Platform.Parent = workspace
+        else
+            -- Удаляем платформу, если выключено
+            local ExistingPlatform = workspace:FindFirstChild("AntiVoidPlatform")
+            if ExistingPlatform then
+                ExistingPlatform:Destroy()
+            end
+        end
+    end
+})
+
+local ESpamSection = Tabs.Main:AddSection("E-Spam")
 local ESpamConnection = nil
 local VirtualInput = game:GetService("VirtualInputManager")
 
@@ -55,7 +163,7 @@ local function StartESpam()
     end)
     
     Fluent:Notify({
-        Title = "E-Spam Turbo Enabled",
+        Title = "E-Spam Enabled",
         Content = "Ultra-fast E spamming (0.1s interval)",
         Duration = 3
     })
@@ -111,7 +219,7 @@ local function StopESpam()
 end
 
 ESpamSection:AddToggle("ESpamTurboEnabled", {
-    Title = "Enable Turbo E-Spam",
+    Title = "Enable E-Spam",
     Description = "Spams E every 0.1 seconds",
     Default = false,
     Callback = function(Value)
@@ -139,14 +247,14 @@ local function UpdateButton(title, desc)
 end
 
 DetectButton = KeypadSection:AddButton({
-    Title = "Поиск кейпада",
-    Description = "Ищет кейпад в workspace",
+    Title = "Search keypad",
+    Description = "Searching keypad in workspace",
     Callback = function()
         keypad = workspace:FindFirstChild("Keypad")
         
         if keypad then
             keypadDetected = true
-            UpdateButton("Кейпад: DETECTED", "Кейпад найден в workspace")
+            UpdateButton("Keypad: Detected", "Keypad detected in workspace")
             
             if not teleportPart then
                 teleportPart = Instance.new("Part")
@@ -161,16 +269,16 @@ DetectButton = KeypadSection:AddButton({
             end
             
             Fluent:Notify({
-                Title = "Кейпад найден",
-                Content = "Кейпад успешно обнаружен",
+                Title = "Keypad detected",
+                Content = "Keypad sucesffuly detected",
                 Duration = 3
             })
         else
             keypadDetected = false
-            UpdateButton("Поиск кейпада", "Кейпад не найден")
+            UpdateButton("Keypad: Not detected", "Keypad was not found")
             Fluent:Notify({
-                Title = "Ошибка",
-                Content = "Кейпад не найден в workspace",
+                Title = "Error",
+                Content = "Keypad not detected in workspace",
                 Duration = 3
             })
         end
@@ -178,13 +286,13 @@ DetectButton = KeypadSection:AddButton({
 })
 
 KeypadSection:AddButton({
-    Title = "Узнать код",
-    Description = "Рассчитывает код для кейпада",
+    Title = "Find code",
+    Description = "Calculates the code for keypad",
     Callback = function()
         if not keypadDetected then
             Fluent:Notify({
-                Title = "Ошибка",
-                Content = "Сначала найдите кейпад",
+                Title = "Error",
+                Content = "First, find keypad",
                 Duration = 3
             })
             return
@@ -194,21 +302,21 @@ KeypadSection:AddButton({
         local code = playerCount * 25 + 1100 - 7
         
         Fluent:Notify({
-            Title = "Код кейпада",
-            Content = "Расчетный код: "..tostring(code),
-            Duration = 5
+            Title = "Keypad code",
+            Content = "Code: "..tostring(code),
+            Duration = 10
         })
     end
 })
 
 KeypadSection:AddButton({
-    Title = "Телепорт к кейпаду",
-    Description = "Телепортирует вас к кейпаду",
+    Title = "Teleport to keypad",
+    Description = "Teleports you to keypad",
     Callback = function()
         if not keypadDetected or not keypad or not keypad.Parent then
             Fluent:Notify({
-                Title = "Ошибка",
-                Content = "Сначала найдите кейпад",
+                Title = "Error",
+                Content = "First, find keypad",
                 Duration = 3
             })
             return
@@ -217,8 +325,8 @@ KeypadSection:AddButton({
         local keypadPart = keypad:FindFirstChildWhichIsA("BasePart") or keypad.PrimaryPart
         if not keypadPart then
             Fluent:Notify({
-                Title = "Ошибка",
-                Content = "Не найдена основная часть кейпада",
+                Title = "Error",
+                Content = "The main part of keypad was not found",
                 Duration = 3
             })
             return
@@ -230,8 +338,8 @@ KeypadSection:AddButton({
         local humanoidRootPart = character:WaitForChild("HumanoidRootPart", 5)
         if not humanoidRootPart then
             Fluent:Notify({
-                Title = "Ошибка",
-                Content = "HumanoidRootPart не найден",
+                Title = "Error",
+                Content = "HumanoidRootPart not found",
                 Duration = 3
             })
             return
@@ -250,16 +358,16 @@ KeypadSection:AddButton({
             task.wait(0.1)
             if (humanoidRootPart.Position - targetPosition).Magnitude > 10 then
                 Fluent:Notify({
-                    Title = "Ошибка",
-                    Content = "Телепортация не удалась",
+                    Title = "Error",
+                    Content = "Teleportation failed",
                     Duration = 3
                 })
                 return
             end
             
             Fluent:Notify({
-                Title = "Телепортация",
-                Content = "Вы успешно телепортированы к кейпаду",
+                Title = "Teleportation",
+                Content = "You have been successfully teleported to Keypad",
                 Duration = 3
             })
         end)
@@ -272,10 +380,68 @@ task.spawn(function()
         keypad = workspace:FindFirstChild("Keypad")
         if keypad and DetectButton then
             keypadDetected = true
-            UpdateButton("Кейпад: DETECTED", "Кейпад найден автоматически")
+            UpdateButton("Keypad: detected", "Keypad found automatic")
         end
     end)
 end)
+
+
+
+
+
+local NameTagSection = Tabs.Visual:AddSection("NameTag Settings")
+
+-- Toggle для скрытия Nametag
+NameTagSection:AddToggle("RemoveNameTag", {
+    Title = "Remove NameTag",
+    Description = "Hides your nametag (good for recordings)",
+    Default = false,
+    Callback = function(State)
+        getgenv().HideNameTag = State
+
+        -- Проверяем, существует ли персонаж
+        local function UpdateNameTagVisibility()
+            local character = game.Players.LocalPlayer.Character
+            if not character then return end
+
+            local head = character:FindFirstChild("Head")
+            if not head then return end
+
+            local nameTag = head:FindFirstChild("Nametag") or head:FindFirstChildWhichIsA("BillboardGui")
+            if nameTag then
+                nameTag.Enabled = not State
+            end
+        end
+
+        -- Применяем сразу при включении
+        UpdateNameTagVisibility()
+
+        -- Цикл для обработки изменений (если Nametag reappears)
+        if State then
+            coroutine.wrap(function()
+                while getgenv().HideNameTag do
+                    UpdateNameTagVisibility()
+                    task.wait(0.3)  -- Проверка каждые 0.3 секунды
+                end
+            end)()
+        end
+    end
+})
+
+-- Автоматическое обновление при появлении нового персонажа
+game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
+    if getgenv().HideNameTag then
+        task.wait(1)  -- Ждем загрузки модели
+        local head = character:WaitForChild("Head", 5)
+        if head then
+            local nameTag = head:FindFirstChild("Nametag") or head:FindFirstChildWhichIsA("BillboardGui")
+            if nameTag then
+                nameTag.Enabled = false
+            end
+        end
+    end
+end)
+
 
 
 
@@ -335,6 +501,9 @@ local MovementKeys = {
     Enum.KeyCode.S,
     Enum.KeyCode.D
 }
+
+
+
 
 -- Функция для нажатия клавиш
 local function SimulateMovement()
@@ -435,6 +604,123 @@ AntiAFKSection:AddSlider("MovementIntervalSlider", {
         end
     end
 })
+
+
+local BrickFarmSection = Tabs.Farm:AddSection("Brick Farm Settings")
+
+-- Настройки фарма с фиксированными интервалами
+local BrickFarmConfig = {
+    Enabled = false,
+    Mode = "Slow",
+    Intervals = {
+        Slow = 5.05,  -- Фиксированный интервал для медленного режима
+        Fast = 1.5     -- Фиксированный интервал для быстрого режима
+    }
+}
+
+-- Элементы UI (только переключатель режима и тоггл)
+local ModeDropdown = BrickFarmSection:AddDropdown("BrickFarmMode", {
+    Title = "Farm Mode",
+    Description = "Slow: 5.05s | Fast: 1.5s",  -- Добавили интервалы в описание
+    Values = {"Slow", "Fast"},
+    Default = "Slow",
+    Callback = function(value)
+        BrickFarmConfig.Mode = value
+    end
+})
+
+local BrickFarmToggle = BrickFarmSection:AddToggle("BrickFarmEnabled", {
+    Title = "Auto Farm Brick",
+    Description = "Automatically farm bricks when equipped",
+    Default = false,
+    Callback = function(state)
+        BrickFarmConfig.Enabled = state
+        
+        -- Проверка перчатки
+        local glove = game.Players.LocalPlayer.leaderstats.Glove.Value
+        if state and glove ~= "Brick" then
+            Fluent:Notify({
+                Title = "Brick Farm",
+                Content = "You don't have Brick equipped!",
+                Duration = 5
+            })
+            BrickFarmToggle:Set(false)
+            return
+        end
+
+        -- Основной цикл фарма
+        if state then
+            coroutine.wrap(function()
+                while BrickFarmConfig.Enabled and game.Players.LocalPlayer.leaderstats.Glove.Value == "Brick" do
+                    local interval = BrickFarmConfig.Intervals[BrickFarmConfig.Mode]
+                    
+                    if BrickFarmConfig.Mode == "Slow" then
+                        game:GetService("VirtualInputManager"):SendKeyEvent(true, "E", false, game)
+                    else
+                        local success, err = pcall(function()
+                            game:GetService("ReplicatedStorage").lbrick:FireServer()
+                            -- Обновляем GUI счетчик
+                            local gui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("BRICKCOUNT")
+                            if gui then
+                                local textLabel = gui.ImageLabel.TextLabel
+                                textLabel.Text = tostring(tonumber(textLabel.Text) + 1)
+                            end
+                        end)
+                        
+                        if not success then
+                            Fluent:Notify({
+                                Title = "Brick Farm Error",
+                                Content = "Failed to farm brick!",
+                                Duration = 5
+                            })
+                        end
+                    end
+                    
+                    task.wait(interval)  -- Используем фиксированный интервал
+                end
+                
+                -- Если вышли из цикла из-за смены перчатки
+                if BrickFarmConfig.Enabled and game.Players.LocalPlayer.leaderstats.Glove.Value ~= "Brick" then
+                    Fluent:Notify({
+                        Title = "Brick Farm",
+                        Content = "Brick glove was unequipped!",
+                        Duration = 5
+                    })
+                    BrickFarmToggle:Set(false)
+                end
+            end)()
+        end
+    end
+})
+
+-- Трекер смены перчатки (оптимизированная версия)
+local function setupGloveTracking()
+    local player = game.Players.LocalPlayer
+    if not player then return end
+
+    local leaderstats = player:FindFirstChild("leaderstats")
+    if not leaderstats then return end
+
+    local gloveStat = leaderstats:FindFirstChild("Glove")
+    if not gloveStat then return end
+
+    local function onGloveChanged()
+        if BrickFarmConfig.Enabled and gloveStat.Value ~= "Brick" then
+            Fluent:Notify({
+                Title = "Brick Farm",
+                Content = "Brick glove was unequipped!",
+                Duration = 5
+            })
+            BrickFarmToggle:Set(false)
+        end
+    end
+
+    gloveStat:GetPropertyChangedSignal("Value"):Connect(onGloveChanged)
+    onGloveChanged()  -- Первоначальная проверка
+end
+
+-- Запускаем трекер
+coroutine.wrap(setupGloveTracking)()
 
 Fluent:Notify({
     Title = "Slap Battles",
@@ -581,17 +867,29 @@ Player.Chatted:Connect(function(message)
     end
 end)
 
-local PingLabel = Tabs.Other:AddParagraph({
+
+
+
+
+
+
+
+
+
+local OtSection = Tabs.Other:AddSection("Other Fuctions")
+
+
+local PingLabel = OtSection:AddParagraph({
     Title = "Ping: -- ms",
     Content = "Network latency"
 })
 
-local FPSLabel = Tabs.Other:AddParagraph({
+local FPSLabel = OtSection:AddParagraph({
     Title = "FPS: --",
     Content = "Frames per second"
 })
 
-Tabs.Other:AddButton({
+OtSection:AddButton({
     Title = "FlyGUIV3",
     Description = "Activates FlyGuiV3 (Flight Script)",
     Callback = function()
@@ -604,7 +902,7 @@ Tabs.Other:AddButton({
     end
 })
 
-Tabs.Other:AddButton({
+OtSection:AddButton({
     Title = "Infinity Yield",
     Description = "Activates Infinity Yield",
     Callback = function()
@@ -652,6 +950,3 @@ end
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:IgnoreThemeSettings()
-InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-SaveManager:BuildConfigSection(Tabs.Settings)
-SaveManager:LoadAutoloadConfig()

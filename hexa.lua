@@ -143,14 +143,9 @@ end
 -- Инициализация
 SetupPerformanceUI()
 
--- Настройки SaveManager
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:IgnoreThemeSettings()
-InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-SaveManager:BuildConfigSection(Tabs.Settings)
-SaveManager:LoadAutoloadConfig()
-
 -- Завершение
 Window:SelectTab(1)
 Fluent:Notify({

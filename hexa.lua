@@ -15,6 +15,9 @@ end
 -- Основные сервисы
 local player = game:GetService("Players").LocalPlayer
 local RunService = game:GetService("RunService")
+local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
+local placeName = placeInfo.Name or "Unknown"  
+
 
 -- Проверка игры (замените на реальный ID)
 if game.PlaceId ~= 98726100529621  then

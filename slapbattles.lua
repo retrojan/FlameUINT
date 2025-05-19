@@ -33,7 +33,7 @@ local Tabs = {
     Teleport = Window:AddTab({Title = "Teleport", Icon = "map-pin"}),
     antiafk = Window:AddTab({Title = "Anti-Afk", Icon = "flag"}),
     antihelp = Window:AddTab({Title = "Anti", Icon = "shield"}),
-    farm = Window:AddTab({Title = "Farming", Icon = "tree-palm"}),
+    farm = Window:AddTab({Title = "Farm (NEW)", Icon = "user"}),
     Visual = Window:AddTab({Title = "Visual", Icon = "eye"}),
     Gloves = Window:AddTab({Title = "Gloves", Icon = "hand"}),
     Other = Window:AddTab({Title = "Other", Icon = "code"}),

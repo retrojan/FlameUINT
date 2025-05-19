@@ -328,17 +328,6 @@ end
 
 
 
-    Window:SelectTab(1)
--- Настройки
-do
-    SaveManager:SetLibrary(Fluent)
-    InterfaceManager:SetLibrary(Fluent)
-    
-    SaveManager:IgnoreThemeSettings()
-    InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-    SaveManager:BuildConfigSection(Tabs.Settings)
-end
-
--- Инициализация
-
-SaveManager:LoadAutoloadConfig()
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+SaveManager:IgnoreThemeSettings()

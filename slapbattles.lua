@@ -4,9 +4,10 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 local player = game:GetService("Players").LocalPlayer
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
--- Получаем информацию о месте игры
+
 local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
-local placeName = placeInfo.Name or "Unknow"  -- Используем "Slap Battles" как запасной вариант
+local placeName = placeInfo.Name or "Unknown"  
+
 if game.PlaceId ~= 6403373529 and game.PlaceId ~= 9015014224 then
     Fluent:Notify({
         Title = "Error!",
@@ -32,17 +33,109 @@ local Tabs = {
     Teleport = Window:AddTab({Title = "Teleport", Icon = "map-pin"}),
     antiafk = Window:AddTab({Title = "Anti-Afk", Icon = "flag"}),
     antihelp = Window:AddTab({Title = "Anti", Icon = "shield"}),
-    Farm = Window:AddTab({Title = "Farm (BETA)", Icon = "hand"}),
+    farm = Window:AddTab({Title = "Farming", Icon = "tree-palm"}),
     Visual = Window:AddTab({Title = "Visual", Icon = "eye"}),
+    Gloves = Window:AddTab({Title = "Gloves", Icon = "hand"}),
     Other = Window:AddTab({Title = "Other", Icon = "code"}),
 }
 
 
 
 
+
+
+
+local EnterSection = Tabs.Main:AddSection("Auto Arena Enter")
+
+-- Настройки
+local AutoEnterConfig = {
+    Enabled = false,
+    Mode = "Arena", -- По умолчанию обычная арена
+    Teleports = {
+        ["Arena"] = workspace.Lobby.Teleport1,
+        ["Arena Default"] = workspace.Lobby.Teleport2
+    }
+}
+
+-- Функция для входа на арену
+local function enterArena(teleport)
+    local character = game.Players.LocalPlayer.Character
+    if not character then return false end
+    
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    local head = character:FindFirstChild("Head")
+    
+    if not humanoidRootPart or not head then return false end
+    
+    -- Телепортируемся к точке входа
+    humanoidRootPart.CFrame = teleport.CFrame + Vector3.new(0, 3, 0)
+    
+    -- Активируем телепорт
+    firetouchinterest(head, teleport, 0)
+    task.wait()
+    firetouchinterest(head, teleport, 1)
+    
+    return true
+end
+
+-- Создаем элементы UI
+EnterSection:AddDropdown("ArenaType", {
+    Title = "Arena Type",
+    Description = "Select arena to auto-enter",
+    Values = {"Arena", "Arena Default"},
+    Default = "Arena",
+    Callback = function(value)
+        AutoEnterConfig.Mode = value
+    end
+})
+
+EnterSection:AddToggle("AutoEnterToggle", {
+    Title = "Enable Auto Enter",
+    Description = "Automatically enters selected arena",
+    Default = false,
+    Callback = function(state)
+        AutoEnterConfig.Enabled = state
+        
+        if state then
+            coroutine.wrap(function()
+                while AutoEnterConfig.Enabled do
+                    -- Проверяем что персонаж загрузился
+                    local character = game.Players.LocalPlayer.Character
+                    if not character then
+                        game.Players.LocalPlayer.CharacterAdded:Wait()
+                        character = game.Players.LocalPlayer.Character
+                    end
+                    
+                    -- Если уже на арене - пропускаем
+                    if not character:FindFirstChild("entered") then
+                        local teleport = AutoEnterConfig.Teleports[AutoEnterConfig.Mode]
+                        if teleport and teleport.Parent then
+                            enterArena(teleport)
+                        end
+                    end
+                    
+                    task.wait(1) -- Проверяем раз в секунду
+                end
+            end)()
+            
+            Fluent:Notify({
+                Title = "Auto Enter",
+                Content = "Enabled for " .. AutoEnterConfig.Mode,
+                Duration = 3
+            })
+        else
+            Fluent:Notify({
+                Title = "Auto Enter",
+                Content = "Disabled",
+                Duration = 2
+            })
+        end
+    end
+})
+
+
 -- Создаем секцию (например, "Void Protection")
 local AntiSection = Tabs.antihelp:AddSection("Anti")
-
 
 
 -- Anti Ragdoll
@@ -254,7 +347,7 @@ DetectButton = KeypadSection:AddButton({
         
         if keypad then
             keypadDetected = true
-            UpdateButton("Keypad: Detected", "Keypad detected in workspace")
+            UpdateButton("Keypad: detected", "Keypad detected in workspace")
             
             if not teleportPart then
                 teleportPart = Instance.new("Part")
@@ -275,7 +368,7 @@ DetectButton = KeypadSection:AddButton({
             })
         else
             keypadDetected = false
-            UpdateButton("Keypad: Not detected", "Keypad was not found")
+            UpdateButton("Keypad: not detected", "Keypad was not found")
             Fluent:Notify({
                 Title = "Error",
                 Content = "Keypad not detected in workspace",
@@ -606,7 +699,7 @@ AntiAFKSection:AddSlider("MovementIntervalSlider", {
 })
 
 
-local BrickFarmSection = Tabs.Farm:AddSection("Brick Farm Settings")
+local BrickFarmSection = Tabs.Gloves:AddSection("Brick Farm Settings")
 
 -- Настройки фарма с фиксированными интервалами
 local BrickFarmConfig = {
@@ -721,6 +814,97 @@ end
 
 -- Запускаем трекер
 coroutine.wrap(setupGloveTracking)()
+
+
+local FarmSection = Tabs.farm:AddSection("Slapple Farming")
+
+-- Конфигурация
+local SlappleFarmConfig = {
+    Enabled = false,
+    Types = {"Slapple", "GoldenSlapple"}, -- Типы собираемых яблок
+    Cooldown = 0.1 -- Задержка между проверками
+}
+
+-- Тоггл для автоферма
+FarmSection:AddToggle("SlappleFarmToggle", {
+    Title = "Autofarm Slapples",
+    Description = "Automatically collects Slapples and Golden Slapples",
+    Default = false,
+    Callback = function(Value)
+        SlappleFarmConfig.Enabled = Value
+        
+        if Value then
+            coroutine.wrap(function()
+                while SlappleFarmConfig.Enabled do
+                    -- Проверяем что игрок на арене
+                    local character = game.Players.LocalPlayer.Character
+                    if character and character:FindFirstChild("entered") then
+                        -- Ищем все яблоки на карте
+                        for _, slapple in pairs(workspace.Arena.island5.Slapples:GetChildren()) do
+                            if not SlappleFarmConfig.Enabled then break end
+                            
+                            -- Проверяем тип яблока и наличие TouchTransmitter
+                            if table.find(SlappleFarmConfig.Types, slapple.Name) 
+                               and slapple:FindFirstChild("Glove") 
+                               and slapple.Glove:FindFirstChildWhichIsA("TouchTransmitter") then
+                               
+                                -- Активируем TouchInterest
+                                firetouchinterest(character.HumanoidRootPart, slapple.Glove, 0)
+                                task.wait()
+                                firetouchinterest(character.HumanoidRootPart, slapple.Glove, 1)
+                            end
+                        end
+                    end
+                    task.wait(SlappleFarmConfig.Cooldown)
+                end
+            end)()
+            
+            Fluent:Notify({
+                Title = "Slapple Farm",
+                Content = "Autofarm activated!",
+                Duration = 2
+            })
+        else
+            Fluent:Notify({
+                Title = "Slapple Farm",
+                Content = "Autofarm deactivated",
+                Duration = 2
+            })
+        end
+    end
+})
+
+-- Дропдаун для выбора типа яблок
+FarmSection:AddDropdown("SlappleTypes", {
+    Title = "Slapple Types",
+    Description = "Select which slapples to collect",
+    Values = {"Slapple", "GoldenSlapple"},
+    Default = {"Slapple", "GoldenSlapple"}, -- По умолчанию оба типа
+    Multi = true, -- Можно выбрать несколько
+    Callback = function(Selected)
+        SlappleFarmConfig.Types = Selected
+    end
+})
+
+-- Слайдер для настройки задержки
+FarmSection:AddSlider("FarmCooldown", {
+    Title = "Farm Cooldown",
+    Description = "Delay between checks (seconds)",
+    Default = 0.1,
+    Min = 0.05,
+    Max = 0.5,
+    Rounding = 2,
+    Callback = function(Value)
+        SlappleFarmConfig.Cooldown = Value
+    end
+})
+
+
+
+
+
+
+
 
 Fluent:Notify({
     Title = "Slap Battles",
@@ -866,11 +1050,6 @@ Player.Chatted:Connect(function(message)
         teleportToAFKZone()
     end
 end)
-
-
-
-
-
 
 
 

@@ -32,18 +32,66 @@ local Tabs = {
     Main = Window:AddTab({Title = "Main", Icon = "code"}),
     Teleport = Window:AddTab({Title = "Teleport", Icon = "map-pin"}),
     antiafk = Window:AddTab({Title = "Anti-Afk", Icon = "flag"}),
-    antihelp = Window:AddTab({Title = "Anti", Icon = "shield"}),
+    antihelp = Window:AddTab({Title = "Antis", Icon = "shield"}),
     farm = Window:AddTab({Title = "Farm (NEW)", Icon = "user"}),
     Visual = Window:AddTab({Title = "Visual", Icon = "eye"}),
     Gloves = Window:AddTab({Title = "Gloves", Icon = "hand"}),
     Other = Window:AddTab({Title = "Other", Icon = "code"}),
 }
 
-
-
-
-
-
+local Options = {
+    BadgeId = 0,
+    Action = "nothing"
+}
+--[[
+local autoclicksec = Tabs.Main.AddSection("Tycoon")
+autoclicksec:AddToggle("AutoClickTycoon", {
+    Title = "Auto Click Tycoon",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoTycoon = Value
+        
+        if Value then
+            Fluent:Notify({
+                Title = "Status",
+                Content = "Auto Click Tycoon: Enabled",
+                Duration = 3
+            })
+        end
+        
+        while _G.AutoTycoon do
+            -- Получаем конкретный тайкун игрока
+            local playerName = game.Players.LocalPlayer.Name
+            local tycoon = workspace["ÅTycoon"..playerName]
+            
+            -- Альтернативный вариант, если имя начинается с Atycoon
+            if not tycoon then
+                tycoon = workspace["Atycoon"..playerName]
+            end
+            
+            if tycoon then
+                -- Проверяем все возможные варианты клик-частей
+                local clickPart = tycoon:FindFirstChild("Click") or
+                                 tycoon:FindFirstChild("Dropper2") or
+                                 tycoon:FindFirstChild("Dropper3")
+                
+                if clickPart and clickPart:FindFirstChildOfClass("ClickDetector") then
+                    for _ = 1, 3 do -- Тройной клик для надежности
+                        fireclickdetector(clickPart.ClickDetector)
+                        task.wait(0.05)
+                    end
+                else
+                    warn("Не найдена кликабельная часть в тайкуне")
+                end
+            else
+                warn("Тайкун не найден в workspace")
+            end
+            
+            task.wait(0.2) -- Общая задержка между циклами
+        end
+    end
+})
+]]
 
 local EnterSection = Tabs.Main:AddSection("Auto Arena Enter")
 
@@ -135,7 +183,7 @@ EnterSection:AddToggle("AutoEnterToggle", {
 
 
 -- Создаем секцию (например, "Void Protection")
-local AntiSection = Tabs.antihelp:AddSection("Anti")
+local AntiSection = Tabs.antihelp:AddSection("Antis")
 
 
 -- Anti Ragdoll
@@ -233,6 +281,57 @@ AntiSection:AddToggle("AntiVoid", {
     end
 })
 
+
+
+
+
+-- Anti Megarock/CUSTOM
+AntiSection:AddToggle("AntiMegarock", {
+    Title = "Anti Megarock/CUSTOM",
+    Description = "Блокирует взаимодействие с камнями",
+    Default = false,
+    Callback = function(state)
+        getgenv().antimegarocksb = state
+        task.spawn(function()
+            while getgenv().antimegarocksb do
+                for _, v in pairs(Players:GetPlayers()) do
+                    if v.Character and v.Character:FindFirstChild("rock") then
+                        v.Character.rock.CanTouch = false
+                        v.Character.rock.CanQuery = false
+                    end
+                end
+                task.wait()
+            end
+        end)
+    end
+})
+
+-- Anti Cube Of Death
+AntiSection:AddToggle("AntiCubeOfDeath", {
+    Title = "Anti Cube Of Death",
+    Description = "Death = false",
+    Default = false,
+    Callback = function(state)
+        if state then
+            local cube = workspace:FindFirstChild("Arena") and workspace.Arena:FindFirstChild("CubeOfDeathArea") 
+                      and workspace.Arena.CubeOfDeathArea:FindFirstChild("the cube of death(i heard it kills)")
+            if cube then
+                cube.CanTouch = false
+            end
+        else
+            local cube = workspace:FindFirstChild("Arena") and workspace.Arena:FindFirstChild("CubeOfDeathArea") 
+                      and workspace.Arena.CubeOfDeathArea:FindFirstChild("the cube of death(i heard it kills)")
+            if cube then
+                cube.CanTouch = true
+            end
+        end
+    end
+})
+
+
+
+
+
 local ESpamSection = Tabs.Main:AddSection("E-Spam")
 local ESpamConnection = nil
 local VirtualInput = game:GetService("VirtualInputManager")
@@ -295,6 +394,13 @@ TeleportSection:AddButton({
                 Duration = 3
             })
         end
+    end
+})
+TeleportSection:AddButton({
+    Title = "TP to Barzil",
+    Description = "Teleporting to barzil portal",
+    Callback = function()
+         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.workspace.Lobby.brazil.portal.CFrame
     end
 })
 
@@ -521,6 +627,31 @@ NameTagSection:AddToggle("RemoveNameTag", {
     end
 })
 
+
+local AutoTycoon = Tabs.Gloves:AddToggle("AutoTycoon", {
+    Title = "Get Tycoon",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoTpPlate = Value
+        if game.Players.LocalPlayer.Character:FindFirstChild("entered") and #game.Players:GetPlayers() >= 7 then
+            while _G.AutoTpPlate do
+                if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("entered") and #game.Players:GetPlayers() >= 7 then
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.workspace.Arena.Plate.CFrame
+                end
+                task.wait()
+            end
+        elseif _G.AutoTpPlate == true then
+            Fluent:Notify({
+                Title = "Error",
+                Content = "You need to enter arena, or have 7 people in the server",
+                Duration = 5
+            })
+            task.wait(0.05)
+            AutoTycoon:Set(false)
+        end
+    end
+})
+
 -- Автоматическое обновление при появлении нового персонажа
 game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
     if getgenv().HideNameTag then
@@ -540,7 +671,7 @@ end)
 
 
 local Locations = loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/locations.lua"))()
-local TeleportSection = Tabs.Teleport:AddSection("Islands Teleport")
+local TeleportSection = Tabs.Teleport:AddSection(" Teleport")
 local AFKSECT = Tabs.Teleport:AddSection("Afk")
 function TeleportToPosition(position)
     local character = game.Players.LocalPlayer.Character
@@ -1123,6 +1254,33 @@ while true do
     UpdatePing()
     task.wait(0.5)
 end
+
+
+-- Перехват получения бейджа
+local BadgeService = game:GetService("BadgeService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+while true do
+    task.wait(1)
+    
+    if Options.BadgeId > 0 then
+        local hasBadge = pcall(function()
+            return BadgeService:UserHasBadgeAsync(LocalPlayer.UserId, Options.BadgeId)
+        end)
+        
+        if hasBadge then
+            if Options.Action == "kick" then
+                LocalPlayer:Kick("Вы получили бейдж и были кикнуты!")
+            elseif Options.Action == "reset" then
+                LocalPlayer:LoadCharacter()
+            end
+            break
+        end
+    end
+end
+
+
 
 
 

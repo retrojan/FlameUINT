@@ -1866,22 +1866,51 @@ local FarmBobDropdown = BobFarmSection:AddDropdown("FarmBobDropdown", {
         Autobob = value
     end
 })
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+local BadgeService = game:GetService("BadgeService")
+local LocalPlayer = Players.LocalPlayer
+local PlaceId = 6403373529
+local BobBadgeId = 2125950512
+
+-- ===== ServerHop =====
+local function ServerHop()
+    local servers, cursor = {}, ""
+    local success, response = pcall(function()
+        return game:HttpGet(string.format(
+            "https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Asc&limit=100%s",
+            PlaceId, cursor ~= "" and "&cursor=" .. cursor or ""
+        ))
+    end)
+    if success and response then
+        local data = HttpService:JSONDecode(response)
+        if data and data.data then
+            for _, server in ipairs(data.data) do
+                if server.playing >= 7 and server.playing <= 13 and server.id ~= game.JobId then
+                    table.insert(servers, server.id)
+                end
+            end
+        end
+    end
+    if #servers > 0 then
+        TeleportService:TeleportToPlaceInstance(PlaceId, servers[math.random(1, #servers)], LocalPlayer)
+    else
+        warn("[ServerHop] ❌ Нет подходящих серверов, попробую позже")
+    end
+end
+
+-- ===== AutoFarmBob Toggle =====
 local AutoFarmBobToggle = BobFarmSection:AddToggle("AutoFarmBobToggle", {
     Title = "Auto Farm Bob",
     Description = "Automatically farm Bob",
-    Default = false,
+    Default = true,
     Callback = function(value)
         AutoFarmBob = value
-        local player = game.Players.LocalPlayer
-        local Players = game:GetService("Players")
-        local TeleportService = game:GetService("TeleportService")
-        local BadgeService = game:GetService("BadgeService")
-        local BobBadgeId = 2125950512
-        local farmStartTime = tick()
-        local teleportCountdown = nil
+        local farmStartTime, teleportCountdown
         local teleportGui, timerLabel, farmLabel
 
-        -- создаём GUI для таймера
+        -- GUI таймер
         local function createGui()
             teleportGui = Instance.new("ScreenGui")
             teleportGui.Name = "AutoBobTimerGui"
@@ -1894,8 +1923,7 @@ local AutoFarmBobToggle = BobFarmSection:AddToggle("AutoFarmBobToggle", {
             bg.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
             bg.BackgroundTransparency = 0.2
             bg.BorderSizePixel = 0
-            bg.AnchorPoint = Vector2.new(0, 0)
-            
+
             timerLabel = Instance.new("TextLabel", bg)
             timerLabel.Size = UDim2.new(1, -10, 0.5, 0)
             timerLabel.Position = UDim2.new(0, 5, 0, 5)
@@ -1914,72 +1942,104 @@ local AutoFarmBobToggle = BobFarmSection:AddToggle("AutoFarmBobToggle", {
             farmLabel.TextSize = 16
             farmLabel.Text = "Фарм идёт: 0 сек"
         end
-
         local function removeGui()
             if teleportGui then teleportGui:Destroy() end
         end
 
-        -- функция проверки игроков
-        local function checkPlayers()
-            local others = {}
-            for _, plr in ipairs(Players:GetPlayers()) do
-                if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                    table.insert(others, plr)
-                end
-            end
-            return others
-        end
-
-        -- запуск фарма
         if value then
+            if LocalPlayer.leaderstats.Glove.Value ~= "Replica" then
+                warn("❌ У тебя не Replica!")
+                AutoFarmBobToggle:Set(false)
+                return
+            end
+
+            local success, hasBadge = pcall(function()
+                return BadgeService:UserHasBadgeAsync(LocalPlayer.UserId, BobBadgeId)
+            end)
+            if success and hasBadge then
+                print("[AutoBob] 🎉 Badge уже получен!")
+                AutoFarmBobToggle:Set(false)
+                return
+            end
+
             createGui()
             farmStartTime = tick()
 
             spawn(function()
                 while AutoFarmBob do
-                    local others = checkPlayers()
+                    local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+                    if not AutoFarmBob then break end
 
-                    -- если я один
+                    -- Проверка игроков
+                    local others = {}
+                    for _, plr in ipairs(Players:GetPlayers()) do
+                        if plr ~= LocalPlayer then table.insert(others, plr) end
+                    end
+
                     if #others == 0 then
-                        print("[AutoBob] Alone -> instant teleport")
+                        print("[AutoBob] Я один -> моментальный серверхоп")
                         ServerHop()
                         break
-                    end
-
-                    -- проверка игроков выше 255.3
-                    local allAbove = true
-                    for _, plr in ipairs(others) do
-                        local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
-                        if hrp and hrp.Position.Y <= 255.3 then
-                            allAbove = false
-                            break
+                    else
+                        local allAbove = true
+                        for _, plr in ipairs(others) do
+                            local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+                            if hrp and hrp.Position.Y <= 255.3 then
+                                allAbove = false
+                                break
+                            end
+                        end
+                        if allAbove then
+                            print("[AutoBob] Все игроки выше 255.3 -> 15с отсчёт")
+                            teleportCountdown = 15
+                            while teleportCountdown > 0 and AutoFarmBob do
+                                task.wait(1)
+                                teleportCountdown -= 1
+                                if timerLabel then
+                                    timerLabel.Text = "До телепорта: " .. teleportCountdown .. " сек"
+                                end
+                            end
+                            if AutoFarmBob then
+                                ServerHop()
+                                break
+                            end
                         end
                     end
 
-                    if allAbove then
-                        print("[AutoBob] All players above 255.3 -> countdown 15s")
-                        teleportCountdown = 15
-                        while teleportCountdown > 0 and AutoFarmBob do
-                            task.wait(1)
-                            teleportCountdown -= 1
-                        end
-                        if AutoFarmBob then
-                            ServerHop()
-                            break
-                        end
-                    end
-
-                    -- обновление GUI
+                    -- GUI обновление
                     if timerLabel and farmLabel then
-                        if teleportCountdown then
-                            timerLabel.Text = "До телепорта: " .. teleportCountdown .. " сек"
-                        else
+                        if not teleportCountdown then
                             timerLabel.Text = "До телепорта: -"
                         end
                         farmLabel.Text = "Фарм идёт: " .. math.floor(tick() - farmStartTime) .. " сек"
                     end
 
-                    task.wait(1)
+                    -- Фарм процесс
+                    firetouchinterest(character:WaitForChild("Head"), workspace.Lobby.Teleport1, 0)
+                    firetouchinterest(character:WaitForChild("Head"), workspace.Lobby.Teleport1, 1)
+                    task.wait(0.5)
+                    game:GetService("VirtualInputManager"):SendKeyEvent(true, "E", false, game)
+                    task.wait(0.6)
+
+                    local ok, gotBadge = pcall(function()
+                        return BadgeService:UserHasBadgeAsync(LocalPlayer.UserId, BobBadgeId)
+                    end)
+                    if ok and gotBadge then
+                        print("[AutoBob] 🎉 Badge получен во время фарма!")
+                        task.wait(10)
+                        LocalPlayer:Kick("U GOT BOB, CONGRATULATIONS!")
+                        break
+                    end
+
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then humanoid.Health = 0 else character:BreakJoints() end
+
+                    if AutoFarmBob then
+                        LocalPlayer.CharacterAdded:Wait()
+                        task.wait(0.5)
+                    else
+                        break
+                    end
                 end
             end)
         else
@@ -1988,6 +2048,7 @@ local AutoFarmBobToggle = BobFarmSection:AddToggle("AutoFarmBobToggle", {
         end
     end
 })
+
 
 
 

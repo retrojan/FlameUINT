@@ -1869,6 +1869,11 @@ local function ServerHop()
         end
     end
 
+
+	    local teleportFunc = queueonteleport or queue_on_teleport
+            teleportFunc([[
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SBBob.lua"))()
+            ]])
     -- Телепортируем на случайный подходящий сервер
     if #servers > 0 then
         TeleportService:TeleportToPlaceInstance(placeId, servers[math.random(1, #servers)], LocalPlayer)
@@ -1929,9 +1934,7 @@ local AutoFarmBobToggle = BobFarmSection:AddToggle("AutoFarmBobToggle", {
     local teleportFunc = queueonteleport or queue_on_teleport
         
         -- Устанавливаем скрипт для выполнения после телепортации
-    teleportFunc([[
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SBBob.lua"))()
-    ]])
+
         -- GUI таймер
         local function createGui()
             teleportGui = Instance.new("ScreenGui")

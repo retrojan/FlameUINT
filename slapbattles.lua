@@ -31,6 +31,10 @@ end
 
 wbadge()
 ]]
+
+
+
+
 local Window = Fluent:CreateWindow({
     Title = placeNameok,
     SubTitle = "by FlameUINT Hub",
@@ -1152,7 +1156,7 @@ Tabs.Gloves:AddButton({
                 game.Loaded:Wait()
             end
             if game.PlaceId ~= 17290438723 then
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/main.lua", true))()
+                return
             end
             -- Ожидаем игрока
             local player = game.Players.LocalPlayer
@@ -1210,6 +1214,45 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
         end
     end
 end)
+
+Tabs.Gloves:AddButton({
+    Title = "Get Lamp",
+    Description = "Get Lamp with ZZZZZZZ glove",
+    Callback = function()
+        if game.Players.LocalPlayer.leaderstats.Glove.Value == "ZZZZZZZ" and not game:GetService("BadgeService"):UserHasBadgeAsync(game.Players.LocalPlayer.UserId, 490455814138437) then
+            -- Уведомление о начале
+            Fluent:Notify({
+                Title = "Free Lamp",
+                Content = "Starting to get free lamp...",
+                Duration = 3
+            })
+            
+            -- Запускаем процесс в отдельном потоке
+            task.spawn(function()
+                repeat 
+                    task.wait()
+                    game:GetService("ReplicatedStorage").nightmare:FireServer("LightBroken")
+                until game:GetService("BadgeService"):UserHasBadgeAsync(game.Players.LocalPlayer.UserId, 490455814138437)
+                
+                -- Уведомление об успехе
+                Fluent:Notify({
+                    Title = "Success",
+                    Content = "Free lamp obtained successfully!",
+                    Duration = 5
+                })
+            end)
+        else
+            -- Уведомление об ошибке
+            Fluent:Notify({
+                Title = "Error",
+                Content = "You don't have ZZZZZZZ equipped, or already have Owner badge",
+                Duration = 5
+            })
+        end
+    end 
+})
+
+
 
 
 local PhaseJetToggle = Tabs.Gloves:AddToggle("PhaseJetFarm", {
@@ -1765,6 +1808,10 @@ end
 
 
 
+
+
+
+
 -- ❄️ Зависание персонажа
 local freezeEnabled = false
 local originalMaxSlopeAngle = 89 -- Стандартное значение для персонажа
@@ -1827,6 +1874,67 @@ Tabs.Utility:AddButton({
 
 
 
+local AntiLag = Tabs.Main:AddButton({
+    Title = "Anti Lag",
+    Description = "Boost FPS and reduce lag",
+    Callback = function()
+        -- Уведомление о включении
+        Fluent:Notify({
+            Title = "Anti Lag",
+            Content = "Optimizing game performance...",
+            Duration = 3
+        })
+        
+        -- Настройки для анти-лага
+        _G.Settings = {
+            Players = {
+                ["Ignore Me"] = true, 
+                ["Ignore Others"] = true
+            },
+            Meshes = {
+                Destroy = false,
+                LowDetail = true
+            },
+            Images = {
+                Invisible = true,
+                LowDetail = false,
+                Destroy = false
+            },
+            Other = {
+                ["No Particles"] = true,
+                ["No Camera Effects"] = true,
+                ["No Explosions"] = true,
+                ["No Clothes"] = true,
+                ["Low Water Graphics"] = true,
+                ["No Shadows"] = true,
+                ["Low Rendering"] = true,
+                ["Low Quality Parts"] = true
+            }
+        }
+        
+        -- Загружаем скрипт оптимизации
+        local success, error = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/CasperFlyModz/discord.gg-rips/main/FPSBooster.lua"))()
+            print("test")
+        end)
+        
+        if success then
+            Fluent:Notify({
+                Title = "Success",
+                Content = "Anti-Lag activated successfully!",
+                Duration = 5
+            })
+        else
+            Fluent:Notify({
+                Title = "Error",
+                Content = "Failed to load FPS Booster: " .. tostring(error),
+                Duration = 5
+            })
+        end
+    end    
+})
+
+
 
 
 local LastTick = tick()
@@ -1857,30 +1965,6 @@ end
 while true do
     UpdatePing()
     task.wait(0.5)
-end
-
--- Перехват получения бейджа
-local BadgeService = game:GetService("BadgeService")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
-while true do
-    task.wait(1)
-    
-    if Options.BadgeId > 0 then
-        local hasBadge = pcall(function()
-            return BadgeService:UserHasBadgeAsync(LocalPlayer.UserId, Options.BadgeId)
-        end)
-        
-        if hasBadge then
-            if Options.Action == "kick" then
-                LocalPlayer:Kick("Вы получили бейдж и были кикнуты!")
-            elseif Options.Action == "reset" then
-                LocalPlayer:LoadCharacter()
-            end
-            break
-        end
-    end
 end
 
 

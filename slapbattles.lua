@@ -1,6 +1,4 @@
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 local player = game:GetService("Players").LocalPlayer
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -20,6 +18,7 @@ end
 local StarterGui = game:GetService("StarterGui")
 local Players = game:GetService("Players")
 --[[
+
 local function wbadge()
 	StarterGui:SetCore("SendNotification",{
 		Title = "FlameUINT HUB",
@@ -30,6 +29,30 @@ local function wbadge()
 end
 
 wbadge()
+
+
+
+
+
+
+
+
+        if not game:IsLoaded() then
+            game.Loaded:Wait()
+        end
+        repeat wait() until game.Players.LocalPlayer
+        wait(3)
+Time = 121
+fireclickdetector(game.Workspace.CounterLever.ClickDetector)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0,100,0)
+wait(0.2)
+game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
+for i = 1,Time do
+Time = Time - 1
+game:GetService("StarterGui"):SetCore("SendNotification",{Title = "Error",Text = "You wait time [ "..Time.." ] receive.",Icon = "rbxassetid://7733658504",Duration = 1})
+
+
+
 ]]
 
 
@@ -42,23 +65,38 @@ local Window = Fluent:CreateWindow({
     Size = UDim2.fromOffset(580, 460),
     Acrylic = false,
     Theme = "Darker",
+    Transparency = 0,
     MinimizeKey = Enum.KeyCode.LeftControl
 })
 
 local Tabs = {
     
     Main = Window:AddTab({Title = "Main", Icon = "code"}),
-    antiafk = Window:AddTab({Title = "Anti-Afk", Icon = "flag"}),
     antihelp = Window:AddTab({Title = "Antis", Icon = "shield"}),
-    farm = Window:AddTab({Title = "Farm (NEW)", Icon = "user"}),
+    Slapple = Window:AddTab({Title = "Slapple", Icon = "user"}),
     Visual = Window:AddTab({Title = "Visual", Icon = "eye"}),
     Gloves = Window:AddTab({Title = "Gloves", Icon = "hand"}),
-    Utility = Window:AddTab({Title = "Utility", Icon = "user"}),
     Teleport = Window:AddTab({Title = "Teleport", Icon = "map-pin"}),
+    Farming = Window:AddTab({Title = "Farming", Icon = ""}),
     ptp = Window:AddTab({Title = "Place Teleport", Icon = "compass"}),
     Other = Window:AddTab({Title = "Other", Icon = "code"}),
 
 }
+
+-- ===== ServerHop без скрипта после хопа =====
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local LocalPlayer = Players.LocalPlayer
+
+
+
+
+
+
+
+
+
 
 local Options = {
     BadgeId = 0,
@@ -120,6 +158,10 @@ autoclicksec:AddToggle("AutoClickTycoon", {
 
 
 
+
+
+
+local UtilitySection = Tabs.Main:AddSection("Utility")
 
 
 
@@ -362,6 +404,36 @@ local AntiAdmin = AntiSection:AddToggle("AntiAdmin", {
     end
 })
 
+-- Добавляем тоггл
+AntiSection:AddToggle("AntiAFK_Toggle", {
+    Title = "Enabale AntiAFK",
+    Description = "AntiAfk",
+    Default = false,
+    Callback = function(Value)
+        _G.AntiAfk = Value
+        
+        -- Обрабатываем все соединения события Idled
+        for _, connection in next, getconnections(game.Players.LocalPlayer.Idled) do
+            if Value then
+                connection:Disable() -- Отключаем AFK, если переключатель включен
+            else
+                connection:Enable()  -- Включаем обратно, если выключен
+            end
+        end
+        
+        -- Уведомление
+        if Value then
+            Fluent:Notify({
+                Title = "Анти-AFK",
+                Content = "Защита от AFK включена",
+                Duration = 3
+            })
+        else
+            return
+        end
+    end
+})
+
 local AntiKick = AntiSection:AddToggle("AntiKick", {
     Title = "Anti Kick",
     Description = "Automatically teleports when trying to kick / just rejoining",
@@ -576,6 +648,9 @@ local AntiIceAndPotion = AntiSection:AddToggle("AntiIceAndPotion", {
     end
 })
 
+--[[
+
+DONT WORKING!
 
 local AntiBrick = AntiSection:AddToggle("AntiBrick", {
     Title = "Anti Brick", 
@@ -622,7 +697,7 @@ local AntiBrick = AntiSection:AddToggle("AntiBrick", {
         end
     end
 })
-
+]]
 
 
 local AntiSbeve = AntiSection:AddToggle("AntiSbeve", {
@@ -656,11 +731,12 @@ local AntiSbeve = AntiSection:AddToggle("AntiSbeve", {
     end
 })
 
-
+--[[
+DONT WORKING!
 -- Anti Megarock/CUSTOM
 AntiSection:AddToggle("AntiMegarock", {
     Title = "Anti Megarock/CUSTOM",
-    Description = "Блокирует взаимодействие с камнями",
+    Description = "",
     Default = false,
     Callback = function(state)
         getgenv().antimegarocksb = state
@@ -677,7 +753,7 @@ AntiSection:AddToggle("AntiMegarock", {
         end)
     end
 })
-
+]]
 local AntiMail = AntiSection:AddToggle("AntiMail", {
     Title = "Anti Mail",
     Description = "Block main ability",
@@ -1216,6 +1292,61 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
 end)
 
 Tabs.Gloves:AddButton({
+    Title = "Get Elude",
+    Description = "Automatically obtain Elude glove",
+    Callback = function()
+        local teleportFunc = queueonteleport or queue_on_teleport
+        
+        if teleportFunc then
+            
+            teleportFunc([[
+                if not game:IsLoaded() then
+                    game.Loaded:Wait()
+                end
+
+                if game.PlaceId ~= 11828384869 then
+                    return
+                end
+
+
+                wait(2)
+                
+                -- Получаем Elude glove
+                if workspace:FindFirstChild("Ruins") and workspace.Ruins:FindFirstChild("Elude") and workspace.Ruins.Elude:FindFirstChild("Glove") then
+                    firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, workspace.Ruins.Elude.Glove, 0)
+                    firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, workspace.Ruins.Elude.Glove, 1)
+                end
+                
+                -- Активируем все ClickDetector в Maze
+                if workspace:FindFirstChild("Maze") then
+                    for i, v in pairs(workspace.Maze:GetDescendants()) do
+                        if v:IsA("ClickDetector") then
+                            fireclickdetector(v)
+                        end
+                    end
+                end
+                
+                Fluent:Notify({
+                    Title = "Success",
+                    Content = "Counter and Elude gloves obtained!",
+                    Duration = 5
+                })
+            ]])
+            
+            -- Телепортация
+            game:GetService("TeleportService"):Teleport(11828384869)
+            
+        else
+            Fluent:Notify({
+                Title = "Error",
+                Content = "Your executor doesn't support auto teleport",
+                Duration = 5
+            })
+        end
+    end    
+})
+
+Tabs.Gloves:AddButton({
     Title = "Get Lamp",
     Description = "Get Lamp with ZZZZZZZ glove",
     Callback = function()
@@ -1330,37 +1461,8 @@ for name, position in pairs(Locations) do
 end
 
 -- Секция для анти-AFK
-local AntiAFKSection = Tabs.antiafk:AddSection("Анти-AFK")
 
--- Добавляем тоггл
-AntiAFKSection:AddToggle("AntiAFK_Toggle", {
-    Title = "Enabale AntiAFK",
-    Description = "AntiAfk",
-    Default = false,
-    Callback = function(Value)
-        _G.AntiAfk = Value
-        
-        -- Обрабатываем все соединения события Idled
-        for _, connection in next, getconnections(game.Players.LocalPlayer.Idled) do
-            if Value then
-                connection:Disable() -- Отключаем AFK, если переключатель включен
-            else
-                connection:Enable()  -- Включаем обратно, если выключен
-            end
-        end
-        
-        -- Уведомление
-        if Value then
-            Fluent:Notify({
-                Title = "Анти-AFK",
-                Content = "Защита от AFK включена",
-                Duration = 3
-            })
-        else
-            return
-        end
-    end
-})
+
 
 
 
@@ -1481,7 +1583,7 @@ end
 coroutine.wrap(setupGloveTracking)()
 
 
-local FarmSection = Tabs.farm:AddSection("Slapple Farming")
+local FarmSection = Tabs.Slapple:AddSection("Slapple Farming")
 
 -- Конфигурация
 local SlappleFarmConfig = {
@@ -1563,7 +1665,6 @@ FarmSection:AddSlider("FarmCooldown", {
         SlappleFarmConfig.Cooldown = Value
     end
 })
-
 
 
 
@@ -1716,6 +1817,260 @@ Player.Chatted:Connect(function(message)
     end
 end)
 
+local Autobob = "Fast"
+local AutoFarmBob = false
+
+-- Создаем секцию для Bob Farm
+local BobFarmSection = Tabs.Farming:AddSection("Bob Farm (BETA)", {
+    Title = "Bob Farm (NEW + BETA)"
+})
+
+local FarmBobDropdown = BobFarmSection:AddDropdown("FarmBobDropdown", {
+    Title = "Farm Bob Mode",
+    Description = "Select farming mode",
+    Default = "Fast",
+    Values = {"Fast"},
+    Callback = function(value)
+        Autobob = value
+    end
+})
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+local BadgeService = game:GetService("BadgeService")
+local LocalPlayer = Players.LocalPlayer
+local PlaceId = 6403373529
+local BobBadgeId = 2125950512
+
+local function ServerHop()
+
+
+
+    local placeId = game.PlaceId
+    local servers = {}
+    local cursor = ""
+
+    -- Получаем список серверов
+    local success, response = pcall(function()
+        return game:HttpGet(string.format(
+            "https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Asc&limit=100%s",
+            placeId, cursor ~= "" and "&cursor=" .. cursor or ""
+        ))
+    end)
+
+    if success and response then
+        local data = HttpService:JSONDecode(response)
+        if data and data.data then
+            for _, server in ipairs(data.data) do
+                if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                    table.insert(servers, server.id)
+                end
+            end
+        end
+    end
+
+    -- Телепортируем на случайный подходящий сервер
+    if #servers > 0 then
+        TeleportService:TeleportToPlaceInstance(placeId, servers[math.random(1, #servers)], LocalPlayer)
+        print("[ServerHop] Перешёл на новый сервер")
+    else
+        warn("❌No available servers were found!")
+    end
+end
+
+
+
+local function ServerHopD()
+
+
+    local placeId = game.PlaceId
+    local servers = {}
+    local cursor = ""
+
+    -- Получаем список серверов
+    local success, response = pcall(function()
+        return game:HttpGet(string.format(
+            "https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Asc&limit=100%s",
+            placeId, cursor ~= "" and "&cursor=" .. cursor or ""
+        ))
+    end)
+
+    if success and response then
+        local data = HttpService:JSONDecode(response)
+        if data and data.data then
+            for _, server in ipairs(data.data) do
+                if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                    table.insert(servers, server.id)
+                end
+            end
+        end
+    end
+
+    -- Телепортируем на случайный подходящий сервер
+    if #servers > 0 then
+        TeleportService:TeleportToPlaceInstance(placeId, servers[math.random(1, #servers)], LocalPlayer)
+        print("[ServerHop] Перешёл на новый сервер")
+    else
+        warn("❌No available servers were found!")
+    end
+end
+
+-- ===== AutoFarmBob Toggle =====
+local AutoFarmBobToggle = BobFarmSection:AddToggle("AutoFarmBobToggle", {
+    Title = "Auto Farm Bob",
+    Description = "Automatically farm Bob",
+    Default = false,
+    Callback = function(value)
+        AutoFarmBob = value
+        local farmStartTime, teleportCountdown
+        local teleportGui, timerLabel, farmLabel
+        
+        -- Устанавливаем скрипт для выполнения после телепортации
+    local teleportFunc = queueonteleport or queue_on_teleport
+        
+        -- Устанавливаем скрипт для выполнения после телепортации
+    teleportFunc([[
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SBBob.lua"))()
+    ]])
+        -- GUI таймер
+        local function createGui()
+            teleportGui = Instance.new("ScreenGui")
+            teleportGui.Name = "AutoBobTimerGui"
+            teleportGui.ResetOnSpawn = false
+            teleportGui.Parent = game.CoreGui
+
+            local bg = Instance.new("Frame", teleportGui)
+            bg.Size = UDim2.new(0, 220, 0, 60)
+            bg.Position = UDim2.new(0, 10, 1, -70)
+            bg.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            bg.BackgroundTransparency = 0.2
+            bg.BorderSizePixel = 0
+
+            timerLabel = Instance.new("TextLabel", bg)
+            timerLabel.Size = UDim2.new(1, -10, 0.5, 0)
+            timerLabel.Position = UDim2.new(0, 5, 0, 5)
+            timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+            timerLabel.BackgroundTransparency = 1
+            timerLabel.Font = Enum.Font.SourceSansBold
+            timerLabel.TextSize = 16
+            timerLabel.Text = "До телепорта: -"
+
+            farmLabel = Instance.new("TextLabel", bg)
+            farmLabel.Size = UDim2.new(1, -10, 0.5, 0)
+            farmLabel.Position = UDim2.new(0, 5, 0, 30)
+            farmLabel.TextColor3 = Color3.fromRGB(180, 255, 180)
+            farmLabel.BackgroundTransparency = 1
+            farmLabel.Font = Enum.Font.SourceSans
+            farmLabel.TextSize = 16
+            farmLabel.Text = "Фарм идёт: 0 сек"
+        end
+        local function removeGui()
+            if teleportGui then teleportGui:Destroy() end
+        end
+
+        if value then
+            if LocalPlayer.leaderstats.Glove.Value ~= "Replica" then
+                warn("❌ У тебя не Replica!")
+                AutoFarmBobToggle:Set(false)
+                return
+            end
+
+            local success, hasBadge = pcall(function()
+                return BadgeService:UserHasBadgeAsync(LocalPlayer.UserId, BobBadgeId)
+            end)
+            if success and hasBadge then
+                print("[AutoBob] 🎉 Badge уже получен!")
+                AutoFarmBobToggle:Set(false)
+                return
+            end
+
+            createGui()
+            farmStartTime = tick()
+
+            spawn(function()
+                while AutoFarmBob do
+                    local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+                    if not AutoFarmBob then break end
+
+                    -- Проверка игроков
+                    local others = {}
+                    for _, plr in ipairs(Players:GetPlayers()) do
+                        if plr ~= LocalPlayer then table.insert(others, plr) end
+                    end
+
+                    if #others == 0 then
+                        print("[AutoBob] Я один -> моментальный серверхоп")
+                        ServerHop()
+                        break
+                    else
+                        local allAbove = true
+                        for _, plr in ipairs(others) do
+                            local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+                            if hrp and hrp.Position.Y <= 255.3 then
+                                allAbove = false
+                                break
+                            end
+                        end
+                        if allAbove then
+                            print("[AutoBob] Все игроки выше 255.3 -> 15с отсчёт")
+                            teleportCountdown = 15
+                            while teleportCountdown > 0 and AutoFarmBob do
+                                task.wait(1)
+                                teleportCountdown -= 1
+                                if timerLabel then
+                                    timerLabel.Text = "До телепорта: " .. teleportCountdown .. " сек"
+                                end
+                            end
+                            if AutoFarmBob then
+                                ServerHop()
+                                break
+                            end
+                        end
+                    end
+
+                    -- GUI обновление
+                    if timerLabel and farmLabel then
+                        if not teleportCountdown then
+                            timerLabel.Text = "До телепорта: -"
+                        end
+                        farmLabel.Text = "Фарм идёт: " .. math.floor(tick() - farmStartTime) .. " сек"
+                    end
+
+                    -- Фарм процесс
+                    firetouchinterest(character:WaitForChild("Head"), workspace.Lobby.Teleport1, 0)
+                    firetouchinterest(character:WaitForChild("Head"), workspace.Lobby.Teleport1, 1)
+                    task.wait(0.5)
+                    game:GetService("VirtualInputManager"):SendKeyEvent(true, "E", false, game)
+                    task.wait(0.6)
+
+                    local ok, gotBadge = pcall(function()
+                        return BadgeService:UserHasBadgeAsync(LocalPlayer.UserId, BobBadgeId)
+                    end)
+                    if ok and gotBadge then
+                        print("[AutoBob] 🎉 Badge получен во время фарма!")
+                        task.wait(0.5)
+                        LocalPlayer:Kick("U GOT BOB, CONGRATULATIONS!")
+                        break
+                    end
+
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then humanoid.Health = 0 else character:BreakJoints() end
+
+                    if AutoFarmBob then
+                        LocalPlayer.CharacterAdded:Wait()
+                        task.wait(0.5)
+                    else
+                        break
+                    end
+                end
+            end)
+        else
+            removeGui()
+            print("[AutoBob] Auto Farm Bob disabled.")
+        end
+    end
+})
+
 
 
 
@@ -1758,58 +2113,7 @@ OtSection:AddButton({
         })
     end
 })
-
-
-local TeleportService = game:GetService("TeleportService")
-local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
--- 🌀 Server Hop с queue_on_teleport
-local function ServerHop()
-    local teleportFunc = queueonteleport or queue_on_teleport
-    if teleportFunc then
-        teleportFunc([[
-
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/main.lua", true))()
-
-            ]])
-    end
-    
-    local servers = {}
-    local cursor = ""
-    local placeId = game.PlaceId
-
-    local success, response = pcall(function()
-        return game:HttpGet(
-            string.format("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Asc&limit=100%s",
-            placeId, cursor ~= "" and "&cursor=" .. cursor or "")
-        )
-    end)
-
-    if success and response then
-        local data = HttpService:JSONDecode(response)
-        if data and data.data then
-            for _, server in ipairs(data.data) do
-                if server.playing < server.maxPlayers and server.id ~= game.JobId then
-                    table.insert(servers, server.id)
-                end
-            end
-        end
-    end
-
-    if #servers > 0 then
-        TeleportService:TeleportToPlaceInstance(placeId, servers[math.random(1, #servers)], LocalPlayer)
-    else
-        warn("❌No available servers were found!")
-    end
-end
-
-
-
-
-
-
+--[[]]
 
 
 -- ❄️ Зависание персонажа
@@ -1853,7 +2157,20 @@ LocalPlayer.CharacterAdded:Connect(function(character)
     end
 end)
 
-Tabs.Utility:AddToggle("FreezeToggle", {
+
+-- 🖥️ Добавление в Fluent GUI
+UtilitySection:AddButton({
+    Title = "Server Hop",
+    Description = "Joining to another server ",
+    Callback = function()
+        ServerHopD()
+    end
+})
+
+
+
+
+UtilitySection:AddToggle("FreezeToggle", {
     Title = "Tab", 
     Description = "tabbing (for kinetic or berserk)",
     Default = false,
@@ -1863,18 +2180,15 @@ Tabs.Utility:AddToggle("FreezeToggle", {
 })
 
 
--- 🖥️ Добавление в Fluent GUI
-Tabs.Utility:AddButton({
-    Title = "Server Hop",
-    Description = "Joining to another server ",
-    Callback = function()
-        ServerHop()
-    end
-})
 
 
 
-local AntiLag = Tabs.Main:AddButton({
+
+
+
+
+
+local AntiLag = AntiSection:AddButton({
     Title = "Anti Lag",
     Description = "Boost FPS and reduce lag",
     Callback = function()
@@ -1970,7 +2284,7 @@ end
 
 
 
-
+Window:SelectTab(4)
 
 
 SaveManager:SetLibrary(Fluent)

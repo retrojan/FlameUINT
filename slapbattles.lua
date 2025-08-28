@@ -1130,7 +1130,7 @@ Tabs.Gloves:AddButton({
 })
 
 Tabs.Gloves:AddButton({
-    Title = "🪬 Auto FrostBite Glove",
+    Title = "Get FrostBite Glove",
     Description = "Automatically obtains the FrostBite glove",
     Callback = function()
         -- Проверяем поддержку телепортации

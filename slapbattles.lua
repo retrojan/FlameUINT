@@ -6,7 +6,7 @@ local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
 local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
-local placeName = placeInfo.Name or "Unknown"  
+local placeNameok = placeInfo.Name or "Unknown"  
 
 if game.PlaceId ~= 6403373529 and game.PlaceId ~= 9015014224 then
     Fluent:Notify({
@@ -17,8 +17,22 @@ if game.PlaceId ~= 6403373529 and game.PlaceId ~= 9015014224 then
     return
 end
 
+local StarterGui = game:GetService("StarterGui")
+local Players = game:GetService("Players")
+--[[
+local function wbadge()
+	StarterGui:SetCore("SendNotification",{
+		Title = "FlameUINT HUB",
+		Text = "LOADED V4",
+		Icon = "rbxassetid://206410289",
+        Duration = 5
+	})
+end
+
+wbadge()
+]]
 local Window = Fluent:CreateWindow({
-    Title = placeName,
+    Title = placeNameok,
     SubTitle = "by FlameUINT Hub",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
@@ -30,13 +44,16 @@ local Window = Fluent:CreateWindow({
 local Tabs = {
     
     Main = Window:AddTab({Title = "Main", Icon = "code"}),
-    Teleport = Window:AddTab({Title = "Teleport", Icon = "map-pin"}),
     antiafk = Window:AddTab({Title = "Anti-Afk", Icon = "flag"}),
     antihelp = Window:AddTab({Title = "Antis", Icon = "shield"}),
     farm = Window:AddTab({Title = "Farm (NEW)", Icon = "user"}),
     Visual = Window:AddTab({Title = "Visual", Icon = "eye"}),
     Gloves = Window:AddTab({Title = "Gloves", Icon = "hand"}),
+    Utility = Window:AddTab({Title = "Utility", Icon = "user"}),
+    Teleport = Window:AddTab({Title = "Teleport", Icon = "map-pin"}),
+    ptp = Window:AddTab({Title = "Place Teleport", Icon = "compass"}),
     Other = Window:AddTab({Title = "Other", Icon = "code"}),
+
 }
 
 local Options = {
@@ -44,6 +61,10 @@ local Options = {
     Action = "nothing"
 }
 --[[
+
+!DONT WORKING!
+
+
 local autoclicksec = Tabs.Main.AddSection("Tycoon")
 autoclicksec:AddToggle("AutoClickTycoon", {
     Title = "Auto Click Tycoon",
@@ -92,6 +113,17 @@ autoclicksec:AddToggle("AutoClickTycoon", {
     end
 })
 ]]
+
+
+
+
+
+
+
+
+
+
+
 
 local EnterSection = Tabs.Main:AddSection("Auto Arena Enter")
 
@@ -186,6 +218,9 @@ EnterSection:AddToggle("AutoEnterToggle", {
 local AntiSection = Tabs.antihelp:AddSection("Antis")
 
 
+
+
+
 -- Anti Ragdoll
 local AntiRagdollToggle = AntiSection:AddToggle("AntiRagdoll", {
     Title = "Anti Ragdoll",
@@ -194,60 +229,64 @@ local AntiRagdollToggle = AntiSection:AddToggle("AntiRagdoll", {
     Callback = function(state)
         getgenv().AntiRagdollEnabled = state
         
-        -- Wait for character if needed
-        if not game.Players.LocalPlayer.Character then
-            game.Players.LocalPlayer.CharacterAdded:Wait()
+        -- Останавливаем предыдущие соединения
+        if getgenv().AntiRagdollConnection then
+            getgenv().AntiRagdollConnection:Disconnect()
+            getgenv().AntiRagdollConnection = nil
         end
-        local character = game.Players.LocalPlayer.Character
-
-        -- Main loop
-        coroutine.wrap(function()
-            while getgenv().AntiRagdollEnabled and character do
-                -- Safe check for Ragdolled value
-                local ragdollValue = character:FindFirstChild("Ragdolled")
-                local humanoid = character:FindFirstChildOfClass("Humanoid")
-                
-                if ragdollValue and ragdollValue.Value and humanoid and humanoid.Health > 0 then
-                    -- Anchor torso parts
-                    local torso = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
-                    local root = character:FindFirstChild("HumanoidRootPart")
-                    
-                    if torso then torso.Anchored = true end
-                    if root then root.Anchored = true end
-                    
-                    -- Wait until ragdoll ends
-                    repeat
-                        task.wait()
-                        ragdollValue = character:FindFirstChild("Ragdolled")
-                    until not getgenv().AntiRagdollEnabled or not ragdollValue or not ragdollValue.Value or not character
-                    
-                    -- Unanchor when done
-                    if character then
-                        if torso and torso.Parent then torso.Anchored = false end
-                        if root and root.Parent then root.Anchored = false end
-                    end
+        
+        if state then
+            -- Функция для обработки персонажа
+            local function setupAntiRagdoll()
+                local character = game.Players.LocalPlayer.Character
+                if not character then
+                    character = game.Players.LocalPlayer.CharacterAdded:Wait()
                 end
-                task.wait(0.1)
+                
+                -- Создаем соединение на Heartbeat для постоянной проверки
+                getgenv().AntiRagdollConnection = game:GetService("RunService").Heartbeat:Connect(function()
+                    if not getgenv().AntiRagdollEnabled or not character or not character.Parent then
+                        return
+                    end
+                    
+                    local ragdollValue = character:FindFirstChild("Ragdolled")
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    
+                    if ragdollValue and ragdollValue.Value and humanoid and humanoid.Health > 0 then
+                        local torso = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
+                        local root = character:FindFirstChild("HumanoidRootPart")
+                        
+                        if torso then torso.Anchored = true end
+                        if root then root.Anchored = true end
+                    else
+                        -- Разблокируем части когда не в ragdoll
+                        local torso = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
+                        local root = character:FindFirstChild("HumanoidRootPart")
+                        if torso then torso.Anchored = false end
+                        if root then root.Anchored = false end
+                    end
+                end)
             end
             
-            -- Cleanup when disabled
+            -- Запускаем сразу и при смене персонажа
+            setupAntiRagdoll()
+            game.Players.LocalPlayer.CharacterAdded:Connect(function()
+                if getgenv().AntiRagdollEnabled then
+                    setupAntiRagdoll()
+                end
+            end)
+        else
+            -- При выключении разблокируем все части
+            local character = game.Players.LocalPlayer.Character
             if character then
                 local torso = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
                 local root = character:FindFirstChild("HumanoidRootPart")
                 if torso then torso.Anchored = false end
                 if root then root.Anchored = false end
             end
-        end)()
+        end
     end
 })
-
--- Connection for character changes
-game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
-    if getgenv().AntiRagdollEnabled then
-        -- Reapply the effect if enabled
-        AntiRagdollToggle:Set(true)
-    end
-end)
 
 
 
@@ -283,6 +322,335 @@ AntiSection:AddToggle("AntiVoid", {
 
 
 
+local AntiAdmin = AntiSection:AddToggle("AntiAdmin", {
+    Title = "Anti Mod | Admin",
+    Description = "Automatically kicks in when a moderator/admin is detected.",
+    Default = false,
+    Callback = function(Value)
+        _G.AntiMods = Value
+        
+        if Value then
+            -- Создаем отдельный поток для проверки
+            task.spawn(function()
+                while _G.AntiMods do
+                    for _, player in pairs(game.Players:GetPlayers()) do
+                        if player:GetRankInGroup(9950771) >= 2 then
+                            _G.AntiKick = false
+                            
+                            -- Уведомление перед киком
+                            Fluent:Notify({
+                                Title = "Anti Admin",
+                                Content = "DETECTED: " .. player.Name,
+                                Duration = 3
+                            })
+                            
+                            task.wait(1)
+                            game.Players.LocalPlayer:Kick("High Rank Player Detected. [ " .. player.Name .. " ]")
+                            break
+                        end
+                    end
+                    task.wait(1) -- Проверка каждую секунду вместо каждого кадра
+                end
+            end)
+        else
+
+        end
+    end
+})
+
+local AntiKick = AntiSection:AddToggle("AntiKick", {
+    Title = "Anti Kick",
+    Description = "Automatically teleports when trying to kick / just rejoining",
+    Default = false,
+    Callback = function(Value)
+        _G.AntiKick = Value
+        
+        if Value then
+            -- Создаем отдельный поток для мониторинга
+            task.spawn(function()
+                while _G.AntiKick do
+                    for _, v in pairs(game.CoreGui.RobloxPromptGui.promptOverlay:GetDescendants()) do
+                        if v.Name == "ErrorPrompt" then
+                            -- Уведомление о обнаружении кика
+                            Fluent:Notify({
+                                Title = "Anti Kick",
+                                Content = "Обнаружена попытка кика! Телепортация...",
+                                Duration = 3
+                            })
+                            
+                            -- Телепортация на этот же сервер
+                            game:GetService("TeleportService"):TeleportToPlaceInstance(
+                                game.PlaceId, 
+                                game.JobId, 
+                                game.Players.LocalPlayer
+                            )
+                            break
+                        end
+                    end
+                    task.wait(0.5) -- Проверка каждые 0.5 секунды для оптимизации
+                end
+            end)
+        else
+
+        end
+    end
+})
+
+--[[
+local AntiObby = AntiSection:AddToggle("AntiObby", {
+    Title = "Anti Obby",
+    Description = "Anti killbrick",
+    Default = false,
+    Callback = function(Value)
+        _G.AntiObby = Value
+        
+        if Value then
+            -- Уведомление о включении
+            Fluent:Notify({
+                Title = "Anti Obby",
+                Content = "Защита от обби включена",
+                Duration = 3
+            })
+            
+            -- Создаем отдельный поток для мониторинга
+            task.spawn(function()
+                while _G.AntiObby do
+                    for _, v in pairs(game.Workspace:GetChildren()) do
+                        if string.find(v.Name, "LavaSpinner") or string.find(v.Name, "LavaBlock") then
+                            if v:FindFirstChild("CanTouch") and v.CanTouch == true then
+                                v.CanTouch = false
+                            end
+                        end
+                    end
+                    task.wait(1) -- Проверка каждую секунду для оптимизации
+                end
+            end)
+        else
+            -- Восстанавливаем CanTouch при выключении
+            for _, v in pairs(game.Workspace:GetChildren()) do
+                if string.find(v.Name, "LavaSpinner") or string.find(v.Name, "LavaBlock") then
+                    if v:FindFirstChild("CanTouch") and v.CanTouch == false then
+                        v.CanTouch = true
+                    end
+                end
+            end
+            
+        end
+    end
+})
+
+
+]]
+
+
+local AntiIceBin = AntiSection:AddToggle("AntiIceBin", {
+    Title = "Anti IceSkate",
+    Description = "Disable collision for all objects in IceSkate",
+    Default = false,
+    Callback = function(Value)
+        _G.AntiIceBin = Value
+        
+        if Value then
+            Fluent:Notify({
+                Title = "Anti IceSkate",
+                Content = "enable",
+                Duration = 3
+            })
+            
+            task.spawn(function()
+                while _G.AntiIceBin do
+                    if workspace:FindFirstChild("IceBin") then
+                        -- Обрабатываем все части в IceBin и его подпапках
+                        for _, obj in pairs(workspace.IceBin:GetDescendants()) do
+                            if obj:IsA("BasePart") then
+                                obj.CanCollide = false
+                                obj.CanTouch = false
+                            end
+                        end
+                    end
+                    task.wait(0.5)
+                end
+            end)
+        else
+            if workspace:FindFirstChild("IceBin") then
+                for _, obj in pairs(workspace.IceBin:GetDescendants()) do
+                    if obj:IsA("BasePart") then
+                        obj.CanCollide = true
+                        obj.CanTouch = true
+                    end
+                end
+            end
+        end
+    end
+})
+
+
+local AntiPusher = AntiSection:AddToggle("AntiPusher", {
+    Title = "Anti Pusher",
+    Description = "Protection from pusher walls",
+    Default = false,
+    Callback = function(Value)
+        _G.AntiPusher = Value
+        
+        if Value then
+            -- Уведомление о включении
+            Fluent:Notify({
+                Title = "Anti Pusher",
+                Content = "Защита от толкающих стен включена",
+                Duration = 3
+            })
+            
+            -- Создаем отдельный поток для мониторинга
+            task.spawn(function()
+                while _G.AntiPusher do
+                    for i, v in pairs(game.Workspace:GetChildren()) do
+                        if v.Name == "wall" then
+                            v.CanCollide = false
+                        end
+                    end
+                    task.wait(0.3) -- Оптимизированная задержка
+                end
+            end)
+        else
+            -- Уведомление о выключении
+            Fluent:Notify({
+                Title = "Anti Pusher",
+                Content = "Защита от толкающих стен выключена",
+                Duration = 3
+            })
+            
+            -- Восстанавливаем свойства при выключении
+            for i, v in pairs(game.Workspace:GetChildren()) do
+                if v.Name == "wall" then
+                    v.CanCollide = true
+                end
+            end
+        end
+    end
+})
+
+local AntiIceAndPotion = AntiSection:AddToggle("AntiIceAndPotion", {
+    Title = "Anti Ice & Potion",
+    Description = "Protection from ice and potion effects",
+    Default = false,
+    Callback = function(Value)
+        _G.AntiIce = Value
+        
+        if Value then
+            -- Уведомление о включении
+            Fluent:Notify({
+                Title = "Anti Ice & Potion",
+                Content = "Защита от льда и зелий включена",
+                Duration = 3
+            })
+            
+            -- Создаем отдельный поток для мониторинга
+            task.spawn(function()
+                while _G.AntiIce do
+                    if game.Players.LocalPlayer.Character then
+                        for i, v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+                            if v.Name == "Icecube" then
+                                v:Destroy()
+                                if game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+                                    game.Players.LocalPlayer.Character.Humanoid.PlatformStand = false
+                                    game.Players.LocalPlayer.Character.Humanoid.AutoRotate = true
+                                end
+                            end
+                        end
+                    end
+                    task.wait(0.1)
+                end
+            end)
+        else
+            -- Уведомление о выключении
+            Fluent:Notify({
+                Title = "Anti Ice & Potion", 
+                Content = "Защита от льда и зелий выключена",
+                Duration = 3
+            })
+        end
+    end
+})
+
+
+local AntiBrick = AntiSection:AddToggle("AntiBrick", {
+    Title = "Anti Brick", 
+    Description = "Protection from brick objects",
+    Default = false,
+    Callback = function(Value)
+        _G.AntiBrick = Value
+        
+        if Value then
+            -- Уведомление о включении
+            Fluent:Notify({
+                Title = "Anti Brick",
+                Content = "Защита от кирпичей включена",
+                Duration = 3
+            })
+            
+            -- Создаем отдельный поток для мониторинга
+            task.spawn(function()
+                while _G.AntiBrick do
+                    for i, v in pairs(game.Workspace:GetChildren()) do
+                        if v.Name == "Union" then
+                            v.CanTouch = false
+                            v.CanQuery = false
+                        end
+                    end
+                    task.wait(0.5) -- Оптимизированная задержка
+                end
+            end)
+        else
+            -- Уведомление о выключении
+            Fluent:Notify({
+                Title = "Anti Brick",
+                Content = "Защита от кирпичей выключена", 
+                Duration = 3
+            })
+            
+            -- Восстанавливаем свойства при выключении
+            for i, v in pairs(game.Workspace:GetChildren()) do
+                if v.Name == "Union" then
+                    v.CanTouch = true
+                    v.CanQuery = true
+                end
+            end
+        end
+    end
+})
+
+
+
+local AntiSbeve = AntiSection:AddToggle("AntiSbeve", {
+    Title = "Anti Sbeve",
+    Description = "",
+    Default = false,
+    Callback = function(Value)
+        _G.AntiSbeve = Value
+        
+        if Value then
+            
+            -- Создаем отдельный поток для мониторинга
+            task.spawn(function()
+                while _G.AntiSbeve do
+                    for _, player in pairs(game.Players:GetPlayers()) do
+                        if player ~= game.Players.LocalPlayer and 
+                           player.Character and 
+                           player.Character:FindFirstChild("stevebody") then
+                            
+                            local stevebody = player.Character:FindFirstChild("stevebody")
+                            stevebody.CanTouch = false
+                            stevebody.CanQuery = false
+                            stevebody.CanCollide = false
+                        end
+                    end
+                    task.wait(0.5) -- Проверка каждые 0.5 секунды для оптимизации
+                end
+            end)
+        else
+        end
+    end
+})
 
 
 -- Anti Megarock/CUSTOM
@@ -296,8 +664,8 @@ AntiSection:AddToggle("AntiMegarock", {
             while getgenv().antimegarocksb do
                 for _, v in pairs(Players:GetPlayers()) do
                     if v.Character and v.Character:FindFirstChild("rock") then
-                        v.Character.rock.CanTouch = false
-                        v.Character.rock.CanQuery = false
+                        v.Character:FindFirstChild("rock").CanTouch = false
+                        v.Character:FindFirstChild("rock").CanQuery = false
                     end
                 end
                 task.wait()
@@ -305,6 +673,85 @@ AntiSection:AddToggle("AntiMegarock", {
         end)
     end
 })
+
+local AntiMail = AntiSection:AddToggle("AntiMail", {
+    Title = "Anti Mail",
+    Description = "Block main ability",
+    Default = false,
+    Callback = function(Value)
+        _G.AntiMail = Value
+        
+        if Value then
+
+            
+            -- Немедленно отключаем если уже есть
+            if game.Players.LocalPlayer.Character and 
+               game.Players.LocalPlayer.Character:FindFirstChild("YouHaveGotMail") then
+                game.Players.LocalPlayer.Character.YouHaveGotMail.Disabled = true
+            end
+            
+            -- Создаем отдельный поток для мониторинга
+            task.spawn(function()
+                while _G.AntiMail do
+                    if game.Players.LocalPlayer.Character and 
+                       game.Players.LocalPlayer.Character:FindFirstChild("YouHaveGotMail") then
+                        game.Players.LocalPlayer.Character.YouHaveGotMail.Disabled = true
+                    end
+                    task.wait(0.5) -- Проверка каждые 0.5 секунды
+                end
+            end)
+        else
+            -- Восстанавливаем при выключении
+            if game.Players.LocalPlayer.Character and 
+               game.Players.LocalPlayer.Character:FindFirstChild("YouHaveGotMail") then
+                game.Players.LocalPlayer.Character.YouHaveGotMail.Disabled = false
+            end
+            
+
+        end
+    end
+})
+
+--[[
+local AntiBus = AntiSection:AddToggle("AntiBus", {
+    Title = "Anti Bus",
+    Description = "Защита от автобуса в рабочем пространстве",
+    Default = false,
+    Callback = function(Value)
+        _G.AntiBus = Value
+        
+        if Value then
+            
+            -- Создаем отдельный поток для мониторинга
+            task.spawn(function()
+                while _G.AntiBus do
+                    for _, object in pairs(game.Workspace:GetChildren()) do
+                        if object.Name == "BusModel" then
+                            if object:FindFirstChild("CanTouch") and object.CanTouch == true then
+                                object.CanTouch = false
+                            end
+                        end
+                    end
+                    task.wait(1) -- Проверка каждую секунду для оптимизации
+                end
+            end)
+        else
+            -- Восстанавливаем CanTouch при выключении
+            for _, object in pairs(game.Workspace:GetChildren()) do
+                if object.Name == "BusModel" then
+                    if object:FindFirstChild("CanTouch") and object.CanTouch == false then
+                        object.CanTouch = true
+                    end
+                end
+            end
+            
+        end
+    end
+})
+]]
+
+
+
 
 -- Anti Cube Of Death
 AntiSection:AddToggle("AntiCubeOfDeath", {
@@ -364,16 +811,16 @@ end
 local TeleportSection = Tabs.Teleport:AddSection("Arena")
 
 TeleportSection:AddButton({
-    Title = "TP to Arena Plate",
-    Description = "Teleport to the arena plate",
+    Title = "TP on Plate",
+    Description = "Teleport on plate",
     Callback = function()
         local character = player.Character
         local arenaPlate = workspace:FindFirstChild("Arena"):FindFirstChild("Plate")
         
         if not arenaPlate then
             Fluent:Notify({
-                Title = "Ошибка",
-                Content = "Arena Plate не найдена!",
+                Title = "Error",
+                Content = "Arena Plate not found",
                 Duration = 3
             })
             return
@@ -383,8 +830,8 @@ TeleportSection:AddButton({
             local position = arenaPlate.Position + Vector3.new(0, 5, 0)
             character.HumanoidRootPart.CFrame = CFrame.new(position)
             Fluent:Notify({
-                Title = "Успех",
-                Content = "Телепортирован на Arena Plate!",
+                Title = "Successfully",
+                Content = "Teleported on plate",
                 Duration = 3
             })
         else
@@ -630,13 +1077,20 @@ NameTagSection:AddToggle("RemoveNameTag", {
 
 local AutoTycoon = Tabs.Gloves:AddToggle("AutoTycoon", {
     Title = "Get Tycoon",
+    Description = "Automatically teleports to tycoon plate",
     Default = false,
     Callback = function(Value)
         _G.AutoTpPlate = Value
+        
         if game.Players.LocalPlayer.Character:FindFirstChild("entered") and #game.Players:GetPlayers() >= 7 then
             while _G.AutoTpPlate do
-                if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("entered") and #game.Players:GetPlayers() >= 7 then
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.workspace.Arena.Plate.CFrame
+                if game.Players.LocalPlayer.Character and 
+                   game.Players.LocalPlayer.Character:FindFirstChild("entered") and 
+                   #game.Players:GetPlayers() >= 7 then
+                    -- Телепортируемся на пластину с небольшим смещением вверх, чтобы стоять на ногах
+                    local plate = game.workspace.Arena.Plate
+                    local humanoidRootPart = game.Players.LocalPlayer.Character.HumanoidRootPart
+                    humanoidRootPart.CFrame = plate.CFrame + Vector3.new(0, 2, 0) -- +5 по Y чтобы упасть на пластину
                 end
                 task.wait()
             end
@@ -650,6 +1104,97 @@ local AutoTycoon = Tabs.Gloves:AddToggle("AutoTycoon", {
             AutoTycoon:Set(false)
         end
     end
+})
+
+
+
+
+
+
+Tabs.Gloves:AddButton({
+    Title = "Get Ice Skate",
+    Description = "just freezes u",
+    Callback = function()
+        if not game:GetService("BadgeService"):UserHasBadgeAsync(game.Players.LocalPlayer.UserId, 2906002612987222) then
+            game:GetService("ReplicatedStorage").IceSkate:FireServer("Freeze")
+            
+        else
+            -- Уведомление если уже есть badge
+            Fluent:Notify({
+                Title = "Ice Skate",
+                Content = "U have this glove",
+                Duration = 5
+            })
+        end
+    end
+})
+
+Tabs.Gloves:AddButton({
+    Title = "🪬 Auto FrostBite Glove",
+    Description = "Automatically obtains the FrostBite glove",
+    Callback = function()
+        -- Проверяем поддержку телепортации
+        if not (queueonteleport or queue_on_teleport) then
+            Fluent:Notify({
+                Title = "Error",
+                Content = "Your executor doesn't support auto teleport",
+                Duration = 5
+            })
+            return
+        end
+        
+        local teleportFunc = queueonteleport or queue_on_teleport
+        
+        -- Устанавливаем скрипт для выполнения после телепортации
+        teleportFunc([[
+            -- Ждем загрузки игры
+            if not game:IsLoaded() then
+                game.Loaded:Wait()
+            end
+            if game.PlaceId ~= 17290438723 then
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/main.lua", true))()
+            end
+            -- Ожидаем игрока
+            local player = game.Players.LocalPlayer
+            repeat wait() until player
+            
+            -- Ожидаем персонажа
+            while not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") do
+                wait(0.5)
+            end
+            
+            -- Телепортируем к перчатке
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(-554, 177, 56)
+            wait(1.5)
+            
+            -- Активируем все промпты в радиусе
+            for _, obj in ipairs(workspace:GetDescendants()) do
+                if obj:IsA("ProximityPrompt") then
+                    fireproximityprompt(obj)
+                    wait(0.3)
+                end
+            end
+            
+            print("FrostBite glove automation completed!")
+            local teleportFunc = queueonteleport or queue_on_teleport
+            
+
+
+            
+
+        ]])
+        
+        -- Уведомление
+        Fluent:Notify({
+            Title = "Teleporting",
+            Content = "Going to Get FrostBite",
+            Duration = 3
+        })
+        
+        -- Телепортация
+        local ts = game:GetService("TeleportService")
+        ts:Teleport(17290438723)
+    end    
 })
 
 -- Автоматическое обновление при появлении нового персонажа
@@ -667,7 +1212,38 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
 end)
 
 
+local PhaseJetToggle = Tabs.Gloves:AddToggle("PhaseJetFarm", {
+    Title = "Phase Or Jet Farm",
+    Description = "Auto-Farming Phase/Jet orb",
+    Default = false,
+    Callback = function(Value)
+        _G.PhaseOrJetfarm = Value
+        
+        if Value then
+            
+            -- Создаем отдельный поток для фарма
+            task.spawn(function()
+                while _G.PhaseOrJetfarm do
+                    local character = game.Players.LocalPlayer.Character
+                    if character and character:FindFirstChild("Head") then
+                        for _, v in pairs(game.Workspace:GetChildren()) do
+                            if not _G.PhaseOrJetfarm then break end
+                            
+                            if v.Name == "JetOrb" or v.Name == "PhaseOrb" then
+                                firetouchinterest(character.Head, v, 0)
+                                task.wait()
+                                firetouchinterest(character.Head, v, 1)
+                            end
+                        end
+                    end
+                    task.wait(0.1) -- Оптимизация проверки
+                end
+            end)
+        else
 
+        end
+    end
+})
 
 
 local Locations = loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/locations.lua"))()
@@ -709,128 +1285,43 @@ for name, position in pairs(Locations) do
         end
     })
 end
+
 -- Секция для анти-AFK
-local AntiAFKSection = Tabs.antiafk:AddSection("Анти-AFK (WASD)")
-
--- Переменные
-local AntiAFK_Enabled = false
-local AntiAFK_Thread = nil
-local MovementInterval = 2 -- Интервал между движениями (секунды)
-local MovementDuration = 0.2 -- Длительность нажатия клавиш (секунды)
-
--- Список клавиш для имитации ходьбы
-local MovementKeys = {
-    Enum.KeyCode.W,
-    Enum.KeyCode.A,
-    Enum.KeyCode.S,
-    Enum.KeyCode.D
-}
-
-
-
-
--- Функция для нажатия клавиш
-local function SimulateMovement()
-    local randomKey = MovementKeys[math.random(1, #MovementKeys)]
-    
-    -- Нажимаем клавишу
-    VirtualInput:SendKeyEvent(true, randomKey, false, game)
-    task.wait(MovementDuration)
-    
-    -- Отпускаем клавишу
-    VirtualInput:SendKeyEvent(false, randomKey, false, game)
-end
-
--- Запуск анти-AFK
-local function StartAntiAFK()
-    if AntiAFK_Thread then return end
-    
-    AntiAFK_Thread = task.spawn(function()
-        while AntiAFK_Enabled do
-            SimulateMovement()
-            task.wait(MovementInterval)
-        end
-        AntiAFK_Thread = nil
-    end)
-    
-    Fluent:Notify({
-        Title = "Анти-AFK",
-        Content = "Имитация движения включена (WASD)",
-        Duration = 3
-    })
-end
-
--- Остановка анти-AFK
-local function StopAntiAFK()
-    if AntiAFK_Thread then
-        task.cancel(AntiAFK_Thread)
-        AntiAFK_Thread = nil
-        
-        -- Отпускаем все клавиши на случай, если одна была зажата
-        for _, key in ipairs(MovementKeys) do
-            VirtualInput:SendKeyEvent(false, key, false, game)
-        end
-    end
-    
-    Fluent:Notify({
-        Title = "Анти-AFK",
-        Content = "Имитация движения отключена",
-        Duration = 3
-    })
-end
+local AntiAFKSection = Tabs.antiafk:AddSection("Анти-AFK")
 
 -- Добавляем тоггл
 AntiAFKSection:AddToggle("AntiAFK_Toggle", {
-    Title = "Включить анти-AFK (WASD)",
+    Title = "Enabale AntiAFK",
+    Description = "AntiAfk",
     Default = false,
     Callback = function(Value)
-        AntiAFK_Enabled = Value
-        if Value then
-            StartAntiAFK()
-        else
-            StopAntiAFK()
-        end
-    end
-})
-
--- Опционально: Добавляем настройки интервала
-AntiAFKSection:AddSlider("MovementIntervalSlider", {
-    Title = "Интервал движений: " .. MovementInterval .. " сек",
-    Min = 1,
-    Max = 10,
-    Default = MovementInterval,
-    Rounding = 1,
-    Callback = function(Value)
-        MovementInterval = Value
-    end
-})TeleportSection:AddButton({
-    Title = "Copy All Coordinates",
-    Description = "Copy all locations to clipboard",
-    Callback = function()
-        local text = ""
-        for name, pos in pairs(Locations) do
-            text = text .. string.format("%s = Vector3.new(%.2f, %.2f, %.2f)\n", name, pos.X, pos.Y, pos.Z)
+        _G.AntiAfk = Value
+        
+        -- Обрабатываем все соединения события Idled
+        for _, connection in next, getconnections(game.Players.LocalPlayer.Idled) do
+            if Value then
+                connection:Disable() -- Отключаем AFK, если переключатель включен
+            else
+                connection:Enable()  -- Включаем обратно, если выключен
+            end
         end
         
-        if setclipboard then
-            setclipboard(text)
+        -- Уведомление
+        if Value then
             Fluent:Notify({
-                Title = "Copied!",
-                Content = "All coordinates copied to clipboard",
+                Title = "Анти-AFK",
+                Content = "Защита от AFK включена",
                 Duration = 3
             })
         else
-            Fluent:Notify({
-                Title = "Error",
-                Content = "Clipboard function not available",
-                Duration = 3
-            })
+            return
         end
     end
 })
 
 
-local BrickFarmSection = Tabs.Gloves:AddSection("Brick Farm Settings")
+
+local BrickFarmSection = Tabs.Gloves:AddSection("Brick")
 
 -- Настройки фарма с фиксированными интервалами
 local BrickFarmConfig = {
@@ -846,7 +1337,7 @@ local BrickFarmConfig = {
 local ModeDropdown = BrickFarmSection:AddDropdown("BrickFarmMode", {
     Title = "Farm Mode",
     Description = "Slow: 5.05s | Fast: 1.5s",  -- Добавили интервалы в описание
-    Values = {"Slow", "Fast"},
+    Values = {"Slow | 5.05s", "Fast | 1.5s"},
     Default = "Slow",
     Callback = function(value)
         BrickFarmConfig.Mode = value
@@ -1225,6 +1716,119 @@ OtSection:AddButton({
     end
 })
 
+
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- 🌀 Server Hop с queue_on_teleport
+local function ServerHop()
+    local teleportFunc = queueonteleport or queue_on_teleport
+    if teleportFunc then
+        teleportFunc([[
+
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/main.lua", true))()
+
+            ]])
+    end
+    
+    local servers = {}
+    local cursor = ""
+    local placeId = game.PlaceId
+
+    local success, response = pcall(function()
+        return game:HttpGet(
+            string.format("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Asc&limit=100%s",
+            placeId, cursor ~= "" and "&cursor=" .. cursor or "")
+        )
+    end)
+
+    if success and response then
+        local data = HttpService:JSONDecode(response)
+        if data and data.data then
+            for _, server in ipairs(data.data) do
+                if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                    table.insert(servers, server.id)
+                end
+            end
+        end
+    end
+
+    if #servers > 0 then
+        TeleportService:TeleportToPlaceInstance(placeId, servers[math.random(1, #servers)], LocalPlayer)
+    else
+        warn("❌No available servers were found!")
+    end
+end
+
+
+
+
+-- ❄️ Зависание персонажа
+local freezeEnabled = false
+local originalMaxSlopeAngle = 89 -- Стандартное значение для персонажа
+
+local function toggleCharacterFreeze(state)
+    freezeEnabled = state
+    
+    local character = LocalPlayer.Character
+    if not character then return end
+    
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    local root = character:FindFirstChild("HumanoidRootPart")
+    
+    if humanoid and root then
+        if state then
+            -- Сохраняем оригинальное значение
+            originalMaxSlopeAngle = humanoid.MaxSlopeAngle
+            
+            -- Замораживаем персонажа и блокируем повороты
+            root.Anchored = true
+            humanoid.MaxSlopeAngle = 0 -- Блокирует повороты персонажа
+        else
+            -- Размораживаем персонажа
+            root.Anchored = false
+            humanoid.MaxSlopeAngle = originalMaxSlopeAngle
+        end
+    end
+end
+
+-- Обработка смены персонажа
+LocalPlayer.CharacterAdded:Connect(function(character)
+    if freezeEnabled then
+        task.wait(0.1)
+        local humanoid = character:WaitForChild("Humanoid")
+        local root = character:WaitForChild("HumanoidRootPart")
+        
+        root.Anchored = true
+        humanoid.MaxSlopeAngle = 0
+    end
+end)
+
+Tabs.Utility:AddToggle("FreezeToggle", {
+    Title = "Tab", 
+    Description = "tabbing (for kinetic or berserk)",
+    Default = false,
+    Callback = function(state)
+        toggleCharacterFreeze(state)
+    end
+})
+
+
+-- 🖥️ Добавление в Fluent GUI
+Tabs.Utility:AddButton({
+    Title = "Server Hop",
+    Description = "Joining to another server ",
+    Callback = function()
+        ServerHop()
+    end
+})
+
+
+
+
+
 local LastTick = tick()
 local FrameCount = 0
 local CurrentFPS = 0
@@ -1255,7 +1859,6 @@ while true do
     task.wait(0.5)
 end
 
-
 -- Перехват получения бейджа
 local BadgeService = game:GetService("BadgeService")
 local Players = game:GetService("Players")
@@ -1279,6 +1882,8 @@ while true do
         end
     end
 end
+
+
 
 
 

@@ -89,38 +89,6 @@ local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local LocalPlayer = Players.LocalPlayer
 
-local function ServerHop()
-    local placeId = game.PlaceId
-    local servers = {}
-    local cursor = ""
-
-    -- Получаем список серверов
-    local success, response = pcall(function()
-        return game:HttpGet(string.format(
-            "https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Asc&limit=100%s",
-            placeId, cursor ~= "" and "&cursor=" .. cursor or ""
-        ))
-    end)
-
-    if success and response then
-        local data = HttpService:JSONDecode(response)
-        if data and data.data then
-            for _, server in ipairs(data.data) do
-                if server.playing < server.maxPlayers and server.id ~= game.JobId then
-                    table.insert(servers, server.id)
-                end
-            end
-        end
-    end
-
-    -- Телепортируем на случайный подходящий сервер
-    if #servers > 0 then
-        TeleportService:TeleportToPlaceInstance(placeId, servers[math.random(1, #servers)], LocalPlayer)
-        print("[ServerHop] Перешёл на новый сервер")
-    else
-        warn("❌No available servers were found!")
-    end
-end
 
 
 
@@ -1874,29 +1842,76 @@ local LocalPlayer = Players.LocalPlayer
 local PlaceId = 6403373529
 local BobBadgeId = 2125950512
 
--- ===== ServerHop =====
 local function ServerHop()
-    local servers, cursor = {}, ""
+
+
+
+    local placeId = game.PlaceId
+    local servers = {}
+    local cursor = ""
+
+    -- Получаем список серверов
     local success, response = pcall(function()
         return game:HttpGet(string.format(
             "https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Asc&limit=100%s",
-            PlaceId, cursor ~= "" and "&cursor=" .. cursor or ""
+            placeId, cursor ~= "" and "&cursor=" .. cursor or ""
         ))
     end)
+
     if success and response then
         local data = HttpService:JSONDecode(response)
         if data and data.data then
             for _, server in ipairs(data.data) do
-                if server.playing >= 7 and server.playing <= 13 and server.id ~= game.JobId then
+                if server.playing < server.maxPlayers and server.id ~= game.JobId then
                     table.insert(servers, server.id)
                 end
             end
         end
     end
+
+    -- Телепортируем на случайный подходящий сервер
     if #servers > 0 then
-        TeleportService:TeleportToPlaceInstance(PlaceId, servers[math.random(1, #servers)], LocalPlayer)
+        TeleportService:TeleportToPlaceInstance(placeId, servers[math.random(1, #servers)], LocalPlayer)
+        print("[ServerHop] Перешёл на новый сервер")
     else
-        warn("[ServerHop] ❌ Нет подходящих серверов, попробую позже")
+        warn("❌No available servers were found!")
+    end
+end
+
+
+
+local function ServerHopD()
+
+
+    local placeId = game.PlaceId
+    local servers = {}
+    local cursor = ""
+
+    -- Получаем список серверов
+    local success, response = pcall(function()
+        return game:HttpGet(string.format(
+            "https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Asc&limit=100%s",
+            placeId, cursor ~= "" and "&cursor=" .. cursor or ""
+        ))
+    end)
+
+    if success and response then
+        local data = HttpService:JSONDecode(response)
+        if data and data.data then
+            for _, server in ipairs(data.data) do
+                if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                    table.insert(servers, server.id)
+                end
+            end
+        end
+    end
+
+    -- Телепортируем на случайный подходящий сервер
+    if #servers > 0 then
+        TeleportService:TeleportToPlaceInstance(placeId, servers[math.random(1, #servers)], LocalPlayer)
+        print("[ServerHop] Перешёл на новый сервер")
+    else
+        warn("❌No available servers were found!")
     end
 end
 
@@ -1909,7 +1924,14 @@ local AutoFarmBobToggle = BobFarmSection:AddToggle("AutoFarmBobToggle", {
         AutoFarmBob = value
         local farmStartTime, teleportCountdown
         local teleportGui, timerLabel, farmLabel
-
+        
+        -- Устанавливаем скрипт для выполнения после телепортации
+    local teleportFunc = queueonteleport or queue_on_teleport
+        
+        -- Устанавливаем скрипт для выполнения после телепортации
+    teleportFunc([[
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SBBob.lua"))()
+    ]])
         -- GUI таймер
         local function createGui()
             teleportGui = Instance.new("ScreenGui")
@@ -2141,7 +2163,7 @@ UtilitySection:AddButton({
     Title = "Server Hop",
     Description = "Joining to another server ",
     Callback = function()
-        ServerHop()
+        ServerHopD()
     end
 })
 

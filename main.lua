@@ -21,7 +21,6 @@ if gameScripts[currentGameId] then
     print("The game was found in the database (ID:", currentGameId..")")
     print("Loading script...", scriptUrl)
     
-    -- Пытаемся загрузить и выполнить скрипт
     local success, errorMsg = pcall(function()
         local scriptContent = game:HttpGet(scriptUrl, true)
         loadstring(scriptContent)()

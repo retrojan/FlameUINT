@@ -1633,8 +1633,8 @@ local AutoFarmBobToggle = Gloves:CreateToggle({
                     local currentGlove = game.Players.LocalPlayer.leaderstats.Glove.Value
                     if currentGlove ~= "Replica" then
                         Rayfield:Notify({
-                            Title = "Ошибка",
-                            Content = "Сменили перчатку! Остановка фарма.",
+                            Title = "Error",
+                            Content = "Changed glove",
                             Duration = 5
                         })
                         AutoFarmBobToggle:Set(false)
@@ -1648,10 +1648,10 @@ local AutoFarmBobToggle = Gloves:CreateToggle({
                         firetouchinterest(character:WaitForChild("Head"), teleport, 1)
                     end
                     
-                    task.wait(0.5)
+                    task.wait(1)
                     
                     game:GetService("VirtualInputManager"):SendKeyEvent(true, "E", false, game)
-                    task.wait(0.6)
+                    task.wait(1)
 
                     local success, hasBadge = pcall(function()
                         return game:GetService("BadgeService"):UserHasBadgeAsync(game.Players.LocalPlayer.UserId, 2125950512)

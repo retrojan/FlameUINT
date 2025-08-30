@@ -98,7 +98,7 @@ SetupBypass()
 
 
 
-local Info = Window:CreateTab("Information", "book")
+local Info = Window:CreateTab("Info", "book")
 local Main = Window:CreateTab("Main", "code")
 local Antis = Window:CreateTab("Antis", "shield")
 local Gloves = Window:CreateTab("Gloves", "hand")
@@ -113,7 +113,7 @@ local SAntis = Antis:CreateSection("Antis")
 local SMaster = Mastery:CreateSection("Mastery")
 Mastery:CreateLabel("Coming soon...")
 
-local SInfo = Info:CreateSection("Information")
+local SInfo = Info:CreateSection("Info")
 
 Info:CreateLabel("MEGA UPDATE v5")
 Info:CreateLabel("Switched to RayField | Added Bob farm")
@@ -1603,7 +1603,7 @@ local ReachSlider = Main:CreateSlider({
 local Sbob = Gloves:CreateSection("BOB")
 
 local AutoFarmBobToggle = Gloves:CreateToggle({
-    Name = "Auto Farm Bob",
+    Name = "Auto Farm Bob (dont working on mobile)",
     CurrentValue = false,
     Flag = "AutoFarmBobToggle",
     Callback = function(Value)
@@ -1613,8 +1613,8 @@ local AutoFarmBobToggle = Gloves:CreateToggle({
             local glove = game.Players.LocalPlayer.leaderstats.Glove.Value
             if glove ~= "Replica" then 
                 Rayfield:Notify({
-                    Title = "Ошибка",
-                    Content = "Нужна перчатка Replica!",
+                    Title = "Error",
+                    Content = "Need Replica!",
                     Duration = 5
                 })
                 AutoFarmBobToggle:Set(false)
@@ -1648,10 +1648,10 @@ local AutoFarmBobToggle = Gloves:CreateToggle({
                         firetouchinterest(character:WaitForChild("Head"), teleport, 1)
                     end
                     
-                    task.wait(1)
+                    task.wait(0.6)
                     
                     game:GetService("VirtualInputManager"):SendKeyEvent(true, "E", false, game)
-                    task.wait(1)
+                    task.wait(0.5)
 
                     local success, hasBadge = pcall(function()
                         return game:GetService("BadgeService"):UserHasBadgeAsync(game.Players.LocalPlayer.UserId, 2125950512)
@@ -1800,7 +1800,6 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
     end
 end)
 
-local InfoS = Other:CreateSection("Information")
 
 
 

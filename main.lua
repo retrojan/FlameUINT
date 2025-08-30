@@ -1,25 +1,27 @@
 --[[
-  Универсальный Loader для Roblox
-  Загружает разные скрипты в зависимости от ID игры
+    LOADER BY ReTrojan
 ]]
 
 local currentGameId = game.PlaceId
 
--- Таблица соответствия ID игр и URL скриптов
+-- ID
 local gameScripts = {
-    [18550498098] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/guidefight.lua", --Guide Boss Fight
-    [6403373529] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/slapbattles.lua", -- Default Slap Battles
-    [98726100529621] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/hexa.lua", -- Hexa
-    [9015014224] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/slapbattles.lua", -- SLap Battles No OneShot Gloves
-    [124596094333302] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/slapbattles.lua" -- New Players
-} -- ← ЗДЕСЬ ДОБАВЛЕНА ЗАКРЫВАЮЩАЯ СКОБКА
+      [6403373529] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua", -- Default Slap Battles
+      [9015014224] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua", -- SLap Battles No OneShot Gloves
+  
+    --[18550498098] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/guidefight.lua", --Guide Boss Fight
 
--- Проверяем, есть ли скрипт для текущей игры
+    --[98726100529621] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/hexa.lua", -- Hexa
+
+    -- [124596094333302] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/slapbattles.lua" -- New Players. REMOVED: HAVE BUGS AND PROBLEMS
+} 
+
+
 if gameScripts[currentGameId] then
     local scriptUrl = gameScripts[currentGameId]
     
-    print("Игра найдена в базе (ID:", currentGameId..")")
-    print("Загружаем скрипт:", scriptUrl)
+    print("The game was found in the database (ID:", currentGameId..")")
+    print("Loading script...", scriptUrl)
     
     -- Пытаемся загрузить и выполнить скрипт
     local success, errorMsg = pcall(function()
@@ -28,10 +30,9 @@ if gameScripts[currentGameId] then
     end)
     
     if not success then
-        warn("Ошибка загрузки скрипта:", errorMsg)
+        warn("ERROR Loading FlameUINT:", errorMsg)
     end
 else
-    print("Для этой игры нет скрипта (ID:", currentGameId..")")
+    print("IDK THIS GAME (ID:", currentGameId..")")
 end
 
-print("Loader завершил работу")

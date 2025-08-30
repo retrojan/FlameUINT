@@ -12,6 +12,7 @@ local gameScripts = {
     [98726100529621] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/hexa.lua", -- Hexa
     [9015014224] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/slapbattles.lua", -- SLap Battles No OneShot Gloves
     [124596094333302] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/slapbattles.lua" -- New Players
+} -- ← ЗДЕСЬ ДОБАВЛЕНА ЗАКРЫВАЮЩАЯ СКОБКА
 
 -- Проверяем, есть ли скрипт для текущей игры
 if gameScripts[currentGameId] then

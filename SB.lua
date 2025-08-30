@@ -60,6 +60,44 @@ local Window = Rayfield:CreateWindow({
 
 })
 
+
+
+-- BYPASS
+local function SetupBypass()
+    local function safeHook()
+        local success, result = pcall(function()
+            local bypass
+            bypass = hookmetamethod(game, "__namecall", function(self, ...)
+                local method = getnamecallmethod()
+                if method == "FireServer" then
+                    if self == game.ReplicatedStorage:FindFirstChild("Ban") then
+                        return nil
+                    elseif self == game.ReplicatedStorage:FindFirstChild("AdminGUI") then
+                        return nil
+                    elseif self == game.ReplicatedStorage:FindFirstChild("WalkSpeedChanged") then
+                        return nil
+                    end
+                end
+                return bypass(self, ...)
+            end)
+            return bypass
+        end)
+        
+        if not success then
+            warn("Bypass hook failed:", result)
+        end
+    end
+
+    task.spawn(safeHook)
+end
+
+SetupBypass()
+
+
+
+
+
+
 local Info = Window:CreateTab("Information", "book")
 local Main = Window:CreateTab("Main", "code")
 local Antis = Window:CreateTab("Antis", "shield")
@@ -198,11 +236,44 @@ local TABG Main:CreateToggle({
     Callback = function(Value)
         toggleCharacterFreeze(Value)
     end
-
-    
 })
 
+local idkez Main:CreateButton({
+    Name = "Enter Arena",
+    Callback = function()
+        if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Head") then
+            if game.Players.LocalPlayer.Character:FindFirstChild("entered") == nil then
+                firetouchinterest(game.Players.LocalPlayer.Character.Head, workspace.Lobby.Teleport1, 0)
+                task.wait(0.1)
+                firetouchinterest(game.Players.LocalPlayer.Character.Head, workspace.Lobby.Teleport1, 1)
+                
+                Rayfield:Notify({
+                    Title = "Arena",
+                    Content = "Entering arena...",
+                    Duration = 2,
+                    Image = 4483362458
+                })
+            else
+                Rayfield:Notify({
+                    Title = "Arena",
+                    Content = "You are already in arena!",
+                    Duration = 2,
+                    Image = 4483362458
+                })
+            end
+        else
+            Rayfield:Notify({
+                Title = "Error",
+                Content = "Character not found",
+                Duration = 3,
+                Image = 4483362458
+            })
+        end
+    end
+})
+    
 
+--[[
 local AntiLagButton = Main:CreateButton({
     Name = "Anti Lag",
     Callback = function()
@@ -266,9 +337,82 @@ local AntiLagButton = Main:CreateButton({
 })
 
 
+]]
 
+local SectSlapple = Main:CreateSection("Slapple Farm") 
 
+local originalTransparencies = {}
 
+local Slappleezz = Main:CreateToggle({
+    Name = "Auto farm Slapples",
+    CurrentValue = false,
+    Flag = "SlappleFarmToggle",
+    Callback = function(Value)
+        SlappleFarm = Value
+        
+        -- Функция для скрытия/показа только слепплов с Glove
+        local function toggleFlyingSlapplesVisibility(hide)
+            for i, v in pairs(workspace.Arena.island5.Slapples:GetChildren()) do
+                if (v.Name == "Slapple" or v.Name == "GoldenSlapple") and v:FindFirstChild("Glove") then
+                    if hide then
+                        -- Сохраняем оригинальную прозрачность
+                        if not originalTransparencies[v] then
+                            originalTransparencies[v] = {}
+                        end
+                        
+                        -- Скрываем все части слеппла
+                        for _, part in pairs(v:GetDescendants()) do
+                            if part:IsA("BasePart") then
+                                originalTransparencies[v][part] = part.Transparency
+                                part.Transparency = 1
+                            end
+                        end
+                    else
+                        -- Восстанавливаем оригинальную прозрачность
+                        if originalTransparencies[v] then
+                            for part, transparency in pairs(originalTransparencies[v]) do
+                                if part and part.Parent then
+                                    part.Transparency = transparency
+                                end
+                            end
+                            originalTransparencies[v] = nil
+                        end
+                    end
+                end
+            end
+        end
+        
+        if Value then
+            -- Включаем скрытие летящих слепплов
+            toggleFlyingSlapplesVisibility(true)
+        else
+            -- Выключаем скрытие летящих слепплов
+            toggleFlyingSlapplesVisibility(false)
+        end
+        
+        while SlappleFarm do
+            if game.Players.LocalPlayer.Character:FindFirstChild("entered") then
+                for i, v in pairs(workspace.Arena.island5.Slapples:GetChildren()) do
+                    if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and 
+                       game.Players.LocalPlayer.Character:FindFirstChild("entered") and 
+                       (v.Name == "Slapple" or v.Name == "GoldenSlapple") and 
+                       v:FindFirstChild("Glove") and 
+                       v.Glove:FindFirstChildWhichIsA("TouchTransmitter") then
+                        
+                        firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, v.Glove, 0)
+                        firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, v.Glove, 1)
+                    end
+                end
+            end
+            task.wait()
+        end
+        
+        -- При выключении тоггла восстанавливаем видимость
+        if not Value then
+            toggleFlyingSlapplesVisibility(false)
+        end
+    end
+})
 
 local BrickFarmSection = Gloves:CreateSection("TRAP")
 
@@ -429,19 +573,14 @@ end
 coroutine.wrap(setupGloveTracking)()
 
 
-
-
-
-
+--[[
 local FarmSection = Main:CreateSection("Slapple Farming")
-
 
 local SlappleFarmConfig = {
     Enabled = false,
     Types = {"Slapple", "GoldenSlapple"}, 
     Cooldown = 0.1 
 }
-
 
 local SlappleFarmToggle = Main:CreateToggle({
     Name = "Autofarm Slapples",
@@ -452,45 +591,48 @@ local SlappleFarmToggle = Main:CreateToggle({
         
         if Value then
             coroutine.wrap(function()
-                while SlappleFarmConfig.Enabled do
-
+                while SlappleFarmConfig.Enabled and task.wait(SlappleFarmConfig.Cooldown) do
                     local character = game.Players.LocalPlayer.Character
-                    if character and character:FindFirstChild("entered") then
-
-                        for _, slapple in pairs(workspace.Arena.island5.Slapples:GetChildren()) do
-                            if not SlappleFarmConfig.Enabled then break end
+                    if character and character:FindFirstChild("HumanoidRootPart") then
+                        
+                        -- Проверяем остров 5
+                        local island5 = workspace.Arena:FindFirstChild("island5")
+                        if island5 and island5:FindFirstChild("Slapples") then
                             
-
-                            if table.find(SlappleFarmConfig.Types, slapple.Name) 
-                               and slapple:FindFirstChild("Glove") 
-                               and slapple.Glove:FindFirstChildWhichIsA("TuchTransmitter") then
-                               
-
-                                firetouchinterest(character.HumanoidRootPart, slapple.Glove, 0)
-                                task.wait()
-                                firetouchinterest(character.HumanoidRootPart, slapple.Glove, 1)
+                            for _, slapple in pairs(island5.Slapples:GetChildren()) do
+                                if not SlappleFarmConfig.Enabled then break end
+                                
+                                -- Исправлено: TouchTransmitter вместо TuchTransmitter
+                                if table.find(SlappleFarmConfig.Types, slapple.Name) 
+                                   and slapple:FindFirstChild("Glove") 
+                                   and slapple.Glove:FindFirstChildWhichIsA("TouchTransmitter") then
+                                    
+                                    firetouchinterest(character.HumanoidRootPart, slapple.Glove, 0)
+                                    task.wait()
+                                    firetouchinterest(character.HumanoidRootPart, slapple.Glove, 1)
+                                end
                             end
                         end
                     end
-                    task.wait(SlappleFarmConfig.Cooldown)
                 end
             end)()
             
             Rayfield:Notify({
                 Title = "Slapple Farm",
                 Content = "Autofarm activated!",
-                Duration = 2
+                Duration = 2,
+                Image = 4483362458
             })
         else
             Rayfield:Notify({
                 Title = "Slapple Farm",
                 Content = "Autofarm deactivated",
-                Duration = 2
+                Duration = 2,
+                Image = 4483362458
             })
         end
     end
 })
-
 
 local SlappleTypesDropdown = Main:CreateDropdown({
     Name = "Slapple Types",
@@ -516,10 +658,7 @@ local FarmCooldownSlider = Main:CreateSlider({
 })
 
 
-
-
-
-
+]]
 
 
 
@@ -922,6 +1061,9 @@ Gloves:CreateButton({
         end
     end
 })
+
+
+
 
 
 Gloves:CreateButton({
@@ -1660,8 +1802,7 @@ end)
 
 local InfoS = Other:CreateSection("Information")
 
-local FPSLabel = Other:CreateLabel("FPS: --")
-local PingLabel = Other:CreateLabel("Ping: -- ms")
+
 
 local OtherS = Other:CreateSection("Other")
 
@@ -1679,6 +1820,32 @@ Other:CreateButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
     end
 })
+
+
+
+local DestroyS = Other:CreateSection("Destroy GUI")
+
+
+local DestroyButton = Other:CreateButton({
+    Name = "Destroy GUI",
+    Callback = function()
+        Rayfield:Destroy()
+        Rayfield:Notify({
+            Title = "GUI Destroyed",
+            Content = "Interface has been successfully destroyed",
+            Duration = 2
+        })
+    end
+})
+
+
+
+
+
+--[[
+
+local FPSLabel = Other:CreateLabel("FPS: --")
+local PingLabel = Other:CreateLabel("Ping: -- ms")
 
 local LastTick = tick()
 local FrameCount = 0
@@ -1713,21 +1880,8 @@ spawn(function()
         task.wait(0.5)
     end
 end)
+]]
 
-local DestroyS = Other:CreateSection("Destroy GUI")
-
-
-local DestroyButton = Other:CreateButton({
-    Name = "Destroy GUI",
-    Callback = function()
-        Rayfield:Destroy()
-        Rayfield:Notify({
-            Title = "GUI Destroyed",
-            Content = "Interface has been successfully destroyed",
-            Duration = 2
-        })
-    end
-})
 
 
 

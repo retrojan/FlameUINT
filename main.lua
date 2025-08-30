@@ -9,11 +9,9 @@ local gameScripts = {
       [6403373529] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua", -- Default Slap Battles
       [9015014224] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua", -- SLap Battles No OneShot Gloves
   
-    --[18550498098] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/guidefight.lua", --Guide Boss Fight
-
-    --[98726100529621] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/hexa.lua", -- Hexa
-
-    -- [124596094333302] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/slapbattles.lua" -- New Players. REMOVED: HAVE BUGS AND PROBLEMS
+    --[18550498098] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/guidefight.lua", --Guide Boss Fight REMOVED: TEMPORARILY REMOVED: REWORK
+    --[98726100529621] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/hexa.lua", -- Hexa REMOVED: TEMPORARILY REMOVED: REWORK
+    --[124596094333302] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/slapbattles.lua" -- New Players. REMOVED: HAVE BUGS AND PROBLEMS
 } 
 
 

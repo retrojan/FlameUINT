@@ -20,7 +20,19 @@ Happy reading!
 ]]
 
 
+--[[
+    THIS CODE FOR ME
 
+
+
+
+        if game.Players.LocalPlayer.Character:FindFirstChild("entered") == nil then
+        firetouchinterest(game.Players.LocalPlayer.Character:WaitForChild("Head"), workspace.Lobby.Teleport1, 0)
+        firetouchinterest(game.Players.LocalPlayer.Character:WaitForChild("Head"), workspace.Lobby.Teleport1, 1)
+        end
+
+
+]]
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
@@ -44,7 +56,7 @@ local Window = Rayfield:CreateWindow({
    Icon = 0, 
    LoadingTitle = "FlameUINT",
    LoadingSubtitle = "by ReTrojan",
-   ShowText = "FlameUINT", 
+   ShowText = "FlameUINT",
    Theme = "Darker", 
 
    ToggleUIKeybind = "G",
@@ -59,6 +71,55 @@ local Window = Rayfield:CreateWindow({
    },
 
 })
+
+
+
+
+
+
+local function GetLocationsFromGitHub()
+    local success, result = pcall(function()
+        local url = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/get/locations.lua"
+        local response = game:HttpGet(url)
+        
+        -- Заменяем return на локальную переменную
+        response = response:gsub("return", "local locations =")
+        response = response .. " return locations"
+        
+        -- Выполняем код и получаем таблицу
+        local fn = loadstring(response)
+        if fn then
+            return fn()
+        end
+        return nil
+    end)
+    
+    if success and result then
+        return result
+    else
+        warn("Failed to load locations from GitHub: " .. tostring(result))
+        return {
+            ["Slapple Island"] = Vector3.new(-390.08, 50.76, -13.84),
+            ["Lobby"] = Vector3.new(-995.65, 327.79, -2.37),
+            ["Default Arena"] = Vector3.new(133.46, 359.98, -2.10),
+            ["Main Island"] = Vector3.new(21.27, -5.17, 4.74),
+            ["Left Island"] = Vector3.new(-2.39, -5.07, 217.57),
+            ["Right Island"] = Vector3.new(-1.50, -5.14, -214.38),
+            ["Cube of death Island"] = Vector3.new(-208.20, -5.28, 4.44),
+            ["Legal Safe Spot"] = Vector3.new(295.62, 10.74, 216.37),
+            ["Legal Danger Safe Slapple"] = Vector3.new(-426.32, 97.87, -35.86),
+            ["Slender Postiton"] = Vector3.new(122.83, 255.30, 1.49)
+        }
+    end
+end
+
+
+
+
+-- Получаем локации
+local locations = GetLocationsFromGitHub()
+
+
 
 
 
@@ -110,6 +171,8 @@ local SAntis = Antis:CreateSection("Antis")
 
 
 
+
+
 local SMaster = Mastery:CreateSection("Mastery")
 Mastery:CreateLabel("Coming soon...")
 
@@ -133,6 +196,46 @@ Info:CreateButton({
         })
     end
 })
+
+
+
+
+
+-- Функция для телепортации к Brazil Portal
+local function TeleportToBrazilPortal()
+    if game.Workspace:FindFirstChild("Lobby") and game.Workspace.Lobby:FindFirstChild("brazil") and game.Workspace.Lobby.brazil:FindFirstChild("portal") then
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Workspace.Lobby.brazil.portal.CFrame
+        Rayfield:Notify({
+            Title = "Teleport",
+            Content = "Teleported to Brazil Portal",
+            Duration = 3,
+            Image = 4483362458
+        })
+    else
+        Rayfield:Notify({
+            Title = "Error",
+            Content = "Brazil portal not found!",
+            Duration = 3,
+            Image = 4483362458
+        })
+        warn("Brazil portal not found!")
+    end
+end
+
+Teleport:CreateSection("Special Teleports")
+
+Teleport:CreateButton({
+    Name = "Brazil Portal",
+    Callback = function()
+        TeleportToBrazilPortal()
+    end
+})
+
+
+
+
+
+
 
 
 local Players = game:GetService("Players")
@@ -1315,7 +1418,7 @@ local function createAFKZone()
         floor.Size = floorSize
         floor.Transparency = 0.5
         floor.CanCollide = true
-        floor.Position = targetPosition - Vector3.new(0, 0.5, 0)
+        floor.Position = targetPosition - Vector3.new(0, -5.17, 0)
         floor.Parent = workspace
         createdParts.afkZone.floor = floor
     end
@@ -1425,6 +1528,39 @@ local function teleportToAFKZone()
         Duration = 3
     })
 end
+
+
+-- Функция для телепортации
+local function TeleportTo(position)
+    local character = game.Players.LocalPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character.HumanoidRootPart.CFrame = CFrame.new(position)
+    end
+end
+
+for locationName, position in pairs(locations) do
+    Teleport:CreateButton({
+        Name = locationName,
+        Callback = function()
+        if game.Players.LocalPlayer.Character:FindFirstChild("entered") == nil then
+        firetouchinterest(game.Players.LocalPlayer.Character:WaitForChild("Head"), workspace.Lobby.Teleport1, 0)
+        firetouchinterest(game.Players.LocalPlayer.Character:WaitForChild("Head"), workspace.Lobby.Teleport1, 1)
+        task.wait(0.5)
+        end
+
+            TeleportTo(position)
+            Rayfield:Notify({
+                Title = "Teleport",
+                Content = "Teleported to " .. locationName,
+                Duration = 3,
+                Image = 4483362458
+            })
+        end
+    })
+end
+
+
+
     local AFKSECT = Teleport:CreateSection("Safe Spot")
     
     Teleport:CreateButton({
@@ -1433,6 +1569,10 @@ end
             teleportToAFKZone()
         end
     })
+
+
+
+
 
 --[[
 

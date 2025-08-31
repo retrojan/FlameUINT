@@ -1,6 +1,6 @@
 <div align="center">
   
-  <img src="https://github.com/user-attachments/assets/ad76d52a-440a-48a6-8236-b419ad88ea80" width="700">
+  <img src="https://github.com/user-attachments/assets/ad76d52a-440a-48a6-8236-b419ad88ea80" width="600">
   
   <p>
     <strong>Newgen Slap Battles script</strong>

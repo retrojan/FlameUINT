@@ -10,5 +10,5 @@ return {
     ["Legal Danger Safe Slapple"] = Vector3.new(-426.32, 97.87, -35.86),
     ["Slender Postiton"] = Vector3.new(122.83, 255.30, 1.49),
     ["For tycoon"] = Vector3.new(17897.01, -23.76, -3539.31),
-    ["In moai"] = Vector3.new(239.96, -16.09, -29.99)
+    ["In moai"] = Vector3.new(222.33, -16.09, 1.59)
 }

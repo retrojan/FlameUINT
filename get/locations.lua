@@ -9,5 +9,5 @@ return {
     ["Legal Safe Spot"] = Vector3.new(295.62, 10.74, 216.37),
     ["Legal Danger Safe Slapple"] = Vector3.new(-426.32, 97.87, -35.86),
     ["Slender Postiton"] = Vector3.new(122.83, 255.30, 1.49),
-    ["For tycoon"] = Vector3.new(17897.01, -23.76, -3539.31),
+    ["For tycoon"] = Vector3.new(17897.01, -23.76, -3539.31)
 }

@@ -10,5 +10,7 @@ return {
     ["Legal Danger Safe Slapple"] = Vector3.new(-426.32, 97.87, -35.86),
     ["Slender Postiton"] = Vector3.new(122.83, 255.30, 1.49),
     ["For tycoon"] = Vector3.new(17897.01, -23.76, -3539.31),
-    ["In tree"] = Vector3.new(222.52, -16.09, 1.85)
+    ["In tree"] = Vector3.new(222.52, -16.09, 1.85),
+    ["Canon Island"] = Vector3.new(275.26, 33.68, 204.05),
+    ["Canon Island 2"] Vector3.new(309.12, 21.63, 206.21),
 }

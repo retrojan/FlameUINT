@@ -1,17 +1,16 @@
 <div align="center">
-  
-  <!-- <img src="https://github.com/user-attachments/assets/ad76d52a-440a-48a6-8236-b419ad88ea80" width="600">  -->
-  
-<h1>FlameUINT</h1>
-</div>
 
-<div align="center">
-  
+<img width="663" height="90" alt="FlameUINT LOGO4" src="https://github.com/user-attachments/assets/9244de17-0ad3-4be4-9a5b-e9a8c84d79d8" />
+
   <p>
-    Loader:
+  <strong>Slap Battles Script</strong>
   </p>
 </div>
 
+<p >EXECUTE THIS:</p>
+
 ```lua
+-- Load FlameUINT
 loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/main.lua", true))()
+
 ```

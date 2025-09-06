@@ -1,12 +1,26 @@
 --[[
+                                                                                                                                                                         
+                                                                                                                                                                         
+                                                                                                                                                                         
+FFFFFFFFFFFFFFFFFFFFFFlllllll                                                               UUUUUUUU     UUUUUUUUIIIIIIIIIINNNNNNNN        NNNNNNNNTTTTTTTTTTTTTTTTTTTTTTT
+F::::::::::::::::::::Fl:::::l                                                               U::::::U     U::::::UI::::::::IN:::::::N       N::::::NT:::::::::::::::::::::T
+F::::::::::::::::::::Fl:::::l                                                               U::::::U     U::::::UI::::::::IN::::::::N      N::::::NT:::::::::::::::::::::T
+FF::::::FFFFFFFFF::::Fl:::::l                                                               UU:::::U     U:::::UUII::::::IIN:::::::::N     N::::::NT:::::TT:::::::TT:::::T
+  F:::::F       FFFFFF l::::l   aaaaaaaaaaaaa      mmmmmmm    mmmmmmm       eeeeeeeeeeee     U:::::U     U:::::U   I::::I  N::::::::::N    N::::::NTTTTTT  T:::::T  TTTTTT
+  F:::::F              l::::l   a::::::::::::a   mm:::::::m  m:::::::mm   ee::::::::::::ee   U:::::D     D:::::U   I::::I  N:::::::::::N   N::::::N        T:::::T        
+  F::::::FFFFFFFFFF    l::::l   aaaaaaaaa:::::a m::::::::::mm::::::::::m e::::::eeeee:::::ee U:::::D     D:::::U   I::::I  N:::::::N::::N  N::::::N        T:::::T        
+  F:::::::::::::::F    l::::l            a::::a m::::::::::::::::::::::me::::::e     e:::::e U:::::D     D:::::U   I::::I  N::::::N N::::N N::::::N        T:::::T        
+  F:::::::::::::::F    l::::l     aaaaaaa:::::a m:::::mmm::::::mmm:::::me:::::::eeeee::::::e U:::::D     D:::::U   I::::I  N::::::N  N::::N:::::::N        T:::::T        
+  F::::::FFFFFFFFFF    l::::l   aa::::::::::::a m::::m   m::::m   m::::me:::::::::::::::::e  U:::::D     D:::::U   I::::I  N::::::N   N:::::::::::N        T:::::T        
+  F:::::F              l::::l  a::::aaaa::::::a m::::m   m::::m   m::::me::::::eeeeeeeeeee   U:::::D     D:::::U   I::::I  N::::::N    N::::::::::N        T:::::T        
+  F:::::F              l::::l a::::a    a:::::a m::::m   m::::m   m::::me:::::::e            U::::::U   U::::::U   I::::I  N::::::N     N:::::::::N        T:::::T        
+FF:::::::FF           l::::::la::::a    a:::::a m::::m   m::::m   m::::me::::::::e           U:::::::UUU:::::::U II::::::IIN::::::N      N::::::::N      TT:::::::TT      
+F::::::::FF           l::::::la:::::aaaa::::::a m::::m   m::::m   m::::m e::::::::eeeeeeee    UU:::::::::::::UU  I::::::::IN::::::N       N:::::::N      T:::::::::T      
+F::::::::FF           l::::::l a::::::::::aa:::am::::m   m::::m   m::::m  ee:::::::::::::e      UU:::::::::UU    I::::::::IN::::::N        N::::::N      T:::::::::T      
+FFFFFFFFFFF           llllllll  aaaaaaaaaa  aaaammmmmm   mmmmmm   mmmmmm    eeeeeeeeeeeeee        UUUUUUUUU      IIIIIIIIIINNNNNNNN         NNNNNNN      TTTTTTTTTTT      
 
-THIS CODE OPEN SOURCE
 
-===========================
-
-FlameUINT HUB
-By ReTrojan
-
+ 
 https://github.com/retrojan/FlameUINT
 
 ===========================
@@ -18,6 +32,25 @@ ICONS: https://lucide.dev/icons/
 
 Happy reading!
 ]]
+
+
+
+
+
+
+
+local ScriptName = "FlameUINT REVOLUTION"
+local ScriptVersion = "13.4"
+local ScriptDev = "ReTrojan"
+
+local AntiToggles = {}
+local AntiVoidPlatforms = {}
+
+
+
+
+
+
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
@@ -37,7 +70,7 @@ end
 
 
 local Window = Rayfield:CreateWindow({
-   Name = placeNameok .. " | 🔥 FlameUINT HUB",
+   Name = placeNameok .. " | 🔥 FlameUINT",
    Icon = 0, 
    LoadingTitle = "FlameUINT",
    LoadingSubtitle = "by ReTrojan",
@@ -213,13 +246,22 @@ local AntiLagButton = Other:CreateButton({
 
 
 
-local DestroyS = Other:CreateSection("Destroy GUI")
-
-
-local DestroyButton = Other:CreateButton({
+Other:CreateSection("Destroy GUI")
+Other:CreateButton({
     Name = "Destroy GUI",
     Callback = function()
+        -- Удаляем все платформы
+        for _, platform in pairs(AntiVoidPlatforms) do
+            if platform and platform.Parent then
+                platform:Destroy()
+            end
+        end
+        AntiVoidPlatforms = {}
+
+        -- Удаляем GUI
         Rayfield:Destroy()
+
+        -- Уведомление
         Rayfield:Notify({
             Title = "GUI Destroyed",
             Content = "Interface has been successfully destroyed",
@@ -251,6 +293,27 @@ local locationsInOrder = {
         }
     }
 }
+
+
+Info:CreateSection("Script")
+Info:CreateLabel("Name: " .. ScriptName)
+Info:CreateLabel("Version: " .. ScriptVersion)
+Info:CreateLabel("Dev: " .. ScriptDev)
+Info:CreateButton({
+    Name = "https://github.com/retrojan/FlameUINT",
+    Callback = function()
+        setclipboard("https://github.com/retrojan/FlameUINT")
+        Rayfield:Notify({
+            Title = "Success",
+            Content = "Repository link copied to clipboard!",
+            Duration = 3,
+            Image = 4483362458
+        })
+    end
+})
+
+
+
 
 
 local SPlayer = Info:CreateSection("Player")
@@ -356,18 +419,6 @@ updateServerTime()
 
 
 
-Info:CreateButton({
-    Name = "https://github.com/retrojan/FlameUINT",
-    Callback = function()
-        setclipboard("https://github.com/retrojan/FlameUINT")
-        Rayfield:Notify({
-            Title = "Success",
-            Content = "Repository link copied to clipboard!",
-            Duration = 3,
-            Image = 4483362458
-        })
-    end
-})
 
 local function TeleportToBrazilPortal()
     if game.Workspace:FindFirstChild("Lobby") and game.Workspace.Lobby:FindFirstChild("brazil") and game.Workspace.Lobby.brazil:FindFirstChild("portal") then
@@ -614,6 +665,14 @@ local Slappleezz = Main:CreateToggle({
 
 
 
+
+
+
+
+
+
+
+
 local BrickFarmSection = Gloves:CreateSection("TRAP")
 
 local BrickFarmConfig = {
@@ -773,103 +832,13 @@ end
 coroutine.wrap(setupGloveTracking)()
 
 
---[[
-local FarmSection = Main:CreateSection("Slapple Farming")
-
-local SlappleFarmConfig = {
-    Enabled = false,
-    Types = {"Slapple", "GoldenSlapple"}, 
-    Cooldown = 0.1 
-}
-
-local SlappleFarmToggle = Main:CreateToggle({
-    Name = "Autofarm Slapples",
-    CurrentValue = false,
-    Flag = "SlappleFarmToggle",
-    Callback = function(Value)
-        SlappleFarmConfig.Enabled = Value
-        
-        if Value then
-            coroutine.wrap(function()
-                while SlappleFarmConfig.Enabled and task.wait(SlappleFarmConfig.Cooldown) do
-                    local character = game.Players.LocalPlayer.Character
-                    if character and character:FindFirstChild("HumanoidRootPart") then
-                        
-                        -- Проверяем остров 5
-                        local island5 = workspace.Arena:FindFirstChild("island5")
-                        if island5 and island5:FindFirstChild("Slapples") then
-                            
-                            for _, slapple in pairs(island5.Slapples:GetChildren()) do
-                                if not SlappleFarmConfig.Enabled then break end
-                                
-                                -- Исправлено: TouchTransmitter вместо TuchTransmitter
-                                if table.find(SlappleFarmConfig.Types, slapple.Name) 
-                                   and slapple:FindFirstChild("Glove") 
-                                   and slapple.Glove:FindFirstChildWhichIsA("TouchTransmitter") then
-                                    
-                                    firetouchinterest(character.HumanoidRootPart, slapple.Glove, 0)
-                                    task.wait()
-                                    firetouchinterest(character.HumanoidRootPart, slapple.Glove, 1)
-                                end
-                            end
-                        end
-                    end
-                end
-            end)()
-            
-            Rayfield:Notify({
-                Title = "Slapple Farm",
-                Content = "Autofarm activated!",
-                Duration = 2,
-                Image = 4483362458
-            })
-        else
-            Rayfield:Notify({
-                Title = "Slapple Farm",
-                Content = "Autofarm deactivated",
-                Duration = 2,
-                Image = 4483362458
-            })
-        end
-    end
-})
-
-local SlappleTypesDropdown = Main:CreateDropdown({
-    Name = "Slapple Types",
-    CurrentOption = {"Slapple", "GoldenSlapple"},
-    Options = {"Slapple", "GoldenSlapple"},
-    MultipleOptions = true,
-    Flag = "SlappleTypesDropdown",
-    Callback = function(Selected)
-        SlappleFarmConfig.Types = Selected
-    end
-})
-
-local FarmCooldownSlider = Main:CreateSlider({
-    Name = "Farm Cooldown",
-    Range = {0.05, 0.5},
-    Increment = 0.05,
-    Suffix = "seconds",
-    CurrentValue = 0.1,
-    Flag = "FarmCooldownSlider",
-    Callback = function(Value)
-        SlappleFarmConfig.Cooldown = Value
-    end
-})
-
-
-]]
-
-
-
-local Toggles = {}
 
 
 local SAntis = Antis:CreateSection("Buttons")
 Antis:CreateButton({
-    Name = "Enable all toggles",
+    Name = "Enable all AntiToggles",
     Callback = function()
-        for _, toggle in pairs(Toggles) do
+        for _, toggle in pairs(AntiToggles) do
             if toggle.CurrentValue == false then
                 toggle:Set(true)
             end
@@ -878,9 +847,9 @@ Antis:CreateButton({
 })
 
 Antis:CreateButton({
-    Name = "Disable all toggles",
+    Name = "Disable all AntiToggles",
     Callback = function()
-        for _, toggle in pairs(Toggles) do
+        for _, toggle in pairs(AntiToggles) do
             if toggle.CurrentValue then
                 toggle:Set(false)
             end
@@ -889,7 +858,7 @@ Antis:CreateButton({
 })
 
 Antis:CreateSection("Player")
-Toggles.AntiRagdollToggle = Antis:CreateToggle({
+AntiToggles.AntiRagdollToggle = Antis:CreateToggle({
    Name = "Anti Ragdoll",
    CurrentValue = false,
    Callback = function(Value)
@@ -949,30 +918,48 @@ Toggles.AntiRagdollToggle = Antis:CreateToggle({
 })
 
 
-Toggles.AntiVoidToggle = Antis:CreateToggle({
-   Name = "Anti Void",
-   CurrentValue = false,
-   Flag = "AntiVoidToggle",
-   Callback = function(Value)
+-- Пример тоггла Anti Void
+AntiToggles.AntiVoidToggle = Antis:CreateToggle({
+    Name = "Anti Void",
+    CurrentValue = false,
+    Flag = "AntiVoidToggle",
+    Callback = function(Value)
         if Value then
-            local Platform = Instance.new("Part")
-            Platform.Name = "AntiVoidPlatform"
-            Platform.Size = Vector3.new(3000, 2, 3000)
-            Platform.Position = Vector3.new(0, -10, 0)
-            Platform.Anchored = true
-            Platform.Transparency = 0.5
-            Platform.CanCollide = true
-            Platform.Parent = workspace
+            -- Платформа внизу
+            local Platform1 = Instance.new("Part")
+            Platform1.Size = Vector3.new(3000, 2, 3000)
+            Platform1.Position = Vector3.new(0, -10, 0)
+            Platform1.Anchored = true
+            Platform1.Transparency = 0.5
+            Platform1.CanCollide = true
+            Platform1.Parent = workspace
+            table.insert(AntiVoidPlatforms, Platform1)
+
+            -- Платформа на заданной позиции
+            local Platform2 = Instance.new("Part")
+            Platform2.Size = Vector3.new(3000, 2, 3000)
+            Platform2.Position = Vector3.new(3426.54, 239.38, -9.97)
+            Platform2.Anchored = true
+            Platform2.Transparency = 0.5
+            Platform2.CanCollide = true
+            Platform2.Parent = workspace
+            table.insert(AntiVoidPlatforms, Platform2)
         else
-            local ExistingPlatform = workspace:FindFirstChild("AntiVoidPlatform")
-            if ExistingPlatform then
-                ExistingPlatform:Destroy()
+            -- Удаляем все платформы, созданные этим тогглом
+            for _, platform in pairs(AntiVoidPlatforms) do
+                if platform and platform.Parent then
+                    platform:Destroy()
+                end
             end
+            -- Очищаем таблицу
+            AntiVoidPlatforms = {}
         end
-   end,
+    end,
 })
 
-Toggles.AntiAFKToggle = Antis:CreateToggle({
+
+
+AntiToggles.AntiAFKToggle = Antis:CreateToggle({
     Name = "Anti AFK",
     CurrentValue = false,
     Flag = "AntiAFK_Toggle",
@@ -990,7 +977,7 @@ Toggles.AntiAFKToggle = Antis:CreateToggle({
 }) 
 
 Antis:CreateSection("Gloves")
-Toggles.AntiIceBinToggle = Antis:CreateToggle({
+AntiToggles.AntiIceBinToggle = Antis:CreateToggle({
     Name = "Anti IceSkate",
     CurrentValue = false,
     Flag = "AntiIceBinToggle",
@@ -1024,7 +1011,42 @@ Toggles.AntiIceBinToggle = Antis:CreateToggle({
     end
 })
 
-Toggles.AntiPusherToggle = Antis:CreateToggle({
+
+AntiToggles.AntiSquidToggle = Antis:CreateToggle({
+    Name = "Anti Squid",
+    CurrentValue = false,
+    Flag = "AntiSquidToggle",
+    Callback = function(Value)
+        _G.AntiSquid = Value
+
+        local squidGui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("SquidInk")
+        if squidGui then
+            squidGui.Enabled = not _G.AntiSquid
+        end
+
+        -- Подключаем наблюдение за изменением состояния
+        if _G.AntiSquid then
+            local connection
+            connection = game.Players.LocalPlayer.PlayerGui.ChildAdded:Connect(function(child)
+                if child.Name == "SquidInk" then
+                    child.Enabled = false
+                end
+            end)
+
+            -- Сохраняем соединение, чтобы отключить его, когда выключаем
+            _G.AntiSquidConnection = connection
+        else
+            if _G.AntiSquidConnection then
+                _G.AntiSquidConnection:Disconnect()
+                _G.AntiSquidConnection = nil
+            end
+        end
+    end
+})
+
+
+
+AntiToggles.AntiPusherToggle = Antis:CreateToggle({
     Name = "Anti Pusher",
     CurrentValue = false,
     Flag = "AntiPusherToggle",
@@ -1052,8 +1074,8 @@ Toggles.AntiPusherToggle = Antis:CreateToggle({
     end
 })
 
-Toggles.AntiIceAndPotionToggle = Antis:CreateToggle({
-    Name = "Anti Ice & Potion",
+AntiToggles.AntiIceAndPotionToggle = Antis:CreateToggle({
+    Name = "Anti Ice",
     CurrentValue = false,
     Flag = "AntiIceAndPotionToggle",
     Callback = function(Value)
@@ -1084,7 +1106,7 @@ Toggles.AntiIceAndPotionToggle = Antis:CreateToggle({
 
 
 
-Toggles.AntiMailToggle = Antis:CreateToggle({
+AntiToggles.AntiMailToggle = Antis:CreateToggle({
     Name = "Anti Mail",
     CurrentValue = false,
     Flag = "AntiMailToggle",
@@ -1115,7 +1137,7 @@ Toggles.AntiMailToggle = Antis:CreateToggle({
     end
 })
 
-Toggles.AntiKickToggle = Antis:CreateToggle({
+AntiToggles.AntiKickToggle = Antis:CreateToggle({
     Name = "Anti Kick",
     CurrentValue = false,
     Flag = "AntiKickToggle",
@@ -1143,7 +1165,7 @@ Toggles.AntiKickToggle = Antis:CreateToggle({
 })
 
 Antis:CreateSection("Other")
-Toggles.AntiAdminToggle = Antis:CreateToggle({
+AntiToggles.AntiAdminToggle = Antis:CreateToggle({
     Name = "Anti Mod | Admin",
     CurrentValue = false,
     Flag = "AntiAdminToggle",
@@ -1175,7 +1197,7 @@ Toggles.AntiAdminToggle = Antis:CreateToggle({
     end
 })
 Antis:CreateSection("Objects")
-Toggles.AntiCubeOfDeathToggle = Antis:CreateToggle({
+AntiToggles.AntiCubeOfDeathToggle = Antis:CreateToggle({
     Name = "Anti Cube Of Death",
     CurrentValue = false,
     Flag = "AntiCubeOfDeathToggle",
@@ -1198,7 +1220,6 @@ Toggles.AntiCubeOfDeathToggle = Antis:CreateToggle({
 
 
 local AutoSection = Gloves:CreateSection("AUTO")
-
 local AutoTycoonToggle = Gloves:CreateToggle({
     Name = "Get Tycoon",
     CurrentValue = false,
@@ -1206,21 +1227,36 @@ local AutoTycoonToggle = Gloves:CreateToggle({
     Callback = function(Value)
         _G.AutoTpPlate = Value
         
-        if game.Players.LocalPlayer.Character:FindFirstChild("entered") and #game.Players:GetPlayers() >= 7 then
-            while _G.AutoTpPlate do
-                if game.Players.LocalPlayer.Character and 
-                   game.Players.LocalPlayer.Character:FindFirstChild("entered") and 
-                   #game.Players:GetPlayers() >= 7 then
-                    local plate = game.workspace.Arena.Plate
-                    local humanoidRootPart = game.Players.LocalPlayer.Character.HumanoidRootPart
-                    humanoidRootPart.CFrame = plate.CFrame + Vector3.new(0, 2, 0)
-                end
-                task.wait()
+        local player = game.Players.LocalPlayer
+        local char = player.Character or player.CharacterAdded:Wait()
+        
+        while _G.AutoTpPlate do
+            char = player.Character or player.CharacterAdded:Wait()
+            
+            -- Если игрок ещё не зашёл в арену, телепорт через touch
+            if not char:FindFirstChild("entered") then
+                local head = char:WaitForChild("Head")
+                local teleport = workspace.Lobby:WaitForChild("Teleport1")
+                firetouchinterest(head, teleport, 0)
+                firetouchinterest(head, teleport, 1)
+                task.wait(0.5)
             end
-        elseif _G.AutoTpPlate == true then
+
+            -- Если в арену зашёл и достаточно игроков — телепорт к Plate
+            if char:FindFirstChild("entered") and #game.Players:GetPlayers() >= 7 then
+                local plate = workspace.Arena:WaitForChild("Plate")
+                local hrp = char:WaitForChild("HumanoidRootPart")
+                hrp.CFrame = plate.CFrame + Vector3.new(0, 2, 0)
+            end
+
+            task.wait()
+        end
+
+        -- Ошибка, если условия не выполнены
+        if _G.AutoTpPlate == true and (not char:FindFirstChild("entered") or #game.Players:GetPlayers() < 7) then
             Rayfield:Notify({
                 Title = "Error",
-                Content = "You need to enter arena, or have 7 people in the server",
+                Content = "You need have 7 people in the server",
                 Duration = 5
             })
             task.wait(0.05)
@@ -1228,6 +1264,7 @@ local AutoTycoonToggle = Gloves:CreateToggle({
         end
     end
 })
+
 
 
 
@@ -1248,6 +1285,41 @@ Gloves:CreateButton({
     end
 })
 
+Gloves:CreateButton({
+    Name = "Get Plank",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart")
+
+        if player.leaderstats.Glove.Value == "Fort" and not game:GetService("BadgeService"):UserHasBadgeAsync(player.UserId, 4031317971987872) then
+            if game.Players.LocalPlayer.Character:FindFirstChild("entered") == nil then
+            firetouchinterest(game.Players.LocalPlayer.Character:WaitForChild("Head"), workspace.Lobby.Teleport1, 0)
+            firetouchinterest(game.Players.LocalPlayer.Character:WaitForChild("Head"), workspace.Lobby.Teleport1, 1)
+            wait(0.5)
+            end
+            local OGL = hrp.CFrame
+            hrp.CFrame = CFrame.new(7000, 97, 4)
+            task.wait(0.2)
+            hrp.Anchored = true
+            task.wait(0.3)
+            game:GetService("ReplicatedStorage").Fortlol:FireServer()
+            task.wait(3.5)
+            hrp.Anchored = false
+            task.wait(0.1)
+            hrp.CFrame = CFrame.new(7000, 106, -6)
+            task.wait(0.5)
+            hrp.CFrame = OGL
+        else
+            Rayfield:Notify({
+                Title = "Error",
+                Content = "You don't have Fort equipped, or you have owner badge [ Don't turn on shiftlock ]",
+                Duration = 5,
+                Image = 7733658504
+            })
+        end
+    end,
+})
 
 
 
@@ -1401,22 +1473,51 @@ local SiphonFarmToggle = Gloves:CreateToggle({
 })
 
 
-local PhaseJetToggle = Gloves:CreateToggle({
-    Name = "Phase Or Jet Farm",
+-- Phase Orb Farm
+local PhaseToggle = Gloves:CreateToggle({
+    Name = "Phase Farm",
     CurrentValue = false,
-    Flag = "PhaseJetToggle",
+    Flag = "PhaseToggle",
     Callback = function(Value)
-        _G.PhaseOrJetfarm = Value
-        
+        _G.PhaseFarm = Value
+
         if Value then
             task.spawn(function()
-                while _G.PhaseOrJetfarm do
+                while _G.PhaseFarm do
                     local character = game.Players.LocalPlayer.Character
                     if character and character:FindFirstChild("Head") then
                         for _, v in pairs(game.Workspace:GetChildren()) do
-                            if not _G.PhaseOrJetfarm then break end
-                            
-                            if v.Name == "JetOrb" or v.Name == "PhaseOrb" then
+                            if not _G.PhaseFarm then break end
+                            if v.Name == "PhaseOrb" then
+                                firetouchinterest(character.Head, v, 0)
+                                task.wait()
+                                firetouchinterest(character.Head, v, 1)
+                            end
+                        end
+                    end
+                    task.wait(0.1)
+                end
+            end)
+        end
+    end
+})
+
+-- Jet Orb Farm
+local JetToggle = Gloves:CreateToggle({
+    Name = "Jet Farm",
+    CurrentValue = false,
+    Flag = "JetToggle",
+    Callback = function(Value)
+        _G.JetFarm = Value
+
+        if Value then
+            task.spawn(function()
+                while _G.JetFarm do
+                    local character = game.Players.LocalPlayer.Character
+                    if character and character:FindFirstChild("Head") then
+                        for _, v in pairs(game.Workspace:GetChildren()) do
+                            if not _G.JetFarm then break end
+                            if v.Name == "JetOrb" then
                                 firetouchinterest(character.Head, v, 0)
                                 task.wait()
                                 firetouchinterest(character.Head, v, 1)
@@ -1431,8 +1532,9 @@ local PhaseJetToggle = Gloves:CreateToggle({
 })
 
 
+
 local PhaseJetGlitchToggle = Gloves:CreateToggle({
-    Name = "Glitch Phase Or Jet",
+    Name = "Glitch Farm",
     CurrentValue = false,
     Flag = "PhaseJetGlitchToggle",
     Callback = function(Value)
@@ -1457,18 +1559,6 @@ local PhaseJetGlitchToggle = Gloves:CreateToggle({
     end
 })
 
--- DANGER
-Gloves:CreateSection("! DANGER ! (BUT WORKING!)")
-
-Gloves:CreateLabel("Possible ban (if you do this on your main account = don't take any chances)")
-
-local GetAllBadges = Gloves:CreateButton({
-    Name = "Get All Badge Gloves",
-    Flag = "GABG",
-    Callback = function()
-           loadstring(game:HttpGet("https://raw.githubusercontent.com/IncognitoScripts/SlapBattles/refs/heads/main/InstantGloves"))()
-    end,
-})
 
 
 
@@ -1537,7 +1627,6 @@ Mastery:CreateToggle({
     Callback = function(value)
         autoUseEnabled = value
 
-        -- если уже есть соединение — отключаем
         if autoUseConnection then
             autoUseConnection:Disconnect()
             autoUseConnection = nil
@@ -1611,76 +1700,40 @@ local ESlider = Mastery:CreateSlider({
     end,
 })
 
-local createdParts = {
-    afkZone = {
-        floor = nil,
-        walls = {}
-    }
-}
-
-local function createAFKZone()
-    local targetPosition = Vector3.new(50000, 100, 50000)
-    local floorSize = Vector3.new(200, 2, 200)
-    local wallHeight = 40
-
-    if not createdParts.afkZone.floor or not createdParts.afkZone.floor.Parent then
-        local floor = Instance.new("Part")
-        floor.Name = "AFK_Floor"
-        floor.Anchored = true
-        floor.Size = floorSize
-        floor.Transparency = 0.5
-        floor.CanCollide = true
-        floor.Position = targetPosition - Vector3.new(0, -5.17, 0)
-        floor.Parent = workspace
-        createdParts.afkZone.floor = floor
-    end
-
-    local wallsConfig = {
-        {Name = "AFK_Wall_Front", Size = Vector3.new(floorSize.X, wallHeight, 1),
-         Position = targetPosition + Vector3.new(0, wallHeight/2 - 0.5, floorSize.Z/2)},
-        {Name = "AFK_Wall_Back", Size = Vector3.new(floorSize.X, wallHeight, 1),
-         Position = targetPosition + Vector3.new(0, wallHeight/2 - 0.5, -floorSize.Z/2)},
-        {Name = "AFK_Wall_Left", Size = Vector3.new(1, wallHeight, floorSize.Z),
-         Position = targetPosition + Vector3.new(-floorSize.X/2, wallHeight/2 - 0.5, 0)},
-        {Name = "AFK_Wall_Right", Size = Vector3.new(1, wallHeight, floorSize.Z),
-         Position = targetPosition + Vector3.new(floorSize.X/2, wallHeight/2 - 0.5, 0)},
-        {Name = "AFK_Ceiling", Size = Vector3.new(floorSize.X, 1, floorSize.Z),
-         Position = targetPosition + Vector3.new(0, wallHeight - 0.5, 0)}
-    }
-
-    for _, config in ipairs(wallsConfig) do
-        if not createdParts.afkZone.walls[config.Name] or not createdParts.afkZone.walls[config.Name].Parent then
-            local wall = Instance.new("Part")
-            wall.Name = config.Name
-            wall.Anchored = true
-            wall.Size = config.Size
-            wall.Transparency = 0.5
-            wall.CanCollide = true
-            wall.Material = Enum.Material.SmoothPlastic
-            wall.Position = config.Position
-            wall.Parent = workspace
-            createdParts.afkZone.walls[config.Name] = wall
-        end
-    end
-end
 
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 
 local AFK_ZONE = {
-    position = Vector3.new(50000, 100, 50000),
+    position = Vector3.new(0, -497, 0), 
     floorSize = Vector3.new(200, 1, 200),
     wallHeight = 40,
     parts = {}
 }
 
+
+local function getRandomAFKPosition()
+    local x = math.random(5000, 25000)
+    local z = math.random(5000, 25000)
+    local y = math.random(-497, 0) 
+    return Vector3.new(x, y, z)
+end
+
 local function createAFKZone()
-    if AFK_ZONE.parts.floor and AFK_ZONE.parts.floor.Parent then
-        return AFK_ZONE.parts.floor
+
+    if AFK_ZONE.parts.floor then
+        for _, part in pairs(AFK_ZONE.parts) do
+            if part and part.Parent then
+                part:Destroy()
+            end
+        end
+        AFK_ZONE.parts = {} 
     end
 
-    AFK_ZONE.parts.floor = Instance.new("Part")
-    local floor = AFK_ZONE.parts.floor
+    AFK_ZONE.position = getRandomAFKPosition()
+
+
+    local floor = Instance.new("Part")
     floor.Name = "AFK_Zone_Floor"
     floor.Size = AFK_ZONE.floorSize
     floor.Anchored = true
@@ -1688,6 +1741,8 @@ local function createAFKZone()
     floor.CanCollide = true
     floor.Position = AFK_ZONE.position - Vector3.new(0, 0.5, 0)
     floor.Parent = workspace
+    AFK_ZONE.parts.floor = floor
+
 
     local wallsConfig = {
         {name = "FrontWall", size = Vector3.new(AFK_ZONE.floorSize.X, AFK_ZONE.wallHeight, 1),
@@ -1702,10 +1757,85 @@ local function createAFKZone()
          pos = AFK_ZONE.position + Vector3.new(0, AFK_ZONE.wallHeight - 0.5, 0)}
     }
 
+
     for _, config in ipairs(wallsConfig) do
-        AFK_ZONE.parts[config.name] = Instance.new("Part")
-        local wall = AFK_ZONE.parts[config.name]
+        local wall = Instance.new("Part")
         wall.Name = "AFK_Zone_" .. config.name
+        wall.Size = config.size
+        wall.Anchored = true
+        wall.Transparency = 0.5
+        wall.CanCollide = true
+        wall.Position = config.pos
+        wall.Parent = workspace
+        AFK_ZONE.parts[config.name] = wall
+    end
+
+    return floor
+end
+
+local function teleportToAFKZone()
+    if not Player.Character then
+        Player.CharacterAdded:Wait()
+    end
+
+    local humanoidRootPart = Player.Character:WaitForChild("HumanoidRootPart")
+    AutoEnter()
+    wait(0.5)
+    createAFKZone()
+    humanoidRootPart.CFrame = CFrame.new(AFK_ZONE.position)
+    
+
+    if Rayfield then
+        Rayfield:Notify({
+            Title = "Safe Spot",
+            Content = "You have been teleported to the Safe Spot!",
+            Duration = 3
+        })
+    end
+end
+
+
+
+
+local DUO_AFK_ZONE = {
+    position = Vector3.new(50000, 0, 50000),
+    floorSize = Vector3.new(200, 1, 200),
+    wallHeight = 40,
+    parts = {}
+}
+
+local function createDUOAFKZone()
+    if DUO_AFK_ZONE.parts.floor and DUO_AFK_ZONE.parts.floor.Parent then
+        return DUO_AFK_ZONE.parts.floor
+    end
+
+    DUO_AFK_ZONE.parts.floor = Instance.new("Part")
+    local floor = DUO_AFK_ZONE.parts.floor
+    floor.Name = "DUO_AFK_Zone_Floor"
+    floor.Size = DUO_AFK_ZONE.floorSize
+    floor.Anchored = true
+    floor.Transparency = 0.5
+    floor.CanCollide = true
+    floor.Position = DUO_AFK_ZONE.position - Vector3.new(0, 0.5, 0)
+    floor.Parent = workspace
+
+    local wallsConfig = {
+        {name = "FrontWall", size = Vector3.new(DUO_AFK_ZONE.floorSize.X, DUO_AFK_ZONE.wallHeight, 1),
+         pos = DUO_AFK_ZONE.position + Vector3.new(0, DUO_AFK_ZONE.wallHeight/2 - 0.5, DUO_AFK_ZONE.floorSize.Z/2)},
+        {name = "BackWall", size = Vector3.new(DUO_AFK_ZONE.floorSize.X, DUO_AFK_ZONE.wallHeight, 1),
+         pos = DUO_AFK_ZONE.position + Vector3.new(0, DUO_AFK_ZONE.wallHeight/2 - 0.5, -DUO_AFK_ZONE.floorSize.Z/2)},
+        {name = "LeftWall", size = Vector3.new(1, DUO_AFK_ZONE.wallHeight, DUO_AFK_ZONE.floorSize.Z),
+         pos = DUO_AFK_ZONE.position + Vector3.new(-DUO_AFK_ZONE.floorSize.X/2, DUO_AFK_ZONE.wallHeight/2 - 0.5, 0)},
+        {name = "RightWall", size = Vector3.new(1, DUO_AFK_ZONE.wallHeight, DUO_AFK_ZONE.floorSize.Z),
+         pos = DUO_AFK_ZONE.position + Vector3.new(DUO_AFK_ZONE.floorSize.X/2, DUO_AFK_ZONE.wallHeight/2 - 0.5, 0)},
+        {name = "Ceiling", size = Vector3.new(DUO_AFK_ZONE.floorSize.X, 1, DUO_AFK_ZONE.floorSize.Z),
+         pos = DUO_AFK_ZONE.position + Vector3.new(0, DUO_AFK_ZONE.wallHeight - 0.5, 0)}
+    }
+
+    for _, config in ipairs(wallsConfig) do
+        DUO_AFK_ZONE.parts[config.name] = Instance.new("Part")
+        local wall = DUO_AFK_ZONE.parts[config.name]
+        wall.Name = "DUO_AFK_Zone_" .. config.name
         wall.Size = config.size
         wall.Anchored = true
         wall.Transparency = 0.5
@@ -1718,41 +1848,45 @@ local function createAFKZone()
     return floor
 end
 
-local function teleportToAFKZone()
+
+local function teleportToDUOAFKZone()
     if not Player.Character then
         Player.CharacterAdded:Wait()
     end
-    if game.Players.LocalPlayer.Character:FindFirstChild("entered") == nil then
-        firetouchinterest(game.Players.LocalPlayer.Character:WaitForChild("Head"), workspace.Lobby.Teleport1, 0)
-        firetouchinterest(game.Players.LocalPlayer.Character:WaitForChild("Head"), workspace.Lobby.Teleport1, 1)
-        
 
-        wait(0.3)
-    end
-    
     local humanoidRootPart = Player.Character:WaitForChild("HumanoidRootPart")
-    createAFKZone()
-    humanoidRootPart.CFrame = CFrame.new(AFK_ZONE.position)
+    AutoEnter()
+    wait(0.5)
+    createDUOAFKZone()
+    humanoidRootPart.CFrame = CFrame.new(DUO_AFK_ZONE.position)
     
-    Rayfield:Notify({
-        Title = "Safe Spot",
-        Content = "You have been teleported to the Safe Spot!",
-        Duration = 3
-    })
-end
 
-local function TeleportTo(position)
-    local character = game.Players.LocalPlayer.Character
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        character.HumanoidRootPart.CFrame = CFrame.new(position)
+    if Rayfield then
+        Rayfield:Notify({
+            Title = "Safe Spot",
+            Content = "You have been teleported to the Safe Spot!",
+            Duration = 3
+        })
     end
 end
+
+
+
+
+
 
 local AFKSECT = Teleport:CreateSection("Safe Spot")
 Teleport:CreateButton({
-    Name = "Safe Spot",
+    Name = "Solo Safe Spot",
     Callback = function()
         teleportToAFKZone()
+    end
+})
+
+Teleport:CreateButton({
+    Name = "DUO Safe Spot",
+    Callback = function()
+        teleportToDUOAFKZone()
     end
 })
 
@@ -1787,40 +1921,6 @@ for _, sectionData in ipairs(locationsInOrder) do
         })
     end
 end
-
-local teleportPart = Instance.new("Part")
-teleportPart.Name = "SafetyTeleportPart"
-teleportPart.Size = Vector3.new(500, 1, 500) 
-teleportPart.Position = Vector3.new(50000, 85, 50000) 
-teleportPart.Anchored = true
-teleportPart.Transparency = 1 
-teleportPart.CanCollide = true
-teleportPart.Color = Color3.fromRGB(255, 0, 0) 
-teleportPart.Material = Enum.Material.Neon
-teleportPart.Parent = workspace
-
-teleportPart.Touched:Connect(function(hit)
-    local character = hit.Parent
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    
-    if humanoid then
-        local player = game.Players:GetPlayerFromCharacter(character)
-        if player then
-            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-            if humanoidRootPart then
-                humanoidRootPart.CFrame = CFrame.new(Vector3.new(50000, 105, 50000))
-
-            end
-        end
-    end
-end)
-
-
-
-
-
-
-
 
 --[[
 
@@ -2177,3 +2277,31 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
         end
     end
 end)
+
+
+-- DANGER
+Gloves:CreateSection("! DANGER ! (BUT WORKING!)")
+
+Gloves:CreateLabel("Possible ban (if you do this on your main account = don't take any chances)")
+
+local GetAllBadges = Gloves:CreateButton({
+    Name = "Get All Badge Gloves",
+    Flag = "GABG",
+    Callback = function()
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/IncognitoScripts/SlapBattles/refs/heads/main/InstantGloves"))()
+    end,
+})
+
+
+
+
+--[[
+
+FPS AND PING STATS COMPLETELY REMOVED
+reason: a lot of errors
+]]
+
+
+
+
+

@@ -139,11 +139,11 @@ if gameScripts[currentGameId] then
     wait(1)
 
     if success then
-        statusLabel.Text = "Loaded Successfully"
+        statusLabel.Text = "Successfully"
         statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
         fadeOutPanel()
     else
-        statusLabel.Text = "Failed to Load"
+        statusLabel.Text = "Failed"
         statusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
         fadeOutPanel()
         warn("ERROR Loading FlameUINT:", errorMsg)

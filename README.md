@@ -11,6 +11,6 @@
 
 ```lua
 -- Load FlameUINT
-loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/main.lua", true))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/main.lua", false))()
 
 ```

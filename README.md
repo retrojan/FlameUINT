@@ -10,7 +10,13 @@
 <p >EXECUTE THIS:</p>
 
 ```lua
--- Load FlameUINT
+--[[
+FlameUINT
+By ReTrojan
+-------------------------------------
+Repository:
+https://github.com/retrojan/FlameUINT
+]]
 loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/main.lua"))()
 
 ```

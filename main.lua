@@ -29,7 +29,7 @@ FFFFFFFFFFF           llllllll  aaaaaaaaaa  aaaammmmmm   mmmmmm   mmmmmm    eeee
 local gameScripts = {
     [6403373529] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua",
     [9015014224] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua",
-    [124596094333302] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua", -- FIXED
+    [124596094333302] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua" -- FIXED
       
     --[18550498098] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/guidefight.lua", --Guide Boss Fight TEMPORARILY REMOVED: REWORK
     --[98726100529621] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/hexa.lua", -- Hexa REMOVED

@@ -58,7 +58,7 @@ local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.Plac
 local placeNameok = placeInfo.Name or "Unknown"  
 
 
-if game.PlaceId ~= 6403373529 and game.PlaceId ~= 9015014224 and game.PlaceID ~= 124596094333302 then
+if game.PlaceId ~= 6403373529 and game.PlaceId ~= 9015014224 and game.PlaceId ~= 124596094333302 then
     RayField:Notify({
         Title = "Error!",
         Content = "This script is for Slap Battles",

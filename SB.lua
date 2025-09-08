@@ -1,4 +1,4 @@
---[[
+8--[[
                                                                                                                                                                          
                                                                                                                                                                          
                                                                                                                                                                          
@@ -558,8 +558,8 @@ local TABG Main:CreateToggle({
         toggleCharacterFreeze(Value)
     end
 })
-Main:CreateToggle({
-    Name = "reset", 
+Main:CreateButton({
+Name = "reset", 
     Callback = function()
         local humanoid = character:FindFirstChildOfClass("Humanoid")
                     if humanoid then 

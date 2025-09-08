@@ -558,6 +558,17 @@ local TABG Main:CreateToggle({
         toggleCharacterFreeze(Value)
     end
 })
+Main:CreateToggle({
+    Name = "reset", 
+    Callback = function()
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then 
+                        humanoid.Health = 0 
+                    else 
+                        character:BreakJoints() 
+                    end
+    end
+})
 
 local idkez Main:CreateButton({
     Name = "Enter Arena",

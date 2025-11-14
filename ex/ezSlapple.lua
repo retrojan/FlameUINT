@@ -69,7 +69,7 @@ if game.PlaceId == 6403373529 then
 
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "Slapple Farm",
-        Text = "Начало фарма",
+        Text = "Started",
         Duration = 3
     })
 

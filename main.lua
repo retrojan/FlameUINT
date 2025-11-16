@@ -25,7 +25,7 @@ local gameScripts = {
     -- SLAP BATTLES
     [6403373529] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua", -- Default
     [9015014224] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua", -- No OneShot Gloves
-    [124596094333302] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua" -- New Players?
+    [124596094333302] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua", -- New Players?
     --                                                                                            --
     [18550498098] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/guidefight.lua", --Guide Boss Fight
     [16034567693] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/place/admin.lua" -- Admin Glove

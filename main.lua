@@ -1,8 +1,22 @@
 --[[
-ITS A LOADER
-SLAP BATTLES SCRIPT: 
-https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua
+FFFFFFFFFFFFFFFFFFFFFFlllllll                                                               UUUUUUUU     UUUUUUUUIIIIIIIIIINNNNNNNN        NNNNNNNNTTTTTTTTTTTTTTTTTTTTTTT
+F::::::::::::::::::::Fl:::::l                                                               U::::::U     U::::::UI::::::::IN:::::::N       N::::::NT:::::::::::::::::::::T
+F::::::::::::::::::::Fl:::::l                                                               U::::::U     U::::::UI::::::::IN::::::::N      N::::::NT:::::::::::::::::::::T
+FF::::::FFFFFFFFF::::Fl:::::l                                                               UU:::::U     U:::::UUII::::::IIN:::::::::N     N::::::NT:::::TT:::::::TT:::::T
+  F:::::F       FFFFFF l::::l   aaaaaaaaaaaaa      mmmmmmm    mmmmmmm       eeeeeeeeeeee     U:::::U     U:::::U   I::::I  N::::::::::N    N::::::NTTTTTT  T:::::T  TTTTTT
+  F:::::F              l::::l   a::::::::::::a   mm:::::::m  m:::::::mm   ee::::::::::::ee   U:::::D     D:::::U   I::::I  N:::::::::::N   N::::::N        T:::::T        
+  F::::::FFFFFFFFFF    l::::l   aaaaaaaaa:::::a m::::::::::mm::::::::::m e::::::eeeee:::::ee U:::::D     D:::::U   I::::I  N:::::::N::::N  N::::::N        T:::::T        
+  F:::::::::::::::F    l::::l            a::::a m::::::::::::::::::::::me::::::e     e:::::e U:::::D     D:::::U   I::::I  N::::::N N::::N N::::::N        T:::::T        
+  F:::::::::::::::F    l::::l     aaaaaaa:::::a m:::::mmm::::::mmm:::::me:::::::eeeee::::::e U:::::D     D:::::U   I::::I  N::::::N  N::::N:::::::N        T:::::T        
+  F::::::FFFFFFFFFF    l::::l   aa::::::::::::a m::::m   m::::m   m::::me:::::::::::::::::e  U:::::D     D:::::U   I::::I  N::::::N   N:::::::::::N        T:::::T        
+  F:::::F              l::::l  a::::aaaa::::::a m::::m   m::::m   m::::me::::::eeeeeeeeeee   U:::::D     D:::::U   I::::I  N::::::N    N::::::::::N        T:::::T        
+  F:::::F              l::::l a::::a    a:::::a m::::m   m::::m   m::::me:::::::e            U::::::U   U::::::U   I::::I  N::::::N     N:::::::::N        T:::::T        
+FF:::::::FF           l::::::la::::a    a:::::a m::::m   m::::m   m::::me::::::::e           U:::::::UUU:::::::U II::::::IIN::::::N      N::::::::N      TT:::::::TT      
+F::::::::FF           l::::::la:::::aaaa::::::a m::::m   m::::m   m::::m e::::::::eeeeeeee    UU:::::::::::::UU  I::::::::IN::::::N       N:::::::N      T:::::::::T      
+F::::::::FF           l::::::l a::::::::::aa:::am::::m   m::::m   m::::m  ee:::::::::::::e      UU:::::::::UU    I::::::::IN::::::N        N::::::N      T:::::::::T      
+FFFFFFFFFFF           llllllll  aaaaaaaaaa  aaaammmmmm   mmmmmm   mmmmmm    eeeeeeeeeeeeee        UUUUUUUUU      IIIIIIIIIINNNNNNNN         NNNNNNN      TTTTTTTTTTT      
 
+                                                                LOADER
 --]]
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/bypass.lua'))()

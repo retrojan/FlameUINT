@@ -6,22 +6,46 @@ local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.Plac
 local placeName = placeInfo.Name or "Unknown"  
 
 if game.PlaceId ~= 18550498098 then
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(17944, -130, -3540)
-    Rayfield:Notify({
-        Title = "Error!",
-        Content = "Go through the portal teleport to get into the boss fight!(Solo the boss to get nah i'd win badge)",
-        Duration = 5
-    })
+    -- game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(17944, -130, -3540)
     return
 end
 
--- Настройки атаки
+
+
+
+local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
+local placeNameok = placeInfo.Name or "Unknown"  
+
+local Window = Rayfield:CreateWindow({
+   Name = placeNameok .. " | FlameUINT",
+   Icon = 0, 
+   LoadingTitle = "FlameUINT",
+   LoadingSubtitle = "by ReTrojan",
+   ShowText = "FlameUINT",
+   Theme = "Darker", 
+
+   ToggleUIKeybind = "G",
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, 
+
+   Discord = {
+      Enabled = false, 
+      Invite = "no (yet)", 
+      RememberJoins = true 
+   },
+
+})
+
+
+
+
+
 local AutoAttackEnabled = false
 local AttackDelay = 0.1
 local AttackConnection = nil
 local ClickConnection = nil
 
--- Функция для клика
 local function DoClick()
     if player.Character then
         local lantern = player.Character:FindFirstChild("Lantern") or player.Backpack:FindFirstChild("Lantern")
@@ -37,7 +61,6 @@ local function DoClick()
     end
 end
 
--- Функция для автоматического клика
 local function AutoClickLoop()
     while AutoAttackEnabled do
         DoClick()
@@ -45,7 +68,6 @@ local function AutoClickLoop()
     end
 end
 
--- Оптимизированная автоатака
 local function FullAutoAttack()
     while AutoAttackEnabled and task.wait(AttackDelay) do
         if not player.Character then continue end
@@ -75,26 +97,9 @@ local function FullAutoAttack()
         end
     end
 end
+local MainTab = Window:CreateTab("Combat", "sword")
 
--- Создаем окно RayField
-local Window = Rayfield:CreateWindow({
-   Name = placeName .. " | 🔥 FlameUINT HUB",
-    LoadingTitle = "🔥 FlameUINT HUB",
-    LoadingSubtitle = "By ReTrojan",
-    ConfigurationSaving = {
-        Enabled = false
-    },
-    Discord = {
-        Enabled = false
-    }
-})
 
--- Создаем вкладки
-local MainTab = Window:CreateTab("Combat", nil)
-local TeleportTab = Window:CreateTab("Teleport", nil)
-local OtherTab = Window:CreateTab("Other", nil)
-
--- Основная функциональность
 do
     Rayfield:Notify({
         Title = "Guide Boss Script",
@@ -102,11 +107,11 @@ do
         Duration = 5
     })
 
-    -- Раздел телепортации
-    TeleportTab:CreateSection("Teleportation")
 
-    -- Кнопка телепорта к боссу
-    TeleportTab:CreateButton({
+    MainTab:CreateSection("Teleportation")
+
+
+    MainTab:CreateButton({
         Name = "Teleport to Boss",
         Callback = function()
             if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
@@ -120,8 +125,8 @@ do
         end,
     })
 
-    -- Кнопка телепорта в безопасную зону
-    TeleportTab:CreateButton({
+
+    MainTab:CreateButton({
         Name = "Teleport to SafeZone",
         Callback = function()
             if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
@@ -147,10 +152,10 @@ do
         end,
     })
 
-    -- Раздел автоматизации
+
     MainTab:CreateSection("Automation")
     
-    -- Тоггл автоатаки
+
     MainTab:CreateToggle({
         Name = "Enable Auto Attack",
         CurrentValue = false,
@@ -188,7 +193,6 @@ do
         end,
     })
 
-    -- Слайдер задержки атаки
     MainTab:CreateSlider({
         Name = "Attack Delay",
         Range = {0.05, 1},
@@ -202,35 +206,14 @@ do
     })
 end
 
--- Создаем метки
-OtherTab:CreateSection("Performance")
 
-local PingLabel = OtherTab:CreateLabel("Ping: -- ms")
-local FPSLabel = OtherTab:CreateLabel("FPS: --")
+local function LoadModule(url)
+    local source = game:HttpGet(url)
+    local fn = loadstring(source)
+    return fn()
+end
 
-OtherTab:CreateSection("Scripts")
+local Other = LoadModule("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/modules/other.lua")
 
-OtherTab:CreateButton({
-    Name = "FlyGUIV3",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-        Rayfield:Notify({
-            Title = "FlyGUIV3",
-            Content = "Successfully activated!",
-            Duration = 2
-        })
-    end,
-})
 
-OtherTab:CreateButton({
-    Name = "Infinity Yield",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-        Rayfield:Notify({
-            Title = "Infinity Yield",
-            Content = "Successfully activated!",
-            Duration = 2
-        })
-    end,
-})
-
+Other(Window, Rayfield)

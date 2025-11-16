@@ -31,7 +31,7 @@ local OtherTab = Window:CreateTab("Other", 4483362458)
 
 local nullPos = Vector3.new(5459.35, -189.00, 1845.44)
 local tinkererPos = Vector3.new(4845.79, -214.00, 799.27)
-local robPos = Vector3.new(5261.27, -138.43, 865.91) -- UPDATED POSITION
+local robPos = Vector3.new(5261.27, -138.43, 865.91)
 
 local function tpTo(pos)
     local player = game.Players.LocalPlayer

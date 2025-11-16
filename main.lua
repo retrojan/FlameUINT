@@ -28,7 +28,7 @@ local gameScripts = {
     [124596094333302] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua" -- New Players?
     --                                                                                            --
     [18550498098] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/guidefight.lua", --Guide Boss Fight
-    [16034567693] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/place/admin.lua". -- Admin Glove
+    [16034567693] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/place/admin.lua" -- Admin Glove
 
 }
 

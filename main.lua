@@ -8,12 +8,13 @@ https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua
 loadstring(game:HttpGet('https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/bypass.lua'))()
 
 local gameScripts = {
-    [6403373529] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua",
-    [9015014224] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua",
-    [124596094333302] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua" -- FIXED
-      
+    -- SLAP BATTLES
+    [6403373529] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua", -- Default
+    [9015014224] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua", -- No OneShot Gloves
+    [124596094333302] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/SB.lua" -- New Players?
+    --                                                                                            --
     [18550498098] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/guidefight.lua", --Guide Boss Fight
-    --[98726100529621] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/hexa.lua", -- Hexa REMOVED
+    [16034567693] = "https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/script/adminglove.lua". -- Admin Glove
 
 }
 

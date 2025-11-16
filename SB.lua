@@ -20,57 +20,48 @@ F::::::::FF           l::::::l a::::::::::aa:::am::::m   m::::m   m::::m  ee::::
 FFFFFFFFFFF           llllllll  aaaaaaaaaa  aaaammmmmm   mmmmmm   mmmmmm    eeeeeeeeeeeeee        UUUUUUUUU      IIIIIIIIIINNNNNNNN         NNNNNNN      TTTTTTTTTTT      
 
 
- 
+
 https://github.com/retrojan/FlameUINT
 
 ===========================
 
 RESOURCES:
-
 Documentation: https://docs.sirius.menu/rayfield
 ICONS: https://lucide.dev/icons/
+===========================
+Some parts of the code are taken from Giang Hub - https://github.com/Giangplay/Slap_Battles
+Bypass: https://github.com/Pro666Pro/BypassAntiCheat
+
 
 Happy reading!
 ]]
 
 
-
-
-
-
-
-local ScriptName = "FlameUINT REVOLUTION"
-local ScriptVersion = "13.4"
+local ScriptName = "FlameUINT "
+local ScriptVersion = "14.3"
 local ScriptDev = "ReTrojan"
 
 local AntiToggles = {}
 local AntiVoidPlatforms = {}
-
-
-
-
-
-
+local SafeZones = {}
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
-local placeNameok = placeInfo.Name or "Unknown"  
-
-
 if game.PlaceId ~= 6403373529 and game.PlaceId ~= 9015014224 and game.PlaceId ~= 124596094333302 then
-    RayField:Notify({
-        Title = "Error!",
-        Content = "This script is for Slap Battles",
-        Duration = 5
-    })
     return
 end
 
 
 
+
+
+
+
+local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
+local placeNameok = placeInfo.Name or "Unknown"  
+
 local Window = Rayfield:CreateWindow({
-   Name = placeNameok .. " | 🔥 FlameUINT",
+   Name = placeNameok .. " | FlameUINT",
    Icon = 0, 
    LoadingTitle = "FlameUINT",
    LoadingSubtitle = "by ReTrojan",
@@ -89,6 +80,11 @@ local Window = Rayfield:CreateWindow({
    },
 
 })
+
+
+
+
+
 
 local player = game.Players.LocalPlayer
 local leaderstats = player:WaitForChild("leaderstats")
@@ -110,13 +106,8 @@ end
 
 
 
-
-
-
-
-
-
-
+--[[ - REMOVED 
+     - Reason: NEW BYPASS
 local function SetupBypass()
     local function safeHook()
         local success, result = pcall(function()
@@ -146,7 +137,7 @@ local function SetupBypass()
 end
 
 SetupBypass()
-
+]]
 
 
 
@@ -158,117 +149,11 @@ local Antis = Window:CreateTab("Antis", "shield")
 local Gloves = Window:CreateTab("Gloves", "hand")
 local Teleport = Window:CreateTab("Teleport", "eye")
 local Mastery = Window:CreateTab("Mastery", "flame")
-local Other = Window:CreateTab("Other", "compass")
 
 
 
 
 
-
-local OtherS = Other:CreateSection("Other")
-
-Other:CreateButton({
-    Name = "FlyGUIV3",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-    end
-})
-
-
-Other:CreateButton({
-    Name = "Infinity Yield",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-    end
-})
-
-local AntiLagButton = Other:CreateButton({
-    Name = "Anti Lag",
-    Callback = function()
-
-        Rayfield:Notify({
-            Title = "Anti Lag",
-            Content = "Optimizing game performance...",
-            Duration = 3,
-            Image = 4483362458
-        })
-        
-
-        _G.Settings = {
-            Players = {
-                ["Ignore Me"] = true, 
-                ["Ignore Others"] = true
-            },
-            Meshes = {
-                Destroy = false,
-                LowDetail = true
-            },
-            Images = {
-                Invisible = true,
-                LowDetail = false,
-                Destroy = false
-            },
-            Other = {
-                ["No Particles"] = true,
-                ["No Camera Effects"] = true,
-                ["No Explosions"] = true,
-                ["No Clothes"] = true,
-                ["Low Water Graphics"] = true,
-                ["No Shadows"] = true,
-                ["Low Rendering"] = true,
-                ["Low Quality Parts"] = true
-            }
-        }
-        
-
-        local success, error = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/CasperFlyModz/discord.gg-rips/main/FPSBooster.lua"))()
-            print("test")
-        end)
-        
-        if success then
-            Rayfield:Notify({
-                Title = "Success",
-                Content = "Anti-Lag activated successfully!",
-                Duration = 5,
-                Image = 4483362458
-            })
-        else
-            Rayfield:Notify({
-                Title = "Error",
-                Content = "Failed to load FPS Booster: " .. tostring(error),
-                Duration = 5,
-                Image = 4483362458
-            })
-        end
-    end
-})
-
-
-
-Other:CreateSection("Destroy GUI")
-Other:CreateButton({
-    Name = "Destroy GUI",
-    Callback = function()
-        -- Удаляем все платформы
-        for _, platform in pairs(AntiVoidPlatforms) do
-            if platform and platform.Parent then
-                platform:Destroy()
-            end
-        end
-        AntiVoidPlatforms = {}
-
-        -- Удаляем GUI
-        Rayfield:Destroy()
-
-        -- Уведомление
-        Rayfield:Notify({
-            Title = "GUI Destroyed",
-            Content = "Interface has been successfully destroyed",
-            Duration = 2
-        })
-    end
-})
 
 local locationsInOrder = {
     {
@@ -315,7 +200,6 @@ Info:CreateButton({
 
 
 
-
 local SPlayer = Info:CreateSection("Player")
 
 local SlapsLabel      = Info:CreateLabel("Slaps: Loading...")
@@ -329,6 +213,9 @@ local GameIDLabel     = Info:CreateLabel("GameID: " .. game.PlaceId)
 local ServerIDLabel   = Info:CreateLabel("ServerID: " .. game.JobId)
 local PlayersLabel    = Info:CreateLabel("Players: Loading...")
 local ServerAgeLabel  = Info:CreateLabel("Server Age: Loading...")
+
+
+
 
 local player = game.Players.LocalPlayer
 local leaderstats = player:WaitForChild("leaderstats")
@@ -542,14 +429,6 @@ end)
 
 local SUtility= Main:CreateSection("Utility")
 
-Main:CreateButton({
-    Name = "Server Hop",
-    Callback = function()
-        ServerHop()
-    end
-})
-
-
 local TABG Main:CreateToggle({
     Name = "Tab", 
     CurrentValue = false,
@@ -558,17 +437,27 @@ local TABG Main:CreateToggle({
         toggleCharacterFreeze(Value)
     end
 })
+
 Main:CreateButton({
-Name = "reset", 
+    Name = "Server Hop",
     Callback = function()
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-                    if humanoid then 
-                        humanoid.Health = 0 
-                    else 
-                        character:BreakJoints() 
-                    end
+        ServerHop()
     end
 })
+
+Main:CreateButton({
+    Name = "Reset", 
+    Callback = function()
+        local character = game.Players.LocalPlayer.Character
+        if character then
+            local humanoid = character:FindFirstChild("Humanoid")
+            if humanoid then
+                humanoid.Health = 0
+            end
+        end
+    end
+})
+
 
 local idkez Main:CreateButton({
     Name = "Enter Arena",
@@ -675,7 +564,12 @@ local Slappleezz = Main:CreateToggle({
 })
 
 
-
+Main:CreateButton({
+    Name = "Slapple Server hop",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/ex/ezSlapple.lua"))()
+    end
+})
 
 
 
@@ -928,15 +822,12 @@ AntiToggles.AntiRagdollToggle = Antis:CreateToggle({
    end,
 })
 
-
--- Пример тоггла Anti Void
 AntiToggles.AntiVoidToggle = Antis:CreateToggle({
     Name = "Anti Void",
     CurrentValue = false,
     Flag = "AntiVoidToggle",
     Callback = function(Value)
         if Value then
-            -- Платформа внизу
             local Platform1 = Instance.new("Part")
             Platform1.Size = Vector3.new(3000, 2, 3000)
             Platform1.Position = Vector3.new(0, -10, 0)
@@ -946,9 +837,9 @@ AntiToggles.AntiVoidToggle = Antis:CreateToggle({
             Platform1.Parent = workspace
             table.insert(AntiVoidPlatforms, Platform1)
 
-            -- Платформа на заданной позиции
+            -- Tournament
             local Platform2 = Instance.new("Part")
-            Platform2.Size = Vector3.new(3000, 2, 3000)
+            Platform2.Size = Vector3.new(500, 2, 500)
             Platform2.Position = Vector3.new(3426.54, 239.38, -9.97)
             Platform2.Anchored = true
             Platform2.Transparency = 0.5
@@ -956,13 +847,12 @@ AntiToggles.AntiVoidToggle = Antis:CreateToggle({
             Platform2.Parent = workspace
             table.insert(AntiVoidPlatforms, Platform2)
         else
-            -- Удаляем все платформы, созданные этим тогглом
             for _, platform in pairs(AntiVoidPlatforms) do
                 if platform and platform.Parent then
                     platform:Destroy()
                 end
             end
-            -- Очищаем таблицу
+
             AntiVoidPlatforms = {}
         end
     end,
@@ -1208,6 +1098,23 @@ AntiToggles.AntiAdminToggle = Antis:CreateToggle({
     end
 })
 Antis:CreateSection("Objects")
+
+AntiToggles.AntiLava = Antis:CreateToggle({
+    Name = "Anti Lava (Cannon Island)",
+    CurrentValue = false,
+    Flag = "Lavatogglecannon",
+    Callback = function(Value)
+        local trap1 = workspace.Arena.CannonIsland["Cannon Island [OLD]"].Traps:GetChildren()[2].Hitbox
+        local trap2 = workspace.Arena.CannonIsland["Cannon Island [OLD]"].Traps.TrapEmitter.Hitbox
+
+        trap1.CanQuery = not Value and true or false
+        trap1.CanTouch = not Value and true or false
+        trap2.CanQuery = not Value and true or false
+        trap2.CanTouch = not Value and true or false
+    end,
+})
+
+
 AntiToggles.AntiCubeOfDeathToggle = Antis:CreateToggle({
     Name = "Anti Cube Of Death",
     CurrentValue = false,
@@ -1240,11 +1147,11 @@ local AutoTycoonToggle = Gloves:CreateToggle({
         
         local player = game.Players.LocalPlayer
         local char = player.Character or player.CharacterAdded:Wait()
-        
+        local plate = workspace.Arena:WaitForChild("Plate")
+
         while _G.AutoTpPlate do
             char = player.Character or player.CharacterAdded:Wait()
-            
-            -- Если игрок ещё не зашёл в арену, телепорт через touch
+            local hrp = char:WaitForChild("HumanoidRootPart")
             if not char:FindFirstChild("entered") then
                 local head = char:WaitForChild("Head")
                 local teleport = workspace.Lobby:WaitForChild("Teleport1")
@@ -1253,17 +1160,18 @@ local AutoTycoonToggle = Gloves:CreateToggle({
                 task.wait(0.5)
             end
 
-            -- Если в арену зашёл и достаточно игроков — телепорт к Plate
             if char:FindFirstChild("entered") and #game.Players:GetPlayers() >= 7 then
-                local plate = workspace.Arena:WaitForChild("Plate")
-                local hrp = char:WaitForChild("HumanoidRootPart")
                 hrp.CFrame = plate.CFrame + Vector3.new(0, 2, 0)
             end
+            if char:FindFirstChild("entered") then
+                local distance = (hrp.Position - plate.Position).Magnitude
+                if distance > 25 then
+                    hrp.CFrame = plate.CFrame + Vector3.new(0, 2, 0)
+                end
+            end
 
-            task.wait()
+            task.wait(0.2)
         end
-
-        -- Ошибка, если условия не выполнены
         if _G.AutoTpPlate == true and (not char:FindFirstChild("entered") or #game.Players:GetPlayers() < 7) then
             Rayfield:Notify({
                 Title = "Error",
@@ -1277,8 +1185,121 @@ local AutoTycoonToggle = Gloves:CreateToggle({
 })
 
 
+Gloves:CreateButton({
+	Name = "Get Admin",
+	Callback = function()
+		local teleportFunc = queueonteleport or queue_on_teleport
+		if teleportFunc then
+			teleportFunc([[
+				if not game:IsLoaded() then
+					game.Loaded:Wait()
+				end
+                if game.PlaceId ~= 16034567693 then
+                    return
+                end
+				repeat wait() until game.Players.LocalPlayer
+				wait(13.5)
+				game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(502, 76, 59)
+				task.wait(6)
+				if getconnections then
+					for i,v in next, getconnections(game.Players.LocalPlayer.Idled) do
+						v:Disable() 
+					end
+				end
+                local player = game.Players.LocalPlayer
+                local playerGui = player:WaitForChild("PlayerGui")
 
+                local screenGui = Instance.new("ScreenGui")
+                screenGui.Name = "AntiAfkGui"
+                screenGui.Parent = playerGui
 
+                local frame = Instance.new("Frame")
+                frame.Size = UDim2.new(0, 200, 0, 100)
+                frame.Position = UDim2.new(0.8, 0, 0.05, 0)
+                frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                frame.BorderSizePixel = 0
+                frame.BackgroundTransparency = 0.3
+                frame.Parent = screenGui
+                frame.AnchorPoint = Vector2.new(0.5, 0.5)
+
+                local statusLabel = Instance.new("TextLabel")
+                statusLabel.Size = UDim2.new(1, -10, 0.5, -5)
+                statusLabel.Position = UDim2.new(0, 5, 0, 5)
+                statusLabel.Text = "Anti-AFK: ON"
+                statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+                statusLabel.Font = Enum.Font.GothamBold
+                statusLabel.TextSize = 20
+                statusLabel.BackgroundTransparency = 1
+                statusLabel.Parent = frame
+
+                local timerLabel = Instance.new("TextLabel")
+                timerLabel.Size = UDim2.new(1, -10, 0.5, -5)
+                timerLabel.Position = UDim2.new(0, 5, 0.5, 0)
+                timerLabel.Text = "00:00"
+                timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                timerLabel.Font = Enum.Font.GothamBold
+                timerLabel.TextSize = 18
+                timerLabel.BackgroundTransparency = 1
+                timerLabel.Parent = frame
+
+                local secondsElapsed = 0
+
+                spawn(function()
+                    while true do
+                        secondsElapsed = secondsElapsed + 1
+                        local minutes = math.floor(secondsElapsed / 60)
+                        local seconds = secondsElapsed % 60
+                        timerLabel.Text = string.format("%02d:%02d", minutes, seconds)
+                        wait(1)
+                    end
+                end)
+
+			]])
+		end
+
+        local retro = game.ReplicatedStorage.Assets:FindFirstChild("Retro")
+        if retro and not game.Workspace:FindFirstChild("Retro") then
+            retro.Parent = game.Workspace
+            wait(1)
+        end
+        
+        local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+        char.HumanoidRootPart.CFrame = CFrame.new(-16970.99, 797.60, 4908.73)
+            Rayfield:Notify({
+            Title = "CLICK ON GREEN BUTTON",
+            Content = "CLICK ON GREEN BUTTON",
+            Duration = 10
+        })
+	end    
+})
+
+Gloves:CreateButton({
+   Name = "Get Glovel",
+   Callback = function()
+        AutoEnter()
+        task.wait(0.5)
+      local player = game.Players.LocalPlayer
+      local char = player.Character
+
+      if char and char:FindFirstChild("entered") then
+         repeat task.wait()
+            char.HumanoidRootPart.CFrame = CFrame.new(289, 13, 261)
+            game:GetService("ReplicatedStorage").DigEvent:FireServer({
+               ["index"] = 2,
+               ["cf"] = CFrame.new(42.7222366, -6.17449856, 91.5175781, -0.414533257, 1.72594355e-05, -0.91003418, -5.57037238e-05, 1, 4.4339522e-05, 0.91003418, 6.90724992e-05, -0.414533257)
+            })
+         until game.Workspace:FindFirstChild("TreasureChestFolder") 
+         and game.Workspace.TreasureChestFolder:FindFirstChild("TreasureChest")
+
+         task.wait(1)
+         game.Workspace.TreasureChestFolder.TreasureChest.OpenRemote:FireServer()
+         task.wait(0.9)
+         game.ReplicatedStorage.HumanoidDied:FireServer(char, false)
+         task.wait(3.75)
+         char.HumanoidRootPart.CFrame = workspace.BountyHunterRoom.BountyHunterBooth._configPart.CFrame * CFrame.new(-5,0,0)
+      end
+   end
+})
 
 Gloves:CreateButton({
     Name = "Get Iceskate",
@@ -1302,8 +1323,8 @@ Gloves:CreateButton({
         local player = game.Players.LocalPlayer
         local char = player.Character or player.CharacterAdded:Wait()
         local hrp = char:WaitForChild("HumanoidRootPart")
-
-        if player.leaderstats.Glove.Value == "Fort" and not game:GetService("BadgeService"):UserHasBadgeAsync(player.UserId, 4031317971987872) then
+                                                    --and not game:GetService("BadgeService"):UserHasBadgeAsync(player.UserId, 4031317971987872)        
+        if player.leaderstats.Glove.Value == "Fort" then
             if game.Players.LocalPlayer.Character:FindFirstChild("entered") == nil then
             firetouchinterest(game.Players.LocalPlayer.Character:WaitForChild("Head"), workspace.Lobby.Teleport1, 0)
             firetouchinterest(game.Players.LocalPlayer.Character:WaitForChild("Head"), workspace.Lobby.Teleport1, 1)
@@ -1460,7 +1481,7 @@ Gloves:CreateButton({
 })
 
 
--- The orb siphon has a bug ( this is not a script issue )
+-- Siphon fixed
 local OrbSection = Gloves:CreateSection("ORBS")
 
 local SiphonFarmToggle = Gloves:CreateToggle({
@@ -1484,7 +1505,6 @@ local SiphonFarmToggle = Gloves:CreateToggle({
 })
 
 
--- Phase Orb Farm
 local PhaseToggle = Gloves:CreateToggle({
     Name = "Phase Farm",
     CurrentValue = false,
@@ -1513,7 +1533,6 @@ local PhaseToggle = Gloves:CreateToggle({
     end
 })
 
--- Jet Orb Farm
 local JetToggle = Gloves:CreateToggle({
     Name = "Jet Farm",
     CurrentValue = false,
@@ -1717,16 +1736,16 @@ local Player = Players.LocalPlayer
 
 local AFK_ZONE = {
     position = Vector3.new(0, -497, 0), 
-    floorSize = Vector3.new(200, 1, 200),
+    floorSize = Vector3.new(200, 4, 200),
     wallHeight = 40,
     parts = {}
 }
 
 
 local function getRandomAFKPosition()
-    local x = math.random(5000, 25000)
-    local z = math.random(5000, 25000)
-    local y = math.random(-497, 0) 
+    local x = math.random(5000, 30000)
+    local z = math.random(5000, 30000)
+    local y = math.random(-18000, 0) 
     return Vector3.new(x, y, z)
 end
 
@@ -1780,7 +1799,7 @@ local function createAFKZone()
         wall.Parent = workspace
         AFK_ZONE.parts[config.name] = wall
     end
-
+    table.insert(SafeZones, floor)
     return floor
 end
 
@@ -1809,8 +1828,8 @@ end
 
 
 local DUO_AFK_ZONE = {
-    position = Vector3.new(50000, 0, 50000),
-    floorSize = Vector3.new(200, 1, 200),
+    position = Vector3.new(50000, -15000, 50000),
+    floorSize = Vector3.new(200, 4, 200),
     wallHeight = 40,
     parts = {}
 }
@@ -1855,7 +1874,7 @@ local function createDUOAFKZone()
         wall.Position = config.pos
         wall.Parent = workspace
     end
-
+    table.insert(SafeZones, floor)
     return floor
 end
 
@@ -1887,6 +1906,7 @@ end
 
 
 local AFKSECT = Teleport:CreateSection("Safe Spot")
+
 Teleport:CreateButton({
     Name = "Solo Safe Spot",
     Callback = function()
@@ -1895,7 +1915,7 @@ Teleport:CreateButton({
 })
 
 Teleport:CreateButton({
-    Name = "DUO Safe Spot",
+    Name = "Duo Safe Spot",
     Callback = function()
         teleportToDUOAFKZone()
     end
@@ -1932,6 +1952,9 @@ for _, sectionData in ipairs(locationsInOrder) do
         })
     end
 end
+
+
+
 
 --[[
 
@@ -2092,9 +2115,17 @@ local ReachSlider = Main:CreateSlider({
 })
 
 local Sbob = Gloves:CreateSection("BOB")
+Gloves:CreateLabel("Giang Method = Spawn ~4000 clones --> Serverhop")
+Gloves:CreateLabel("Classic = Enter Arena --> Spawn 1 clone --> Reset")
+Gloves:CreateButton({
+    Name = "Farm bob (Giang Method)",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Giangplay/Slap_Battles/main/File/Farm%20Bob.lua"))()
+    end
+})
 
 local AutoFarmBobToggle = Gloves:CreateToggle({
-    Name = "Auto Farm Bob (dont working on mobile)",
+    Name = "Auto Farm Bob (Classic)",
     CurrentValue = false,
     Flag = "AutoFarmBobToggle",
     Callback = function(Value)
@@ -2290,29 +2321,138 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
 end)
 
 
--- DANGER
-Gloves:CreateSection("! DANGER ! (BUT WORKING!)")
 
-Gloves:CreateLabel("Possible ban (if you do this on your main account = don't take any chances)")
 
-local GetAllBadges = Gloves:CreateButton({
-    Name = "Get All Badge Gloves",
-    Flag = "GABG",
-    Callback = function()
-           loadstring(game:HttpGet("https://raw.githubusercontent.com/IncognitoScripts/SlapBattles/refs/heads/main/InstantGloves"))()
-    end,
-})
 
 
 
 
 --[[
+local OtherS = Other:CreateSection("Other")
 
-FPS AND PING STATS COMPLETELY REMOVED
-reason: a lot of errors
+Other:CreateButton({
+    Name = "FlyGUIV3",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+    end
+})
+
+
+Other:CreateButton({
+    Name = "Infinity Yield",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    end
+})
+
+Other:CreateButton({
+    Name = "Dex Explorer",
+    Callback = function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/MassiveHubs/loadstring/refs/heads/main/DexXenoAndRezware'))()
+    end
+})
+
+
+
+local AntiLagButton = Other:CreateButton({
+    Name = "Anti Lag",
+    Callback = function()
+
+        _G.Settings = {
+            Players = {
+                ["Ignore Me"] = true, 
+                ["Ignore Others"] = true
+            },
+            Meshes = {
+                Destroy = false,
+                LowDetail = true
+            },
+            Images = {
+                Invisible = true,
+                LowDetail = false,
+                Destroy = false
+            },
+            Other = {
+                ["No Particles"] = true,
+                ["No Camera Effects"] = true,
+                ["No Explosions"] = true,
+                ["No Clothes"] = true,
+                ["Low Water Graphics"] = true,
+                ["No Shadows"] = true,
+                ["Low Rendering"] = true,
+                ["Low Quality Parts"] = true
+            }
+        }
+        
+
+        local success, error = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/CasperFlyModz/discord.gg-rips/main/FPSBooster.lua"))()
+            print("test")
+        end)
+        
+        if success then
+            Rayfield:Notify({
+                Title = "Success",
+                Content = "Anti-Lag activated successfully!",
+                Duration = 5,
+                Image = 4483362458
+            })
+        else
+            Rayfield:Notify({
+                Title = "Error",
+                Content = "Failed to load FPS Booster: " .. tostring(error),
+                Duration = 5,
+                Image = 4483362458
+            })
+        end
+    end
+})
+
+-- For destroying objects (platforms and other parts)
+local function kill(...)
+    local tables = {...}
+    for _, t in pairs(tables) do
+        if type(t) == "table" then
+            for _, obj in pairs(t) do
+                if obj and obj.Parent then
+                    obj:Destroy()
+                end
+            end
+            for k in pairs(t) do
+                t[k] = nil
+            end
+        end
+    end
+end
+
+
+Other:CreateSection("Destroy GUI")
+Other:CreateButton({
+    Name = "Destroy GUI",
+    Callback = function()
+    kill(AntiVoidPlatforms, SafeZones)
+        AntiVoidPlatforms = {}
+        SafeZones = {}
+        Rayfield:Destroy()
+
+        Rayfield:Notify({
+            Title = "GUI Destroyed",
+            Content = "Interface has been successfully destroyed",
+            Duration = 2
+        })
+    end
+})
 ]]
 
 
 
+local function LoadModule(url)
+    local source = game:HttpGet(url)
+    local fn = loadstring(source)
+    return fn()
+end
+
+local Other = LoadModule("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/modules/other.lua")
 
 
+Other(Window, Rayfield)

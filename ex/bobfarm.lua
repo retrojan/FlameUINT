@@ -7,7 +7,7 @@ if game.PlaceId == 6403373529 then
             end
             repeat task.wait() until game.Players.LocalPlayer
             wait(0.25)
-            loadstring(game:HttpGet(""))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/ex/bobfarm.lua"))()
         ]])
     end
 

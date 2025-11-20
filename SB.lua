@@ -38,8 +38,7 @@ Happy reading!
 
 
 
-
-
+loadstring(game:HttpGet('https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/bypass.lua'))()
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local ScriptName = "FlameUINT "

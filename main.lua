@@ -513,14 +513,13 @@ local Slappleezz = Main:CreateToggle({
     end
 })
 
---[[ WIP
+
 Main:CreateButton({
     Name = "Slapple Server hop",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/ex/ezSlapple.lua"))()
     end
 })
-]]
 
 
 

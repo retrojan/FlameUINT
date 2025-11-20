@@ -105,6 +105,33 @@ local locationsInOrder = {
     }
 }
 
+_G.GivePotion = 1
+_G.PotionChooseNuke = "Normal"
+
+
+local GetPotion = {
+	["Grug"] = {"Mushroom"}, --1
+    ["idIot"] = {"Cake Mix"}, --2
+    ["Nightmare"] = {"Dark Root","Dark Root","Dark Root"}, --3
+    ["Confusion"] = {"Red Crystal","Blue Crystal","Glowing Mushroom"}, --4 
+    ["Power"] = {"Dire Flower","Red Crystal","Wild Vine"}, --5
+    ["Paralyzing"] = {"Plane Flower","Plane Flower"}, --6
+    ["Haste"] = {"Autumn Sprout","Jade Stone"}, --7
+    ["Invisibility"] = {"Hazel Lily","Hazel Lily","Blue Crystal"}, --8
+    ["Explosion"] = {"Red Crystal","Fire Flower","Fire Flower"}, --9
+    ["Invincible"] = {"Elder Wood","Mushroom","Mushroom"}, --10
+    ["Toxic"] = {"Dark Root","Dark Root","Blood Rose","Red Crystal"}, --11
+    ["Freeze"] = {"Winter Rose","Winter Rose","Wild Vine","Blue Crystal","Glowing Mushroom"}, --12
+    ["Feather"] = {"Mushroom","Hazel Lily"}, --13
+    ["Speed"] = {"Mushroom","Mushroom","Plane Flower","Hazel Lily","Blue Crystal"}, --14
+    ["Lethal"] = {"Blood Rose","Blood Rose","Blood Rose","Blood Rose","Blood Rose","Blood Rose","Blood Rose","Blood Rose","Blood Rose","Blood Rose","Dark Root","Dark Root","Dark Root","Dark Root","Dark Root","Dark Root","Dark Root","Dark Root","Dark Root","Dark Root"}, --15
+    ["Slow"] = {"Mushroom","Mushroom","Blue Crystal","Blue Crystal","Jade Stone","Plane Flower"}, --16
+    ["Antitoxin"] = {"Blue Crystal","Glowing Mushroom","Plane Flower","Plane Flower","Elder Wood"}, --17
+    ["Corrupted Vine"] = {"Wild Vine","Wild Vine","Wild Vine","Blood Rose","Dark Root","Elder Wood","Jade Stone"}, --18
+    ["Field"] = {"Plane Flower","Plane Flower","Hazel Lily"}, --19
+    ["Lost"] = {"Elder Wood", "Elder Wood", "Elder Wood", "Blue Crystal", "Red Crystal"}, --20
+}
+
 
 
 local player = game.Players.LocalPlayer
@@ -132,7 +159,8 @@ local Main = Window:CreateTab("Main", "code")
 local Antis = Window:CreateTab("Antis", "shield")
 local Gloves = Window:CreateTab("Gloves", "hand")
 local Teleport = Window:CreateTab("Teleport", "eye")
-local Mastery = Window:CreateTab("Mastery", "flame")
+local Mastery = Window:CreateTab("Tools", "flame")
+local Places = Window:CreateTab("Places", "flame")
 
 
 
@@ -300,16 +328,20 @@ Teleport:CreateButton({
 
 
 
-
-
-
-
-
-local function ServerHop()
+local function ServerHop(old)
     pcall(function()
         game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
     end)
+    game.Players.LocalPlayer.OnTeleport:Connect(function(s)
+        if s == Enum.TeleportState.Started then
+            game.Loaded:Wait()
+            if game.JobId == old then
+                ServerHop(old)
+            end
+        end
+    end)
 end
+
 
 
 --[[ DONT WORKING(New api roblox?)
@@ -443,6 +475,56 @@ local idkez Main:CreateButton({
     end
 })
     
+--AUTO GET EMOTES
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local root = character:WaitForChild("HumanoidRootPart")
+local EP
+
+local Animations = {
+    Floss = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Floss),
+    Groove = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Groove),
+    Headless = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Headless),
+    Helicopter = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Helicopter),
+    Kick = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Kick),
+    L = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.L),
+    Laugh = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Laugh),
+    Parker = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Parker),
+    Spasm = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Spasm),
+    Thriller = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Thriller)
+}
+
+player.Chatted:Connect(function(msg)
+    if not character:FindFirstChild("HumanoidRootPart") then return end
+    local lowerMsg = string.lower(msg)
+    for name, anim in pairs(Animations) do
+        if lowerMsg == "/e "..string.lower(name) then
+            anim:Play()
+            EP = root.Position
+        end
+    end
+end)
+
+game:GetService("RunService").Heartbeat:Connect(function()
+    if EP and character:FindFirstChild("HumanoidRootPart") then
+        local isPlaying = false
+        for _, anim in pairs(Animations) do
+            if anim.IsPlaying then
+                isPlaying = true
+                break
+            end
+        end
+        if isPlaying then
+            local magnitude = (root.Position - EP).Magnitude
+            if magnitude > 1 then
+                for _, anim in pairs(Animations) do
+                    anim:Stop()
+                end
+            end
+        end
+    end
+end)
 
 
 
@@ -513,13 +595,14 @@ local Slappleezz = Main:CreateToggle({
     end
 })
 
-
+--[[ WIP
 Main:CreateButton({
     Name = "Slapple Server hop",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/ex/ezSlapple.lua"))()
     end
 })
+]]
 
 
 
@@ -1017,6 +1100,112 @@ AntiToggles.AntiCubeOfDeathToggle = Antis:CreateToggle({
     end
 })
 
+local OrbSection = Gloves:CreateSection("ORBS")
+
+local SiphonFarmToggle = Gloves:CreateToggle({
+    Name = "Siphon Farm",
+    CurrentValue = false,
+    Flag = "SiphonFarmToggle",
+    Callback = function(Value)
+        _G.Siphonfarm = Value
+        while _G.Siphonfarm do
+            if game.Workspace:FindFirstChild("SiphonOrb") then
+                for _, v in pairs(game.Workspace:GetChildren()) do
+                    if v.Name == "SiphonOrb" then
+                        firetouchinterest(game.Players.LocalPlayer.Character:WaitForChild("Head"), v, 0)
+                        firetouchinterest(game.Players.LocalPlayer.Character:WaitForChild("Head"), v, 1)
+                    end
+                end
+            end
+            task.wait()
+        end
+    end
+})
+
+
+local PhaseToggle = Gloves:CreateToggle({
+    Name = "Phase Farm",
+    CurrentValue = false,
+    Flag = "PhaseToggle",
+    Callback = function(Value)
+        _G.PhaseFarm = Value
+
+        if Value then
+            task.spawn(function()
+                while _G.PhaseFarm do
+                    local character = game.Players.LocalPlayer.Character
+                    if character and character:FindFirstChild("Head") then
+                        for _, v in pairs(game.Workspace:GetChildren()) do
+                            if not _G.PhaseFarm then break end
+                            if v.Name == "PhaseOrb" then
+                                firetouchinterest(character.Head, v, 0)
+                                task.wait()
+                                firetouchinterest(character.Head, v, 1)
+                            end
+                        end
+                    end
+                    task.wait(0.1)
+                end
+            end)
+        end
+    end
+})
+
+local JetToggle = Gloves:CreateToggle({
+    Name = "Jet Farm",
+    CurrentValue = false,
+    Flag = "JetToggle",
+    Callback = function(Value)
+        _G.JetFarm = Value
+
+        if Value then
+            task.spawn(function()
+                while _G.JetFarm do
+                    local character = game.Players.LocalPlayer.Character
+                    if character and character:FindFirstChild("Head") then
+                        for _, v in pairs(game.Workspace:GetChildren()) do
+                            if not _G.JetFarm then break end
+                            if v.Name == "JetOrb" then
+                                firetouchinterest(character.Head, v, 0)
+                                task.wait()
+                                firetouchinterest(character.Head, v, 1)
+                            end
+                        end
+                    end
+                    task.wait(0.1)
+                end
+            end)
+        end
+    end
+})
+
+
+
+local PhaseJetGlitchToggle = Gloves:CreateToggle({
+    Name = "Glitch Farm",
+    CurrentValue = false,
+    Flag = "PhaseJetGlitchToggle",
+    Callback = function(Value)
+        _G.Glitchfarm = Value
+        
+        if Value then
+            spawn(function()
+                while _G.Glitchfarm do
+                    if game.Players.LocalPlayer.leaderstats.Glove.Value == "Error" then
+                        if game.Workspace:FindFirstChild("JetOrb") or game.Workspace:FindFirstChild("PhaseOrb") then
+                            for _, v in pairs(game.Workspace:GetChildren()) do
+                                if v.Name == "JetOrb" or v.Name == "PhaseOrb" then
+                                    game.ReplicatedStorage.Errorhit:FireServer(v)
+                                end
+                            end
+                        end
+                    end
+                    task.wait()
+                end
+            end)
+        end
+    end
+})
 
 local AutoSection = Gloves:CreateSection("AUTO")
 local AutoTycoonToggle = Gloves:CreateToggle({
@@ -1064,6 +1253,39 @@ local AutoTycoonToggle = Gloves:CreateToggle({
         end
     end
 })
+
+
+Gloves:CreateButton({
+	Name = "Get Water",
+	Callback = function()
+		local player = game.Players.LocalPlayer
+		if player.leaderstats.Glove.Value ~= "Alchemist" then
+			warn("You don't have Alchemist equipped")
+			return
+		end
+
+		for potionName, ingredients in pairs(GetPotion) do
+			if not game.Workspace:FindFirstChild(player.Name.."'s Cauldron") then
+				game:GetService("ReplicatedStorage").GeneralAbility:FireServer()
+			end
+
+			for b = 1, _G.GivePotion do
+				if not game.Workspace:FindFirstChild(player.Name.."'s Cauldron") then
+					game:GetService("ReplicatedStorage").GeneralAbility:FireServer()
+				end
+
+				for i = 1, #ingredients do
+					game.ReplicatedStorage:WaitForChild("AlchemistEvent"):FireServer(unpack({"AddItem", ingredients[i]}))
+					game.ReplicatedStorage:WaitForChild("AlchemistEvent"):FireServer(unpack({"MixItem", ingredients[i]}))
+				end
+
+				game.ReplicatedStorage:WaitForChild("AlchemistEvent"):FireServer(unpack({"BrewPotion"}))
+				task.wait()
+			end
+		end
+	end
+})
+
 
 
 Gloves:CreateButton({
@@ -1335,23 +1557,11 @@ Gloves:CreateButton({
     Name = "Get Lamp",
     Callback = function()
         if game.Players.LocalPlayer.leaderstats.Glove.Value == "ZZZZZZZ" and not game:GetService("BadgeService"):UserHasBadgeAsync(game.Players.LocalPlayer.UserId, 490455814138437) then
-            Rayfield:Notify({
-                Title = "Free Lamp",
-                Content = "Starting to get free lamp...",
-                Duration = 3
-            })
-            
             task.spawn(function()
                 repeat 
                     task.wait()
                     game:GetService("ReplicatedStorage").nightmare:FireServer("LightBroken")
                 until game:GetService("BadgeService"):UserHasBadgeAsync(game.Players.LocalPlayer.UserId, 490455814138437)
-                
-                Rayfield:Notify({
-                    Title = "Success",
-                    Content = "Free lamp obtained successfully!",
-                    Duration = 5
-                })
             end)
         else
             Rayfield:Notify({
@@ -1363,114 +1573,13 @@ Gloves:CreateButton({
     end 
 })
 
-
--- Siphon fixed
-local OrbSection = Gloves:CreateSection("ORBS")
-
-local SiphonFarmToggle = Gloves:CreateToggle({
-    Name = "Siphon Farm",
-    CurrentValue = false,
-    Flag = "SiphonFarmToggle",
-    Callback = function(Value)
-        _G.Siphonfarm = Value
-        while _G.Siphonfarm do
-            if game.Workspace:FindFirstChild("SiphonOrb") then
-                for _, v in pairs(game.Workspace:GetChildren()) do
-                    if v.Name == "SiphonOrb" then
-                        firetouchinterest(game.Players.LocalPlayer.Character:WaitForChild("Head"), v, 0)
-                        firetouchinterest(game.Players.LocalPlayer.Character:WaitForChild("Head"), v, 1)
-                    end
-                end
-            end
-            task.wait()
-        end
-    end
+--[[
+Gloves:CreateButton({
+    Name = "Get Avatar, Hunter or Relude",
+    Callback = function()
+        game:GetService("TeleportService"):Teleport()
 })
-
-
-local PhaseToggle = Gloves:CreateToggle({
-    Name = "Phase Farm",
-    CurrentValue = false,
-    Flag = "PhaseToggle",
-    Callback = function(Value)
-        _G.PhaseFarm = Value
-
-        if Value then
-            task.spawn(function()
-                while _G.PhaseFarm do
-                    local character = game.Players.LocalPlayer.Character
-                    if character and character:FindFirstChild("Head") then
-                        for _, v in pairs(game.Workspace:GetChildren()) do
-                            if not _G.PhaseFarm then break end
-                            if v.Name == "PhaseOrb" then
-                                firetouchinterest(character.Head, v, 0)
-                                task.wait()
-                                firetouchinterest(character.Head, v, 1)
-                            end
-                        end
-                    end
-                    task.wait(0.1)
-                end
-            end)
-        end
-    end
-})
-
-local JetToggle = Gloves:CreateToggle({
-    Name = "Jet Farm",
-    CurrentValue = false,
-    Flag = "JetToggle",
-    Callback = function(Value)
-        _G.JetFarm = Value
-
-        if Value then
-            task.spawn(function()
-                while _G.JetFarm do
-                    local character = game.Players.LocalPlayer.Character
-                    if character and character:FindFirstChild("Head") then
-                        for _, v in pairs(game.Workspace:GetChildren()) do
-                            if not _G.JetFarm then break end
-                            if v.Name == "JetOrb" then
-                                firetouchinterest(character.Head, v, 0)
-                                task.wait()
-                                firetouchinterest(character.Head, v, 1)
-                            end
-                        end
-                    end
-                    task.wait(0.1)
-                end
-            end)
-        end
-    end
-})
-
-
-
-local PhaseJetGlitchToggle = Gloves:CreateToggle({
-    Name = "Glitch Farm",
-    CurrentValue = false,
-    Flag = "PhaseJetGlitchToggle",
-    Callback = function(Value)
-        _G.Glitchfarm = Value
-        
-        if Value then
-            spawn(function()
-                while _G.Glitchfarm do
-                    if game.Players.LocalPlayer.leaderstats.Glove.Value == "Error" then
-                        if game.Workspace:FindFirstChild("JetOrb") or game.Workspace:FindFirstChild("PhaseOrb") then
-                            for _, v in pairs(game.Workspace:GetChildren()) do
-                                if v.Name == "JetOrb" or v.Name == "PhaseOrb" then
-                                    game.ReplicatedStorage.Errorhit:FireServer(v)
-                                end
-                            end
-                        end
-                    end
-                    task.wait()
-                end
-            end)
-        end
-    end
-})
+]]
 
 
 

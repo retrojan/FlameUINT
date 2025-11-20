@@ -1,4 +1,4 @@
-if game.PlaceId == 6403373529 or game.PlaceId == 9015014224 or game.PlaceId == 124596094333302
+if game.PlaceId == 6403373529 or game.PlaceId == 9015014224 or game.PlaceId == 124596094333302 then
     local teleportFunc = queueonteleport or queue_on_teleport or syn and syn.queue_on_teleport
     if teleportFunc then
         teleportFunc([[

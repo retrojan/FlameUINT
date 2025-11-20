@@ -55,11 +55,6 @@ if game.PlaceId == 6403373529 or game.PlaceId == 9015014224 or game.PlaceId == 1
         game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
 
     else
-        game:GetService("StarterGui"):SetCore("SendNotification",{
-            Title = "🔥FlameUINT",
-            Text = "U have bob!.",
-            Icon = "rbxassetid://7733658504",
-            Duration = 10
-        })
+        return
     end
 end

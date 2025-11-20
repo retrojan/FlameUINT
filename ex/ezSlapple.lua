@@ -2,26 +2,19 @@ if game.PlaceId == 6403373529 then
 
     local lp = game.Players.LocalPlayer
     local ts = game:GetService("TeleportService")
-
-    -- Старый JobId для проверки при хопе
     local oldJob = game.JobId
 
-    -- Код, который выполнится после телепорта
     local q = queueonteleport or queue_on_teleport or (syn and syn.queue_on_teleport)
     if q then
         q([[
             if not game:IsLoaded() then game.Loaded:Wait() end
             repeat task.wait() until game.Players.LocalPlayer
             wait(0.2)
-
-            -- Если попали на тот же сервер — повторяем телепорт
             if game.JobId == "]]..oldJob..[[" then
                 local ts = game:GetService("TeleportService")
                 local lp = game.Players.LocalPlayer
                 ts:Teleport(game.PlaceId, lp)
             end
-
-            -- Загружаем скрипт фарма
             loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/ex/ezSlapple.lua"))()
         ]])
     end
@@ -48,7 +41,6 @@ if game.PlaceId == 6403373529 then
         end
 
         task.wait(0.7)
-        -- Телепорт на новый сервер
         ts:Teleport(game.PlaceId, lp)
     end
 

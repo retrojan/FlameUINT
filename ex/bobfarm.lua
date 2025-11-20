@@ -12,12 +12,6 @@ if game.PlaceId == 6403373529 or game.PlaceId == 9015014224 or game.PlaceId == 1
     end
 
     if not game:GetService("BadgeService"):UserHasBadgeAsync(game.Players.LocalPlayer.UserId, 2125950512) then
-        game:GetService("StarterGui"):SetCore("SendNotification",{
-            Title = "[ Giang ]",
-            Text = "📢 [ You have not issued Bob, and not badge bob ] 🇻🇳.",
-            Icon = "rbxassetid://7733658504",
-            Duration = 10
-        })
 
         fireclickdetector(workspace.Lobby.Replica.ClickDetector)
         wait(0.25)
@@ -62,8 +56,8 @@ if game.PlaceId == 6403373529 or game.PlaceId == 9015014224 or game.PlaceId == 1
 
     else
         game:GetService("StarterGui"):SetCore("SendNotification",{
-            Title = "[ Giang ]",
-            Text = "📢 [ You Got Badge Bob, Meaning you already have Bob ] 🇻🇳.",
+            Title = "🔥FlameUINT",
+            Text = "U have bob!.",
             Icon = "rbxassetid://7733658504",
             Duration = 10
         })

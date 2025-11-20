@@ -37,23 +37,23 @@ Happy reading!
 ]]
 
 
+
+
+
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local ScriptName = "FlameUINT "
-local ScriptVersion = "14.3"
+local ScriptVersion = "15.10"
 local ScriptDev = "ReTrojan"
 
 local AntiToggles = {}
 local AntiVoidPlatforms = {}
 local SafeZones = {}
 
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-
-if game.PlaceId ~= 6403373529 and game.PlaceId ~= 9015014224 and game.PlaceId ~= 124596094333302 then
-    return
-end
 
 
 
-
+if game.PlaceId == 6403373529 or game.PlaceId == 9015014224 or game.PlaceId == 124596094333302 then
 
 
 
@@ -82,79 +82,6 @@ local Window = Rayfield:CreateWindow({
 })
 
 
-
-
-
-
-local player = game.Players.LocalPlayer
-local leaderstats = player:WaitForChild("leaderstats")
-local Slaps = leaderstats:WaitForChild("Slaps")
-local Glove = leaderstats:WaitForChild("Glove")
-
-local function AutoEnter()
-    local char = player.Character or player.CharacterAdded:Wait()
-    if not char:FindFirstChild("entered") then
-        local head = char:WaitForChild("Head")
-        local teleport = workspace.Lobby:WaitForChild("Teleport1")
-
-        firetouchinterest(head, teleport, 0)
-        firetouchinterest(head, teleport, 1)
-    end
-end
-
-
-
-
-
---[[ - REMOVED 
-     - Reason: NEW BYPASS
-local function SetupBypass()
-    local function safeHook()
-        local success, result = pcall(function()
-            local bypass
-            bypass = hookmetamethod(game, "__namecall", function(self, ...)
-                local method = getnamecallmethod()
-                if method == "FireServer" then
-                    if self == game.ReplicatedStorage:FindFirstChild("Ban") then
-                        return nil
-                    elseif self == game.ReplicatedStorage:FindFirstChild("AdminGUI") then
-                        return nil
-                    elseif self == game.ReplicatedStorage:FindFirstChild("WalkSpeedChanged") then
-                        return nil
-                    end
-                end
-                return bypass(self, ...)
-            end)
-            return bypass
-        end)
-        
-        if not success then
-            warn("Bypass hook failed:", result)
-        end
-    end
-
-    task.spawn(safeHook)
-end
-
-SetupBypass()
-]]
-
-
-
-
-
-local Info = Window:CreateTab("Info", "book")
-local Main = Window:CreateTab("Main", "code")
-local Antis = Window:CreateTab("Antis", "shield")
-local Gloves = Window:CreateTab("Gloves", "hand")
-local Teleport = Window:CreateTab("Teleport", "eye")
-local Mastery = Window:CreateTab("Mastery", "flame")
-
-
-
-
-
-
 local locationsInOrder = {
     {
         section = "Islands",
@@ -178,6 +105,42 @@ local locationsInOrder = {
         }
     }
 }
+
+
+
+local player = game.Players.LocalPlayer
+local leaderstats = player:WaitForChild("leaderstats")
+local Slaps = leaderstats:WaitForChild("Slaps")
+local Glove = leaderstats:WaitForChild("Glove")
+
+local function AutoEnter()
+    local char = player.Character or player.CharacterAdded:Wait()
+    if not char:FindFirstChild("entered") then
+        local head = char:WaitForChild("Head")
+        local teleport = workspace.Lobby:WaitForChild("Teleport1")
+
+        firetouchinterest(head, teleport, 0)
+        firetouchinterest(head, teleport, 1)
+    end
+end
+
+
+
+
+
+local Info = Window:CreateTab("Info", "book")
+local Main = Window:CreateTab("Main", "code")
+local Antis = Window:CreateTab("Antis", "shield")
+local Gloves = Window:CreateTab("Gloves", "hand")
+local Teleport = Window:CreateTab("Teleport", "eye")
+local Mastery = Window:CreateTab("Mastery", "flame")
+
+
+
+
+
+
+
 
 
 Info:CreateSection("Script")
@@ -343,14 +306,14 @@ Teleport:CreateButton({
 
 
 
-local Players = game:GetService("Players")
-local TeleportService = game:GetService("TeleportService")
-local HttpService = game:GetService("HttpService")
-local BadgeService = game:GetService("BadgeService")
-local LocalPlayer = Players.LocalPlayer
-local PlaceId = 6403373529
+local function ServerHop()
+    pcall(function()
+        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
+    end)
+end
 
 
+--[[ DONT WORKING(New api roblox?)
 local function ServerHop()
 
     local placeId = game.PlaceId
@@ -384,13 +347,8 @@ local function ServerHop()
     end
 end
 
-
-local freezeEnabled = false
-local originalMaxSlopeAngle = 89 
-
+]]
 local function toggleCharacterFreeze(state)
-    freezeEnabled = state
-    
     local character = game.Players.LocalPlayer.Character
     if not character then return end
     
@@ -399,33 +357,26 @@ local function toggleCharacterFreeze(state)
     
     if humanoid and root then
         if state then
-
-            originalMaxSlopeAngle = humanoid.MaxSlopeAngle
-            
-
             root.Anchored = true
-            humanoid.MaxSlopeAngle = 0 
+            humanoid.MaxSlopeAngle = 0
         else
-
             root.Anchored = false
-            humanoid.MaxSlopeAngle = originalMaxSlopeAngle
+            humanoid.MaxSlopeAngle = 89
         end
     end
 end
 
-
 game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
-    if freezeEnabled then
-        task.wait(0.1)
-        local humanoid = character:WaitForChild("Humanoid")
-        local root = character:WaitForChild("HumanoidRootPart")
-        
-        if humanoid and root then
-            root.Anchored = true
-            humanoid.MaxSlopeAngle = 0
-        end
+    task.wait(0.1)
+    local humanoid = character:WaitForChild("Humanoid")
+    local root = character:WaitForChild("HumanoidRootPart")
+    
+    if humanoid and root and root.Anchored then
+        root.Anchored = true
+        humanoid.MaxSlopeAngle = 0
     end
 end)
+
 
 local SUtility= Main:CreateSection("Utility")
 
@@ -563,20 +514,19 @@ local Slappleezz = Main:CreateToggle({
     end
 })
 
-
+--[[ WIP
 Main:CreateButton({
     Name = "Slapple Server hop",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/ex/ezSlapple.lua"))()
     end
 })
+]]
 
 
 
 
-
-
-
+----------
 
 local BrickFarmSection = Gloves:CreateSection("TRAP")
 
@@ -589,11 +539,11 @@ local BrickFarmConfig = {
         Ultra = 1.1
     }
 }
+
 local lastBrickTime = 0
-local brickCooldown = 1.1 
+local brickCooldown = 1.1
 
-
-local ModeDropdown = Gloves:CreateDropdown({
+Gloves:CreateDropdown({
     Name = "Farm Mode",
     CurrentOption = "Slow",
     Options = {"Slow", "Fast", "Ultra"},
@@ -610,8 +560,9 @@ local BrickFarmToggle = Gloves:CreateToggle({
     Flag = "BrickFarmToggle",
     Callback = function(Value)
         BrickFarmConfig.Enabled = Value
-        
-        local glove = game.Players.LocalPlayer.leaderstats.Glove.Value
+        local player = game.Players.LocalPlayer
+        local glove = player.leaderstats.Glove.Value
+
         if Value and glove ~= "Brick" then
             Rayfield:Notify({
                 Title = "Brick Farm",
@@ -622,33 +573,34 @@ local BrickFarmToggle = Gloves:CreateToggle({
             return
         end
 
-
         if Value then
             coroutine.wrap(function()
-                while BrickFarmConfig.Enabled and game.Players.LocalPlayer.leaderstats.Glove.Value == "Brick" do
+                while BrickFarmConfig.Enabled do
+                    if player.leaderstats.Glove.Value ~= "Brick" then
+                        Rayfield:Notify({
+                            Title = "Brick Farm",
+                            Content = "Brick glove was unequipped!",
+                            Duration = 5
+                        })
+                        BrickFarmToggle:Set(false)
+                        break
+                    end
+
                     local interval = BrickFarmConfig.Intervals[BrickFarmConfig.Mode]
                     local currentTime = tick()
-                    
+
                     if currentTime - lastBrickTime >= brickCooldown then
                         if BrickFarmConfig.Mode == "Slow" then
                             game:GetService("VirtualInputManager"):SendKeyEvent(true, "E", false, game)
-                            lastBrickTime = currentTime
                         else
                             local success, err = pcall(function()
                                 game:GetService("ReplicatedStorage").lbrick:FireServer()
-                                lastBrickTime = currentTime
-                                
-                                task.wait(0.1) 
-                                local gui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("BRICKCOUNT")
-                                if gui and gui:FindFirstChild("ImageLabel") then
-                                    local textLabel = gui.ImageLabel:FindFirstChild("TextLabel")
-                                    if textLabel then
-                                        local currentCount = tonumber(textLabel.Text) or 0
-                                        textLabel.Text = tostring(currentCount + 1)
-                                    end
+                                local gui = player.PlayerGui:FindFirstChild("BRICKCOUNT")
+                                if gui and gui.ImageLabel and gui.ImageLabel:FindFirstChild("TextLabel") then
+                                    local textLabel = gui.ImageLabel.TextLabel
+                                    textLabel.Text = tostring((tonumber(textLabel.Text) or 0) + 1)
                                 end
                             end)
-                            
                             if not success then
                                 Rayfield:Notify({
                                     Title = "Brick Farm Error",
@@ -657,18 +609,10 @@ local BrickFarmToggle = Gloves:CreateToggle({
                                 })
                             end
                         end
+                        lastBrickTime = currentTime
                     end
-                    
+
                     task.wait(interval)
-                end
-                
-                if BrickFarmConfig.Enabled and game.Players.LocalPlayer.leaderstats.Glove.Value ~= "Brick" then
-                    Rayfield:Notify({
-                        Title = "Brick Farm",
-                        Content = "Brick glove was unequipped!",
-                        Duration = 5
-                    })
-                    BrickFarmToggle:Set(false)
                 end
             end)()
         end
@@ -676,68 +620,7 @@ local BrickFarmToggle = Gloves:CreateToggle({
 })
 
 
-local function setupBrickTracking()
-    local player = game.Players.LocalPlayer
-    local lastBrickCount = 0
-    
-
-    local function checkBrickCount()
-        local gui = player.PlayerGui:FindFirstChild("BRICKCOUNT")
-        if gui and gui:FindFirstChild("ImageLabel") then
-            local textLabel = gui.ImageLabel:FindFirstChild("TextLabel")
-            if textLabel then
-                local currentCount = tonumber(textLabel.Text) or 0
-                if currentCount > lastBrickCount then
-                    lastBrickCount = currentCount
-                    return true
-                end
-            end
-        end
-        return false
-    end
-    
-
-    task.spawn(function()
-        while BrickFarmConfig.Enabled do
-            if checkBrickCount() then
-                lastBrickTime = tick()
-            end
-            task.wait(0.1)
-        end
-    end)
-end
-
-
-local function setupGloveTracking()
-    local player = game.Players.LocalPlayer
-    if not player then return end
-
-    local leaderstats = player:FindFirstChild("leaderstats")
-    if not leaderstats then return end
-
-    local gloveStat = leaderstats:FindFirstChild("Glove")
-    if not gloveStat then return end
-
-    local function onGloveChanged()
-        if BrickFarmConfig.Enabled and gloveStat.Value ~= "Brick" then
-            Rayfield:Notify({
-                Title = "Brick Farm",
-                Content = "Brick glove was unequipped!",
-                Duration = 5
-            })
-            BrickFarmToggle:Set(false)
-        end
-    end
-    
-    gloveStat:GetPropertyChangedSignal("Value"):Connect(onGloveChanged)
-    onGloveChanged() 
-end
-
-
-coroutine.wrap(setupGloveTracking)()
-
-
-
+------------
 
 local SAntis = Antis:CreateSection("Buttons")
 Antis:CreateButton({
@@ -1316,6 +1199,8 @@ Gloves:CreateButton({
         end
     end
 })
+
+
 
 Gloves:CreateButton({
     Name = "Get Plank",
@@ -2012,23 +1897,37 @@ end)
 
 
 
-local OrbSection = Main:CreateSection("Slap Aura (BETA)")
-local SlapAuraToggle = Main:CreateToggle({
-    Name = "Slap Aura (BETA)",
+local OrbSection = Main:CreateSection("Slap Aura")
+local AuraToggle = Main:CreateToggle({
+    Name = "Slap Aura",
     CurrentValue = false,
-    Flag = "SlapAuraToggle",
+    Flag = "AuraToggle",
     Callback = function(Value)
-        SlapAura = Value
+        _G.SlapAuraEnabled = Value
+        _G.HitboxesEnabled = Value
+        
         if Value then
+            
+            if _G.ReachValue == nil then
+                _G.ReachValue = 10
+            end
+            
+            
             spawn(function()
-                while SlapAura and SlapAuraFriend == "Fight" do
-                    for i,v in pairs(game.Players:GetPlayers()) do
+                while _G.SlapAuraEnabled do
+                    for i, v in pairs(game.Players:GetPlayers()) do
                         if v ~= game.Players.LocalPlayer then
-                            local character = v.Character or v.CharacterAdded:Wait()
+                            local character = v.Character
                             local localChar = game.Players.LocalPlayer.Character
                             
                             if character and localChar and localChar:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("HumanoidRootPart") then
-                                if character:FindFirstChild("entered") and character.Ragdolled.Value == false and character:FindFirstChild("Torso") and character.Torso.Anchored ~= false and character:FindFirstChild("Mirage") == nil then
+                                local canSlap = character:FindFirstChild("entered") and 
+                                              character.Ragdolled.Value == false and 
+                                              character:FindFirstChild("Torso") and 
+                                              character.Torso.Anchored ~= false and 
+                                              character:FindFirstChild("Mirage") == nil
+                                
+                                if canSlap then
                                     local Magnitude = (localChar.HumanoidRootPart.Position - character.HumanoidRootPart.Position).Magnitude
                                     if _G.ReachValue and _G.ReachValue >= Magnitude then
                                         game.ReplicatedStorage.KSHit:FireServer(character:WaitForChild("HumanoidRootPart"), true)
@@ -2037,64 +1936,62 @@ local SlapAuraToggle = Main:CreateToggle({
                             end
                         end
                     end
-                    task.wait(0.2)
+                    task.wait(0.15)
                 end
             end)
             
-
+            
             spawn(function()
-                while SlapAura and SlapAuraFriend == "Not Fight" do
-                    for i,v in pairs(game.Players:GetPlayers()) do
+                while _G.HitboxesEnabled do
+                    for i, v in pairs(game.Players:GetPlayers()) do
                         if v ~= game.Players.LocalPlayer then
-                            local character = v.Character or v.CharacterAdded:Wait()
-                            local localChar = game.Players.LocalPlayer.Character
-                            
-                            if character and localChar and localChar:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("HumanoidRootPart") then
-                                if character:FindFirstChild("entered") and not game.Players.LocalPlayer:IsFriendsWith(v.UserId) and character.Ragdolled.Value == false and character:FindFirstChild("Torso") and character.Torso.Anchored ~= false and character:FindFirstChild("Mirage") == nil then
-                                    local Magnitude = (localChar.HumanoidRootPart.Position - character.HumanoidRootPart.Position).Magnitude
-                                    if _G.ReachValue and _G.ReachValue >= Magnitude then
-                                        game.ReplicatedStorage.KSHit:FireServer(character:WaitForChild("HumanoidRootPart"), true)
+                            local character = v.Character
+                            if character and character:FindFirstChild("HumanoidRootPart") then
+                                
+                                local hitboxSize = _G.ReachValue or 10
+                                
+                                character.HumanoidRootPart.Size = Vector3.new(hitboxSize * 0.8, hitboxSize * 0.8, hitboxSize * 0.8)
+                                character.HumanoidRootPart.Transparency = 0.9 -- Почти прозрачная
+                                character.HumanoidRootPart.Material = Enum.Material.Neon
+                                character.HumanoidRootPart.Color = Color3.fromRGB(255, 255, 255)
+                                character.HumanoidRootPart.BrickColor = BrickColor.new("Institutional white")
+                                
+                                if not character.HumanoidRootPart:FindFirstChild("HitboxOutline") then
+                                    
+                                    local selectionBox = Instance.new("SelectionBox")
+                                    selectionBox.Name = "HitboxOutline"
+                                    selectionBox.Adornee = character.HumanoidRootPart
+                                    selectionBox.LineThickness = 0.05
+                                    selectionBox.Color3 = Color3.fromRGB(255, 255, 255)
+                                    selectionBox.Transparency = 0
+                                    selectionBox.Parent = character.HumanoidRootPart
+                                else
+
+                                    local selectionBox = character.HumanoidRootPart:FindFirstChild("HitboxOutline")
+                                    if selectionBox then
+                                        selectionBox.Adornee = character.HumanoidRootPart
                                     end
                                 end
                             end
                         end
                     end
-                    task.wait(0.2)
-                end
-            end)
-        end
-    end
-})
-
-
-local HitboxPlayerToggle = Main:CreateToggle({
-    Name = "Hitbox Player",
-    CurrentValue = false,
-    Flag = "HitboxPlayerToggle",
-    Callback = function(Value)
-        _G.HitboxPlayer = Value
-        if Value then
-            spawn(function()
-                while _G.HitboxPlayer do
-                    for i,v in pairs(game.Players:GetPlayers()) do
-                        if v ~= game.Players.LocalPlayer then
-                            local character = v.Character
-                            if character and character:FindFirstChild("HumanoidRootPart") then
-                                character.HumanoidRootPart.Size = Vector3.new(_G.ReachValue, _G.ReachValue, _G.ReachValue)
-                                character.HumanoidRootPart.Transparency = 0.75
-                            end
-                        end
-                    end
-                    task.wait(0.5)
+                    task.wait(0.3)
                 end
             end)
         else
-            for i,v in pairs(game.Players:GetPlayers()) do
+            for i, v in pairs(game.Players:GetPlayers()) do
                 if v ~= game.Players.LocalPlayer then
                     local character = v.Character
                     if character and character:FindFirstChild("HumanoidRootPart") then
                         character.HumanoidRootPart.Size = Vector3.new(2, 2, 1)
                         character.HumanoidRootPart.Transparency = 1
+                        character.HumanoidRootPart.Material = Enum.Material.Plastic
+                        character.HumanoidRootPart.Color = Color3.fromRGB(255, 255, 255)
+                        
+                        local outline = character.HumanoidRootPart:FindFirstChild("HitboxOutline")
+                        if outline then
+                            outline:Destroy()
+                        end
                     end
                 end
             end
@@ -2104,26 +2001,39 @@ local HitboxPlayerToggle = Main:CreateToggle({
 
 local ReachSlider = Main:CreateSlider({
     Name = "Reach & Hitbox Size",
-    Range = {2, 30},
+    Range = {5, 20},
     Increment = 1,
     Suffix = "studs",
-    CurrentValue = 10,
-    Flag = "ReachSlider",
+    CurrentValue = _G.ReachValue,
+    Flag = "ReachSliderez",
     Callback = function(Value)
         _G.ReachValue = Value
+        if _G.HitboxesEnabled then
+            for i, v in pairs(game.Players:GetPlayers()) do
+                if v ~= game.Players.LocalPlayer then
+                    local character = v.Character
+                    if character and character:FindFirstChild("HumanoidRootPart") then
+                        character.HumanoidRootPart.Size = Vector3.new(Value * 0.8, Value * 0.8, Value * 0.8)
+                    end
+                end
+            end
+        end
     end
 })
+
+
+
+
+
 
 local Sbob = Gloves:CreateSection("BOB")
-Gloves:CreateLabel("Giang Method = Spawn ~4000 clones --> Serverhop")
-Gloves:CreateLabel("Classic = Enter Arena --> Spawn 1 clone --> Reset")
 Gloves:CreateButton({
-    Name = "Farm bob (Giang Method)",
+    Name = "Farm bob (NEW)",
     Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Giangplay/Slap_Battles/main/File/Farm%20Bob.lua"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/ex/bobfarm.lua"))()
     end
 })
-
+--[[
 local AutoFarmBobToggle = Gloves:CreateToggle({
     Name = "Auto Farm Bob (Classic)",
     CurrentValue = false,
@@ -2210,7 +2120,7 @@ local AutoFarmBobToggle = Gloves:CreateToggle({
         end
     end
 })
-
+]]
 
 
 
@@ -2320,132 +2230,6 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
     end
 end)
 
-
-
-
-
-
-
-
---[[
-local OtherS = Other:CreateSection("Other")
-
-Other:CreateButton({
-    Name = "FlyGUIV3",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-    end
-})
-
-
-Other:CreateButton({
-    Name = "Infinity Yield",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-    end
-})
-
-Other:CreateButton({
-    Name = "Dex Explorer",
-    Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/MassiveHubs/loadstring/refs/heads/main/DexXenoAndRezware'))()
-    end
-})
-
-
-
-local AntiLagButton = Other:CreateButton({
-    Name = "Anti Lag",
-    Callback = function()
-
-        _G.Settings = {
-            Players = {
-                ["Ignore Me"] = true, 
-                ["Ignore Others"] = true
-            },
-            Meshes = {
-                Destroy = false,
-                LowDetail = true
-            },
-            Images = {
-                Invisible = true,
-                LowDetail = false,
-                Destroy = false
-            },
-            Other = {
-                ["No Particles"] = true,
-                ["No Camera Effects"] = true,
-                ["No Explosions"] = true,
-                ["No Clothes"] = true,
-                ["Low Water Graphics"] = true,
-                ["No Shadows"] = true,
-                ["Low Rendering"] = true,
-                ["Low Quality Parts"] = true
-            }
-        }
-        
-
-        local success, error = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/CasperFlyModz/discord.gg-rips/main/FPSBooster.lua"))()
-            print("test")
-        end)
-        
-        if success then
-            Rayfield:Notify({
-                Title = "Success",
-                Content = "Anti-Lag activated successfully!",
-                Duration = 5,
-                Image = 4483362458
-            })
-        else
-            Rayfield:Notify({
-                Title = "Error",
-                Content = "Failed to load FPS Booster: " .. tostring(error),
-                Duration = 5,
-                Image = 4483362458
-            })
-        end
-    end
-})
-
--- For destroying objects (platforms and other parts)
-local function kill(...)
-    local tables = {...}
-    for _, t in pairs(tables) do
-        if type(t) == "table" then
-            for _, obj in pairs(t) do
-                if obj and obj.Parent then
-                    obj:Destroy()
-                end
-            end
-            for k in pairs(t) do
-                t[k] = nil
-            end
-        end
-    end
-end
-
-
-Other:CreateSection("Destroy GUI")
-Other:CreateButton({
-    Name = "Destroy GUI",
-    Callback = function()
-    kill(AntiVoidPlatforms, SafeZones)
-        AntiVoidPlatforms = {}
-        SafeZones = {}
-        Rayfield:Destroy()
-
-        Rayfield:Notify({
-            Title = "GUI Destroyed",
-            Content = "Interface has been successfully destroyed",
-            Duration = 2
-        })
-    end
-})
-]]
-
-
-
 local function LoadModule(url)
     local source = game:HttpGet(url)
     local fn = loadstring(source)
@@ -2456,3 +2240,288 @@ local Other = LoadModule("https://raw.githubusercontent.com/retrojan/FlameUINT/r
 
 
 Other(Window, Rayfield)
+
+end
+
+if game.PlaceId == 18550498098 then
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local player = game:GetService("Players").LocalPlayer
+local UIS = game:GetService("UserInputService")
+
+local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
+local placeName = placeInfo.Name or "Unknown"  
+
+if game.PlaceId ~= 18550498098 then
+    -- game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(17944, -130, -3540)
+    return
+end
+
+
+
+
+local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
+local placeNameok = placeInfo.Name or "Unknown"  
+
+local Window = Rayfield:CreateWindow({
+   Name = placeNameok .. " | FlameUINT",
+   Icon = 0, 
+   LoadingTitle = "FlameUINT",
+   LoadingSubtitle = "by ReTrojan",
+   ShowText = "FlameUINT",
+   Theme = "Darker", 
+
+   ToggleUIKeybind = "G",
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, 
+
+   Discord = {
+      Enabled = false, 
+      Invite = "no (yet)", 
+      RememberJoins = true 
+   },
+
+})
+
+local AutoAttackEnabled = false
+local AttackDelay = 0.1
+local AttackConnection = nil
+local ClickConnection = nil
+
+local function DoClick()
+    if player.Character then
+        local lantern = player.Character:FindFirstChild("Lantern") or player.Backpack:FindFirstChild("Lantern")
+        if lantern then
+            if not player.Character:FindFirstChild("Lantern") then
+                player.Character.Humanoid:EquipTool(lantern)
+                task.wait(0.2)
+            end
+            if player.Character:FindFirstChild("Lantern") then
+                player.Character.Lantern:Activate()
+            end
+        end
+    end
+end
+
+local function AutoClickLoop()
+    while AutoAttackEnabled do
+        DoClick()
+        task.wait(0.1)
+    end
+end
+
+local function FullAutoAttack()
+    while AutoAttackEnabled and task.wait(AttackDelay) do
+        if not player.Character then continue end
+
+        local lantern = player.Character:FindFirstChild("Lantern")
+        if not lantern then continue end
+        
+        local network = lantern:FindFirstChild("Network")
+        if not network then continue end
+
+        for _, npc in ipairs(workspace:GetDescendants()) do
+            if not AutoAttackEnabled then break end
+            
+            local targetPart
+            if npc.Name == "ReplicaNPC" or npc.Name == "GuideNPC" then
+                targetPart = npc:FindFirstChild("HumanoidRootPart")
+            elseif npc.Name == "golem" then
+                targetPart = npc:FindFirstChild("Hitbox")
+            elseif npc.Name == "TrackGloveMissile" then
+                targetPart = npc
+            end
+            
+            if targetPart then
+                network:FireServer("Hit", targetPart)
+                task.wait(0.05)
+            end
+        end
+    end
+end
+local MainTab = Window:CreateTab("Combat", "sword")
+
+
+do
+    Rayfield:Notify({
+        Title = "Guide Boss Script",
+        Content = "Script successfully loaded!",
+        Duration = 5
+    })
+
+
+    MainTab:CreateSection("Teleportation")
+
+
+    MainTab:CreateButton({
+        Name = "Teleport to Boss",
+        Callback = function()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = CFrame.new(3273, -75, 822)
+                Rayfield:Notify({
+                    Title = "Teleport",
+                    Content = "Teleported to boss area!",
+                    Duration = 2
+                })
+            end
+        end,
+    })
+
+
+    MainTab:CreateButton({
+        Name = "Teleport to SafeZone",
+        Callback = function()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local existingSafeZone = workspace:FindFirstChild("OMOSafeZone")
+                if not existingSafeZone then
+                    local safeZonePart = Instance.new("Part")
+                    safeZonePart.Name = "OMOSafeZone"
+                    safeZonePart.Size = Vector3.new(400, 5, 400)
+                    safeZonePart.Transparency = 0.8
+                    safeZonePart.Anchored = true
+                    safeZonePart.CanCollide = true
+                    safeZonePart.Position = Vector3.new(595, 146, -330)
+                    safeZonePart.Parent = workspace
+                end
+                
+                player.Character.HumanoidRootPart.CFrame = CFrame.new(595, 150, -330)
+                Rayfield:Notify({
+                    Title = "Teleport",
+                    Content = "Teleported to safe zone!",
+                    Duration = 2
+                })
+            end
+        end,
+    })
+
+
+    MainTab:CreateSection("Automation")
+    
+
+    MainTab:CreateToggle({
+        Name = "Enable Auto Attack",
+        CurrentValue = false,
+        Flag = "AutoAttackToggle",
+        Callback = function(Value)
+            AutoAttackEnabled = Value
+            if Value then
+                if AttackConnection then task.cancel(AttackConnection) end
+                if ClickConnection then task.cancel(ClickConnection) end
+                
+                AttackConnection = task.spawn(FullAutoAttack)
+                ClickConnection = task.spawn(AutoClickLoop)
+                
+                Rayfield:Notify({
+                    Title = "Auto Attack",
+                    Content = "Auto attack has been enabled",
+                    Duration = 3
+                })
+            else
+                if AttackConnection then
+                    task.cancel(AttackConnection)
+                    AttackConnection = nil
+                end
+                if ClickConnection then
+                    task.cancel(ClickConnection)
+                    ClickConnection = nil
+                end
+                
+                Rayfield:Notify({
+                    Title = "Auto Attack",
+                    Content = "Auto attack has been disabled",
+                    Duration = 3
+                })
+            end
+        end,
+    })
+
+    MainTab:CreateSlider({
+        Name = "Attack Delay",
+        Range = {0.05, 1},
+        Increment = 0.05,
+        Suffix = "seconds",
+        CurrentValue = 0.05,
+        Flag = "AttackDelaySlider",
+        Callback = function(Value)
+            AttackDelay = Value
+        end,
+    })
+end
+
+
+local function LoadModule(url)
+    local source = game:HttpGet(url)
+    local fn = loadstring(source)
+    return fn()
+end
+
+local Other = LoadModule("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/modules/other.lua")
+Other(Window, Rayfield)
+
+end
+
+
+if game.PlaceId == 14422118326 then -- NULL
+
+local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
+local placeNameok = placeInfo.Name or "Unknown"  
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Window = Rayfield:CreateWindow({
+   Name = placeNameok .. " | FlameUINT v" .. ScriptVersion,
+   Icon = 0, 
+   LoadingTitle = "FlameUINT",
+   LoadingSubtitle = "by ReTrojan",
+   ShowText = "FlameUINT",
+   Theme = "Darker", 
+
+   ToggleUIKeybind = "G",
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, 
+
+   Discord = {
+      Enabled = false, 
+      Invite = "no (yet)", 
+      RememberJoins = true 
+   },
+
+})
+
+local Tab = Window:CreateTab("Teleports", 4483362458)
+
+local nullPos = Vector3.new(5459.35, -189.00, 1845.44)
+local tinkererPos = Vector3.new(4845.79, -214.00, 799.27)
+local robPos = Vector3.new(5261.27, -138.43, 865.91)
+
+local function tpTo(pos)
+    local player = game.Players.LocalPlayer
+    local char = player.Character or player.CharacterAdded:Wait()
+    char:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(pos)
+end
+
+Tab:CreateButton({
+    Name = "Get Null",
+    Callback = function()
+        tpTo(nullPos)
+    end
+})
+
+Tab:CreateButton({
+    Name = "Get Tinkerer",
+    Callback = function()
+        tpTo(tinkererPos)
+    end
+})
+
+Tab:CreateButton({
+    Name = "Get Rob Plushie",
+    Callback = function()
+        tpTo(robPos)
+    end
+})
+	
+local Other = LoadModule("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/modules/other.lua")
+Other(Window, Rayfield)
+
+end

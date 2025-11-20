@@ -38,9 +38,16 @@ Happy reading!
 
 
 
-loadstring(game:HttpGet('https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/bypass.lua'))()
+
+
+
+
+
+
+if game.PlaceId == 6403373529 or game.PlaceId == 9015014224 or game.PlaceId == 124596094333302 then
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
 local ScriptName = "FlameUINT "
 local ScriptVersion = "15.10"
 local ScriptDev = "ReTrojan"
@@ -48,13 +55,6 @@ local ScriptDev = "ReTrojan"
 local AntiToggles = {}
 local AntiVoidPlatforms = {}
 local SafeZones = {}
-
-
-
-
-if game.PlaceId == 6403373529 or game.PlaceId == 9015014224 or game.PlaceId == 124596094333302 then
-
-
 
 local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
 local placeNameok = placeInfo.Name or "Unknown"  
@@ -1894,7 +1894,7 @@ end)
 
 ]]
 
-
+_G.ReachValue = 10
 
 local OrbSection = Main:CreateSection("Slap Aura")
 local AuraToggle = Main:CreateToggle({
@@ -2236,8 +2236,6 @@ local function LoadModule(url)
 end
 
 local Other = LoadModule("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/modules/other.lua")
-
-
 Other(Window, Rayfield)
 
 end
@@ -2246,17 +2244,6 @@ if game.PlaceId == 18550498098 then
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local player = game:GetService("Players").LocalPlayer
 local UIS = game:GetService("UserInputService")
-
-local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
-local placeName = placeInfo.Name or "Unknown"  
-
-if game.PlaceId ~= 18550498098 then
-    -- game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(17944, -130, -3540)
-    return
-end
-
-
-
 
 local placeInfo = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
 local placeNameok = placeInfo.Name or "Unknown"  
@@ -2283,7 +2270,7 @@ local Window = Rayfield:CreateWindow({
 })
 
 local AutoAttackEnabled = false
-local AttackDelay = 0.1
+local AttackDelay = 0.05
 local AttackConnection = nil
 local ClickConnection = nil
 
@@ -2519,7 +2506,6 @@ Tab:CreateButton({
         tpTo(robPos)
     end
 })
-	
 local Other = LoadModule("https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/modules/other.lua")
 Other(Window, Rayfield)
 

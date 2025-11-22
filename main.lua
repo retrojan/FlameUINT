@@ -41,7 +41,7 @@ Happy reading!
 
 
 
-
+loadstring(game:HttpGet('https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/bypass.lua'))()
 
 
 if game.PlaceId == 6403373529 or game.PlaceId == 9015014224 or game.PlaceId == 124596094333302 then

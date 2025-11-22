@@ -138,7 +138,7 @@ local player = game.Players.LocalPlayer
 local leaderstats = player:WaitForChild("leaderstats")
 local Slaps = leaderstats:WaitForChild("Slaps")
 local Glove = leaderstats:WaitForChild("Glove")
-
+--or game.Players.LocalPlayer.leaderstats.Slaps.Value / game.Players.LocalPlayer.leaderstats.Glove.Value
 local function AutoEnter()
     local char = player.Character or player.CharacterAdded:Wait()
     if not char:FindFirstChild("entered") then
@@ -296,9 +296,12 @@ updateServerTime()
 
 
 
+Teleport:CreateSection("Special Teleports")
 
-local function TeleportToBrazilPortal()
-    if game.Workspace:FindFirstChild("Lobby") and game.Workspace.Lobby:FindFirstChild("brazil") and game.Workspace.Lobby.brazil:FindFirstChild("portal") then
+Teleport:CreateButton({
+    Name = "Brazil Portal",
+    Callback = function()
+        if game.Workspace:FindFirstChild("Lobby") and game.Workspace.Lobby:FindFirstChild("brazil") and game.Workspace.Lobby.brazil:FindFirstChild("portal") then
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Workspace.Lobby.brazil.portal.CFrame
         Rayfield:Notify({
             Title = "Teleport",
@@ -316,15 +319,11 @@ local function TeleportToBrazilPortal()
         warn("Brazil portal not found!")
     end
 end
-
-Teleport:CreateSection("Special Teleports")
-
-Teleport:CreateButton({
-    Name = "Brazil Portal",
-    Callback = function()
-        TeleportToBrazilPortal()
-    end
 })
+
+
+
+
 
 
 
@@ -342,9 +341,7 @@ local function ServerHop(old)
     end)
 end
 
-
-
---[[ DONT WORKING(New api roblox?)
+--[[ DONT WORKING(New api roblox)
 local function ServerHop()
 
     local placeId = game.PlaceId
@@ -377,7 +374,7 @@ local function ServerHop()
         warn("❌No available servers were found!")
     end
 end
-
+ServerHop()
 ]]
 local function toggleCharacterFreeze(state)
     local character = game.Players.LocalPlayer.Character
@@ -525,6 +522,165 @@ game:GetService("RunService").Heartbeat:Connect(function()
         end
     end
 end)
+
+Main:CreateSection("Buddies Exploit")
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local exploitEnabled = false
+local maxDistance = 15
+local mode = "All"
+local specificPlayerName = ""
+
+local function getDistance(pos1, pos2)
+    return (pos1 - pos2).Magnitude
+end
+
+local exploitEnabled = false
+local exploitThread = nil
+
+local BuddiesToggle = Main:CreateToggle({
+    Name = "Buddies Exploit ( Equip buddies Glove )",
+    CurrentValue = false,
+    Callback = function(value)
+        local glove = game.Players.LocalPlayer:WaitForChild("leaderstats"):WaitForChild("Glove").Value
+
+        if glove ~= "buddies" then
+            Rayfield:Notify({
+                Title = "Error",
+                Content = "You must equip the Buddies glove to use this exploit.",
+                Duration = 5
+            })
+            return
+        end
+
+        exploitEnabled = value
+
+        if exploitEnabled and not exploitThread then
+            exploitThread = task.spawn(function()
+                while exploitEnabled do
+                    task.wait(0.8)
+
+                    local lp = game.Players.LocalPlayer
+                    local char = lp.Character
+                    if not char or not char:FindFirstChild("HumanoidRootPart") then continue end
+
+                    local hrp = char.HumanoidRootPart
+                    local targets = {}
+
+                    if mode == "All" then
+                        for _, player in pairs(game.Players:GetPlayers()) do
+                            if player ~= lp and player.Character and player.Character:FindFirstChild("Head") then
+                                local distance = (hrp.Position - player.Character.Head.Position).Magnitude
+                                if distance <= maxDistance then
+                                    table.insert(targets, player)
+                                end
+                            end
+                        end
+                    elseif mode == "Specific" and specificPlayerName ~= "" then
+                        for _, player in pairs(game.Players:GetPlayers()) do
+                            if player.Name == specificPlayerName and player.Character and player.Character:FindFirstChild("Head") then
+                                local distance = (hrp.Position - player.Character.Head.Position).Magnitude
+                                if distance <= maxDistance then
+                                    table.insert(targets, player)
+                                end
+                            end
+                        end
+                    end
+
+                    for _, target in pairs(targets) do
+                        if target.Character and target.Character:FindFirstChild("Head") then
+                            game:GetService("ReplicatedStorage").buddiesHIT:FireServer(target.Character.Head)
+                        end
+                    end
+                end
+            end)
+        end
+
+        if not exploitEnabled then
+            exploitThread = nil
+        end
+    end
+})
+
+
+
+
+
+Main:CreateSlider({
+    Name = "Distance",
+    Range = {5, 20},
+    Increment = 1,
+    CurrentValue = 20,
+    Suffix = " studs",
+    Callback = function(value)
+        maxDistance = value
+    end
+})
+
+Main:CreateDropdown({
+    Name = "Mode",
+    Options = {"All"}, --, "Specific"
+    CurrentOption = "All",
+    Callback = function(option)
+        mode = option
+    end
+})
+
+Main:CreateInput({
+    Name = "Enter Player Name",
+    PlaceholderText = "Exact nickname",
+    RemoveTextAfterFocusLost = false,
+    CurrentValue = "",
+    Text = "",
+    Callback = function(text)
+        specificPlayerName = text
+    end
+})
+
+Main:CreateSection("Gloves")
+
+local plr = game.Players.LocalPlayer
+local rs = game:GetService("ReplicatedStorage")
+local recallRemote = rs:FindFirstChild("Recall") or rs:FindFirstChildWhichIsA("RemoteFunction", true)
+
+Main:CreateToggle({
+    Name = "Spam Recall (invisible)",
+    CurrentValue = false,
+    Callback = function(Value)
+        getgenv().RecallSpam = Value
+
+        if Value then
+            if plr.leaderstats.Glove.Value ~= "Recall" then
+                Rayfield:Notify({
+                    Title = "Error",
+                    Content = "Перчатка Recall не экипирована!",
+                    Duration = 4
+                })
+                getgenv().RecallSpam = false
+                return
+            end
+
+            task.spawn(function()
+                while RecallSpam do
+                    local char = plr.Character
+                    if char and char:FindFirstChild("Recall") and recallRemote then
+                        local args = {
+                            char.Recall,
+                            Vector3.new(0,1,0)
+                        }
+                        pcall(function()
+                            recallRemote:InvokeServer(unpack(args))
+                        end)
+                    end
+                    task.wait(0.1)
+                end
+            end)
+        end
+    end,
+})
 
 
 
@@ -1581,9 +1737,47 @@ Gloves:CreateButton({
 })
 ]]
 
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
+Gloves:CreateSection("Debug Glove")
+local DCodeLabel = Gloves:CreateLabel("Debug Code: N/A")
 
+Gloves:CreateButton({
+    Name = "Show Code",
+    Callback = function()
+        local DebugRoom = Workspace:WaitForChild("Debug Room")
+        local DuckTableFolder = DebugRoom:WaitForChild("DuckTable"):WaitForChild("DuckTable")
+        local A = 0
+        for _, obj in pairs(DuckTableFolder:GetChildren()) do
+            if obj:IsA("BasePart") and obj.Name == "Duck" then
+                A = A + 1
+            end
+        end
 
+        local AdminNumberText = DebugRoom:WaitForChild("AdminGloves"):WaitForChild("GlovesCode"):WaitForChild("SurfaceGui"):WaitForChild("AdminNumber").Text
+        local B = tonumber(AdminNumberText) or 0
 
+        local MazeNumberText = DebugRoom:WaitForChild("Maze"):WaitForChild("MazePrize"):WaitForChild("SurfaceGui"):WaitForChild("MazeNumber").Text
+        local C = tonumber(MazeNumberText) or 0
+
+        local D = 7
+
+        local code = tostring(A) .. tostring(B) .. tostring(C) .. tostring(D)
+
+        DCodeLabel:Set("Debug Code: " .. code)
+    end
+})
+
+Gloves:CreateButton({
+    Name = "Teleport",
+    Callback = function()
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            char.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(-17948.45, 59.83, 3598.61))
+        end
+    end
+})
 
 game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
     if getgenv().HideNameTag then
@@ -1894,9 +2088,6 @@ end
 
 
 
-
-
-
 local AFKSECT = Teleport:CreateSection("Safe Spot")
 
 Teleport:CreateButton({
@@ -1945,62 +2136,6 @@ for _, sectionData in ipairs(locationsInOrder) do
     end
 end
 
-
-
-
---[[
-
-
-=========== COMING SOON ===========
-
-local TimeG = Gloves:CreateSection("Time Gloves")
-
-
-local fishfarm Gloves:CreateButton("Get fish", function()
-
-    if game.Players.LocalPlayer.leaderstats.Glove.Value ~= "ZZZZZZZ" then
-        Rayfield:Notify({
-            Title = "Error",
-            Content = "u dont have ZZZZZZZ!",
-            Duration = 5,
-            Image = 4483362458
-        })
-        return
-    end
-    
-    if not Player.Character then
-        Player.CharacterAdded:Wait()
-    end
-    
-    local humanoidRootPart = Player.Character:WaitForChild("HumanoidRootPart")
-    createAFKZone()
-    humanoidRootPart.CFrame = CFrame.new(AFK_ZONE.position)
-    
-    Rayfield:Notify({
-        Title = "Succes",
-        Content = "teleported to Safe Spot",
-        Duration = 5,
-        Image = 4483362458
-    })
-    
-    local EConnection
-    EConnection = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
-        if gameProcessed then return end
-        
-        if input.KeyCode == Enum.KeyCode.E then
-            EConnection:Disconnect() 
-            
-
-            if not _G.antiAfkEnabled then
-                Rayfield.Flags["AntiAFK_Toggle"]:Set(true) 
-            end
-
-        end
-    end)
-end)
-
-
-]]
 
 _G.ReachValue = 10
 

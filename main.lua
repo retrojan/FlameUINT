@@ -41,7 +41,7 @@ Happy reading!
 
 
 
-loadstring(game:HttpGet('https://raw.githubusercontent.com/retrojan/FlameUINT/refs/heads/main/bypass.lua'))()
+
 
 
 if game.PlaceId == 6403373529 or game.PlaceId == 9015014224 or game.PlaceId == 124596094333302 then
@@ -561,7 +561,7 @@ local BuddiesToggle = Main:CreateToggle({
         if exploitEnabled and not exploitThread then
             exploitThread = task.spawn(function()
                 while exploitEnabled do
-                    task.wait(0.8)
+                    task.wait(0.65)
 
                     local lp = game.Players.LocalPlayer
                     local char = lp.Character
@@ -1442,6 +1442,21 @@ Gloves:CreateButton({
 	end
 })
 
+Gloves:CreateButton({
+    Name = "Get Hybrid",
+    Callback = function()
+        if not game:GetService("ReplicatedStorage"):FindFirstChild("GRRRRR") then
+            Rayfield:Notify({
+                Title = "Error",
+                Content = "Remote GRRRRR не найден!",
+                Duration = 4
+            })
+            return
+        end
+
+        game:GetService("ReplicatedStorage").GRRRRR:FireServer(true)
+    end
+})
 
 
 Gloves:CreateButton({

@@ -29,7 +29,7 @@ RESOURCES:
 Documentation: https://docs.sirius.menu/rayfield
 ICONS: https://lucide.dev/icons/
 ===========================
-Some parts of the code are taken from Giang Hub - https://github.com/Giangplay/Slap_Battles
+Some parts of the code are taken from Giang Hub: https://github.com/Giangplay/Slap_Battles
 Bypass: https://github.com/Pro666Pro/BypassAntiCheat
 
 
@@ -79,6 +79,33 @@ local Window = Rayfield:CreateWindow({
    },
 
 })
+
+
+
+
+
+
+local Info = Window:CreateTab("Info", "book")
+local Main = Window:CreateTab("Main", "code")
+local Antis = Window:CreateTab("Antis", "shield")
+local Gloves = Window:CreateTab("Gloves", "hand")
+local Teleport = Window:CreateTab("Teleport", "eye")
+local Mastery = Window:CreateTab("Tools", "flame")
+local Places = Window:CreateTab("Places", "flame")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 local locationsInOrder = {
@@ -153,14 +180,45 @@ end
 
 
 
+local function fug()
+    local player = game.Players.LocalPlayer
+    
+    local leaderstats = player:FindFirstChild("leaderstats")
+    if not leaderstats then return end
+    
+    local gloveStat = leaderstats:FindFirstChild("Glove")
+    if not gloveStat then return end
+    
+    local targetGloveName = gloveStat.Value
+    if not targetGloveName or targetGloveName == "" then return end
+    
+    if player.Character then
+        local equippedTool = player.Character:FindFirstChildOfClass("Tool")
+        if equippedTool and equippedTool.Name == targetGloveName then
+            pcall(function() equippedTool:Activate() end)
+            return
+        end
+    end
+    
+    local backpack = player:FindFirstChild("Backpack")
+    if backpack then
+        for _, tool in ipairs(backpack:GetChildren()) do
+            if tool:IsA("Tool") and tool.Name == targetGloveName then
+                if player.Character then
+                    local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then
+                        humanoid:EquipTool(tool)
+                        task.wait(0.1)
+                        pcall(function() tool:Activate() end)
+                    end
+                end
+                return
+            end
+        end
+    end
+end
 
-local Info = Window:CreateTab("Info", "book")
-local Main = Window:CreateTab("Main", "code")
-local Antis = Window:CreateTab("Antis", "shield")
-local Gloves = Window:CreateTab("Gloves", "hand")
-local Teleport = Window:CreateTab("Teleport", "eye")
-local Mastery = Window:CreateTab("Tools", "flame")
-local Places = Window:CreateTab("Places", "flame")
+
 
 
 
@@ -187,29 +245,36 @@ Info:CreateButton({
     end
 })
 
+local gcount = 0
 
+for _, v in pairs(game.Workspace.Lobby.GloveStands:GetChildren()) do
+    if v.Name ~= "Unknown" then
+        gcount = gcount + 1
+    end
+end
 
+local SServer = Info:CreateSection("Server")
+
+local GameIDLabel     = Info:CreateLabel("GameID: " .. game.PlaceId)
+local JobIDLabel   = Info:CreateLabel("JobID: " .. game.JobId)
+local PlayersLabel    = Info:CreateLabel("Players: Loading...")
+local ServerAgeLabel  = Info:CreateLabel("Server Age: Loading...")
+local GCount          = Info:CreateLabel("Glove Stands: " .. gcount)
 
 local SPlayer = Info:CreateSection("Player")
 
 local SlapsLabel      = Info:CreateLabel("Slaps: Loading...")
 local GloveLabel      = Info:CreateLabel("Glove: Loading...")
 local AgeLabel        = Info:CreateLabel("Account Age: " .. game.Players.LocalPlayer.AccountAge .. " Days")
-local ServerTimeLabel = Info:CreateLabel("In Server: Loading...")
-
-local SServer = Info:CreateSection("Server")
-
-local GameIDLabel     = Info:CreateLabel("GameID: " .. game.PlaceId)
-local ServerIDLabel   = Info:CreateLabel("ServerID: " .. game.JobId)
-local PlayersLabel    = Info:CreateLabel("Players: Loading...")
-local ServerAgeLabel  = Info:CreateLabel("Server Age: Loading...")
-
-
+local NullShardsLabel   = Info:CreateLabel("Null Shards: Loading...")
+local TournamentWinsLabel = Info:CreateLabel("Tournament Wins: Loading...")
+local ServerTimeLabel = Info:CreateLabel("Server Time: Loading...")
 
 
 local player = game.Players.LocalPlayer
 local leaderstats = player:WaitForChild("leaderstats")
 local stats = game:GetService("Stats")
+local pdata = game.ReplicatedStorage:WaitForChild("PlayerData"):WaitForChild(player.Name)
 
 
 local function formatTime(seconds)
@@ -242,6 +307,18 @@ local function updateLabels()
     else
         SlapsLabel:Set("Slaps: Not Found")
     end
+    if pdata:FindFirstChild("NullShards") then
+        NullShardsLabel:Set("Null Shards: " .. tostring(pdata.NullShards.Value))
+    else
+        NullShardsLabel:Set("Null Shards: Not Found")
+    end
+
+    if pdata:FindFirstChild("TournamentWins") then
+        TournamentWinsLabel:Set("Tournament Wins: " .. tostring(pdata.TournamentWins.Value))
+    else
+        TournamentWinsLabel:Set("Tournament Wins: Not Found")
+    end
+
 
     PlayersLabel:Set("Players: " .. tostring(#game.Players:GetPlayers()))
 
@@ -269,7 +346,8 @@ if leaderstats:FindFirstChild("Slaps") then
     leaderstats.Slaps:GetPropertyChangedSignal("Value"):Connect(updateLabels)
 end
 
-
+pdata.NullShards:GetPropertyChangedSignal("Value"):Connect(updateLabels)
+pdata.TournamentWins:GetPropertyChangedSignal("Value"):Connect(updateLabels)
 game.Players.PlayerAdded:Connect(updateLabels)
 game.Players.PlayerRemoving:Connect(updateLabels)
 
@@ -641,6 +719,38 @@ Main:CreateInput({
 })
 
 Main:CreateSection("Gloves")
+
+
+Main:CreateButton({
+    Name = "Knockback x150 (for charge kinetic, or for get kinetic)",
+    Callback = function()
+        local plr = game.Players.LocalPlayer
+        local char = plr.Character
+        local glove = plr.leaderstats.Glove.Value
+
+        if not char:FindFirstChild("entered") then --glove ~= "Kinetic" or
+            OrionLib:MakeNotification({
+                Name = "Error",
+                Content = "You don't have Kinetic equipped.",
+                Image = "rbxassetid://7733658504",
+                Time = 5
+            })
+            return
+        end
+
+        for i = 1, 150 do
+            game.ReplicatedStorage.SelfKnockback:FireServer({
+                ["Force"] = 0,
+                ["Direction"] = Vector3.new(0, 0.01, 0)
+            })
+            task.wait(0.05)
+        end
+    end
+})
+
+
+
+
 
 local plr = game.Players.LocalPlayer
 local rs = game:GetService("ReplicatedStorage")
@@ -1410,16 +1520,52 @@ local AutoTycoonToggle = Gloves:CreateToggle({
     end
 })
 
+Gloves:CreateButton({
+    Name = "Get Suction",
+    Callback = function()
+        local teleportFunc = queueonteleport or queue_on_teleport
+        if teleportFunc then
+            teleportFunc([[
+                if not game:IsLoaded() then
+                    game.Loaded:Wait()
+                end
+
+                if game.PlaceId ~= 89837553336708 then
+                    return
+                end
+
+                repeat task.wait() until game.Players.LocalPlayer
+
+                wait(1.9)
+
+                local char = game.Players.LocalPlayer.Character
+                if char and char:FindFirstChild("HumanoidRootPart") then
+                    local suction = workspace:FindFirstChild("plunger glove")
+                    if suction and suction:FindFirstChild("plungerglove") then
+                        suction.plungerglove.CFrame = char.HumanoidRootPart.CFrame
+                    end
+                end
+            ]])
+        end
+        
+        game.ReplicatedStorage.Events.suction_obby_tp:FireServer()
+    end
+})
+
 
 Gloves:CreateButton({
 	Name = "Get Water",
 	Callback = function()
 		local player = game.Players.LocalPlayer
 		if player.leaderstats.Glove.Value ~= "Alchemist" then
-			warn("You don't have Alchemist equipped")
+			--warn("")
+            Rayfield:Notify({
+                Title = "FlameUINT",
+                Content = "You don't have Alchemist equipped.",
+                Duration = 5
+            })
 			return
 		end
-
 		for potionName, ingredients in pairs(GetPotion) do
 			if not game.Workspace:FindFirstChild(player.Name.."'s Cauldron") then
 				game:GetService("ReplicatedStorage").GeneralAbility:FireServer()
@@ -1443,12 +1589,31 @@ Gloves:CreateButton({
 })
 
 Gloves:CreateButton({
+    Name = "Auto Win Kraken",
+    Callback = function()
+        if game.Workspace:FindFirstChild("Abyss") ~= nil then
+        game:GetService("ReplicatedStorage").AbyssEvent:FireServer(true)
+        game:GetService("ReplicatedStorage").AbyssEvent:FireServer(false)
+
+
+        else
+            Rayfield:Notify({
+                Title = "Warning",
+                Content = "You have enter Map Abyss",
+                Duration = 5
+            })
+
+        end
+    end
+})
+
+Gloves:CreateButton({
     Name = "Get Hybrid",
     Callback = function()
         if not game:GetService("ReplicatedStorage"):FindFirstChild("GRRRRR") then
             Rayfield:Notify({
                 Title = "Error",
-                Content = "Remote GRRRRR не найден!",
+                Content = "Remote GRRRRR not found!",
                 Duration = 4
             })
             return
@@ -1807,43 +1972,6 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
     end
 end)
 
-local function findAndUseGlove()
-    local player = game.Players.LocalPlayer
-    
-    local leaderstats = player:FindFirstChild("leaderstats")
-    if not leaderstats then return end
-    
-    local gloveStat = leaderstats:FindFirstChild("Glove")
-    if not gloveStat then return end
-    
-    local targetGloveName = gloveStat.Value
-    if not targetGloveName or targetGloveName == "" then return end
-    
-    if player.Character then
-        local equippedTool = player.Character:FindFirstChildOfClass("Tool")
-        if equippedTool and equippedTool.Name == targetGloveName then
-            pcall(function() equippedTool:Activate() end)
-            return
-        end
-    end
-    
-    local backpack = player:FindFirstChild("Backpack")
-    if backpack then
-        for _, tool in ipairs(backpack:GetChildren()) do
-            if tool:IsA("Tool") and tool.Name == targetGloveName then
-                if player.Character then
-                    local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-                    if humanoid then
-                        humanoid:EquipTool(tool)
-                        task.wait(0.1)
-                        pcall(function() tool:Activate() end)
-                    end
-                end
-                return
-            end
-        end
-    end
-end
 
 local autoUseEnabled = false
 local autoUseDelay = 0.5
@@ -1866,7 +1994,7 @@ Mastery:CreateToggle({
         if value then
             autoUseConnection = game:GetService("RunService").Heartbeat:Connect(function()
                 if autoUseEnabled then
-                    findAndUseGlove()
+                    fug()
                     task.wait(autoUseDelay)
                 end
             end)
@@ -2487,6 +2615,30 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
     end
 end)
 
+
+
+
+
+
+Places:CreateButton({
+    Name = "The Suction Trials",
+    Callback = function()
+        game.ReplicatedStorage.Events.suction_obby_tp:FireServer()
+    end
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
 local function LoadModule(url)
     local source = game:HttpGet(url)
     local fn = loadstring(source)
@@ -2624,7 +2776,7 @@ do
                     safeZonePart.Transparency = 0.8
                     safeZonePart.Anchored = true
                     safeZonePart.CanCollide = true
-                    safeZonePart.Position = Vector3.new(595, 146, -330)
+                    safeZonePart.Position = Vector3.new(595, 65.96, -330)
                     safeZonePart.Parent = workspace
                 end
                 

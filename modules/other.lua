@@ -24,14 +24,14 @@ Other:CreateButton({
     end
 })
 Other:CreateButton({
-    Name = "Add Autoexec Button",
+    Name = "Add in Autoexec",
     Callback = function()
         local teleportFunc = queueonteleport or queue_on_teleport
         if teleportFunc then
             teleportFunc([[
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/main.lua"))()
-                        ]])
-                end
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/main.lua"))()
+            ]])
+
             Rayfield:Notify({
                 Title = "FlameUINT",
                 Content = "Code added to queueonteleport!",
@@ -42,6 +42,7 @@ Other:CreateButton({
         end
     end
 })
+
 
     
     

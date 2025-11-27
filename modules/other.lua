@@ -23,10 +23,6 @@ Other:CreateButton({
         loadstring(game:HttpGet('https://raw.githubusercontent.com/MassiveHubs/loadstring/refs/heads/main/DexXenoAndRezware'))()
     end
 })
-
-
-    
-    
 local AntiLagButton = Other:CreateButton({
     Name = "Anti Lag",
     Callback = function()

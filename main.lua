@@ -29,7 +29,7 @@ RESOURCES:
 Documentation: https://docs.sirius.menu/rayfield
 ICONS: https://lucide.dev/icons/
 ===========================
-Some parts of the code are taken from Giang Hub: https://github.com/Giangplay/Slap_Battles
+Some parts of the code are taken from Giang Hub / Articles Hub
 Bypass: https://github.com/Pro666Pro/BypassAntiCheat
 
 
@@ -133,9 +133,6 @@ local locationsInOrder = {
 }
 
 _G.GivePotion = 1
-_G.PotionChooseNuke = "Normal"
-
-
 local GetPotion = {
 	["Grug"] = {"Mushroom"}, --1
     ["idIot"] = {"Cake Mix"}, --2
@@ -237,7 +234,7 @@ Info:CreateButton({
     Callback = function()
         setclipboard("https://github.com/retrojan/FlameUINT")
         Rayfield:Notify({
-            Title = "Success",
+            Title = "FlameUINT",
             Content = "Repository link copied to clipboard!",
             Duration = 3,
             Image = 4483362458
@@ -253,22 +250,22 @@ for _, v in pairs(game.Workspace.Lobby.GloveStands:GetChildren()) do
     end
 end
 
-local SServer = Info:CreateSection("Server")
 
+local SPlayer = Info:CreateSection("Player")
+
+local GloveLabel      = Info:CreateLabel("Glove: Loading...")
+local SlapsLabel      = Info:CreateLabel("Slaps: Loading...")
+local NullShardsLabel   = Info:CreateLabel("Null Shards: Loading...")
+local TournamentWinsLabel = Info:CreateLabel("Tournament Wins: Loading...")
+local AgeLabel        = Info:CreateLabel("Account Age: " .. game.Players.LocalPlayer.AccountAge .. " Days")
+local ServerTimeLabel = Info:CreateLabel("Server Time: Loading...")
+
+local SServer = Info:CreateSection("Server")
+local GCount          = Info:CreateLabel("Glove Stands: " .. gcount)
 local GameIDLabel     = Info:CreateLabel("GameID: " .. game.PlaceId)
 local JobIDLabel   = Info:CreateLabel("JobID: " .. game.JobId)
 local PlayersLabel    = Info:CreateLabel("Players: Loading...")
 local ServerAgeLabel  = Info:CreateLabel("Server Age: Loading...")
-local GCount          = Info:CreateLabel("Glove Stands: " .. gcount)
-
-local SPlayer = Info:CreateSection("Player")
-
-local SlapsLabel      = Info:CreateLabel("Slaps: Loading...")
-local GloveLabel      = Info:CreateLabel("Glove: Loading...")
-local AgeLabel        = Info:CreateLabel("Account Age: " .. game.Players.LocalPlayer.AccountAge .. " Days")
-local NullShardsLabel   = Info:CreateLabel("Null Shards: Loading...")
-local TournamentWinsLabel = Info:CreateLabel("Tournament Wins: Loading...")
-local ServerTimeLabel = Info:CreateLabel("Server Time: Loading...")
 
 
 local player = game.Players.LocalPlayer
@@ -377,29 +374,116 @@ updateServerTime()
 Teleport:CreateSection("Special Teleports")
 
 Teleport:CreateButton({
-    Name = "Brazil Portal",
+    Name = "Barzil Portal",
     Callback = function()
         if game.Workspace:FindFirstChild("Lobby") and game.Workspace.Lobby:FindFirstChild("brazil") and game.Workspace.Lobby.brazil:FindFirstChild("portal") then
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Workspace.Lobby.brazil.portal.CFrame
         Rayfield:Notify({
-            Title = "Teleport",
-            Content = "Teleported to Brazil Portal",
+            Title = "FlameUINT",
+            Content = "Teleported to Barzil Portal",
             Duration = 3,
             Image = 4483362458
         })
     else
         Rayfield:Notify({
-            Title = "Error",
+            Title = "FlameUINT",
             Content = "Brazil portal not found!",
             Duration = 3,
             Image = 4483362458
         })
-        warn("Brazil portal not found!")
+        warn("Barzil portal not found!")
     end
 end
 })
 
 
+
+Teleport:CreateSection("Ducky")
+
+Teleport:CreateButton({
+    Name = "Retro Ducky (USE IN RETRO)",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local char = player.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+        local ducky = workspace.RetroObbyMap:WaitForChild("Rubber Ducky")
+        local pos = ducky:GetPivot().Position + Vector3.new(0, 1.5, 0)
+        hrp.CFrame = CFrame.new(pos)
+    end
+})
+
+Teleport:CreateButton({
+    Name = "Limbo Ducky (USE IN LIMBO)",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local char = player.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+
+        local ducky = workspace.RepressedMemories:WaitForChild("Limbo Ducky")
+        local pos = ducky:GetPivot().Position + Vector3.new(0, 1.5, 0)
+
+        hrp.CFrame = CFrame.new(pos)
+    end
+})
+
+Teleport:CreateSection("Remote Event (IF U HAVE RETRO/LIMBO DUCKY)")
+Teleport:CreateButton({
+    Name = "Go in Retro",
+    Callback = function()
+        local RS = game:GetService("ReplicatedStorage")
+        if RS:FindFirstChild("ClaimRetroFastTravel") then
+            RS.ClaimRetroFastTravel:FireServer(true)
+            Rayfield:Notify({
+                Title = "FlameUINT",
+                Content = "Retro FastTravel claimed!",
+                Duration = 3
+            })
+        else
+            warn("ClaimRetroFastTravel not found in ReplicatedStorage!")
+        end
+    end
+})
+Teleport:CreateButton({
+    Name = "Go in Limbo",
+    Callback = function()
+        local RS = game:GetService("ReplicatedStorage")
+        if RS:FindFirstChild("ClaimLimboFastTravel") then
+            RS.ClaimLimboFastTravel:FireServer(true)
+            Rayfield:Notify({
+                Title = "FlameUINT",
+                Content = "Limbo FastTravel claimed!",
+                Duration = 3
+            })
+        else
+            warn("ClaimLimboFastTravel not found in ReplicatedStorage!")
+        end
+    end
+})
+
+Teleport:CreateSection("Quest")
+Teleport:CreateButton({
+    Name = "Bob Plushie",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local char = player.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+        if not workspace:FindFirstChild("RepressedMemoriesMap") then
+            local map = game.ReplicatedStorage:FindFirstChild("RepressedMemoriesMap")
+            if map then
+                map.Parent = workspace
+            else
+                warn("Map not found in ReplicatedStorage!")
+                return
+            end
+        end
+        local plushie = workspace.RepressedMemories:WaitForChild("_ugcQuestObjectBobPlushie")
+        local pos = plushie:GetPivot().Position + Vector3.new(0, 1.5, 0)
+        hrp.CFrame = CFrame.new(pos)
+    end
+})
 
 
 
@@ -526,14 +610,14 @@ local idkez Main:CreateButton({
                 firetouchinterest(game.Players.LocalPlayer.Character.Head, workspace.Lobby.Teleport1, 1)
                 
                 Rayfield:Notify({
-                    Title = "Arena",
+                    Title = "FlameUINT",
                     Content = "Entering arena...",
                     Duration = 2,
                     Image = 4483362458
                 })
             else
                 Rayfield:Notify({
-                    Title = "Arena",
+                    Title = "FlameUINT",
                     Content = "You are already in arena!",
                     Duration = 2,
                     Image = 4483362458
@@ -541,7 +625,7 @@ local idkez Main:CreateButton({
             end
         else
             Rayfield:Notify({
-                Title = "Error",
+                Title = "FlameUINT",
                 Content = "Character not found",
                 Duration = 3,
                 Image = 4483362458
@@ -549,57 +633,7 @@ local idkez Main:CreateButton({
         end
     end
 })
-    
---AUTO GET EMOTES
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
-local root = character:WaitForChild("HumanoidRootPart")
-local EP
 
-local Animations = {
-    Floss = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Floss),
-    Groove = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Groove),
-    Headless = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Headless),
-    Helicopter = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Helicopter),
-    Kick = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Kick),
-    L = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.L),
-    Laugh = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Laugh),
-    Parker = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Parker),
-    Spasm = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Spasm),
-    Thriller = humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Thriller)
-}
-
-player.Chatted:Connect(function(msg)
-    if not character:FindFirstChild("HumanoidRootPart") then return end
-    local lowerMsg = string.lower(msg)
-    for name, anim in pairs(Animations) do
-        if lowerMsg == "/e "..string.lower(name) then
-            anim:Play()
-            EP = root.Position
-        end
-    end
-end)
-
-game:GetService("RunService").Heartbeat:Connect(function()
-    if EP and character:FindFirstChild("HumanoidRootPart") then
-        local isPlaying = false
-        for _, anim in pairs(Animations) do
-            if anim.IsPlaying then
-                isPlaying = true
-                break
-            end
-        end
-        if isPlaying then
-            local magnitude = (root.Position - EP).Magnitude
-            if magnitude > 1 then
-                for _, anim in pairs(Animations) do
-                    anim:Stop()
-                end
-            end
-        end
-    end
-end)
 
 Main:CreateSection("Buddies Exploit")
 
@@ -627,7 +661,7 @@ local BuddiesToggle = Main:CreateToggle({
 
         if glove ~= "buddies" then
             Rayfield:Notify({
-                Title = "Error",
+                Title = "FlameUINT",
                 Content = "You must equip the Buddies glove to use this exploit.",
                 Duration = 5
             })
@@ -765,7 +799,7 @@ Main:CreateToggle({
         if Value then
             if plr.leaderstats.Glove.Value ~= "Recall" then
                 Rayfield:Notify({
-                    Title = "Error",
+                    Title = "FlameUINT",
                     Content = "Перчатка Recall не экипирована!",
                     Duration = 4
                 })
@@ -912,7 +946,7 @@ local BrickFarmToggle = Gloves:CreateToggle({
 
         if Value and glove ~= "Brick" then
             Rayfield:Notify({
-                Title = "Brick Farm",
+                Title = "FlameUINT",
                 Content = "You don't have Brick equipped!",
                 Duration = 5
             })
@@ -925,7 +959,7 @@ local BrickFarmToggle = Gloves:CreateToggle({
                 while BrickFarmConfig.Enabled do
                     if player.leaderstats.Glove.Value ~= "Brick" then
                         Rayfield:Notify({
-                            Title = "Brick Farm",
+                            Title = "FlameUINT",
                             Content = "Brick glove was unequipped!",
                             Duration = 5
                         })
@@ -950,7 +984,7 @@ local BrickFarmToggle = Gloves:CreateToggle({
                             end)
                             if not success then
                                 Rayfield:Notify({
-                                    Title = "Brick Farm Error",
+                                    Title = "FlameUINT",
                                     Content = "Failed to farm brick: " .. tostring(err),
                                     Duration = 5
                                 })
@@ -1311,13 +1345,13 @@ AntiToggles.AntiAdminToggle = Antis:CreateToggle({
                             _G.AntiKick = false
                             
                             Rayfield:Notify({
-                                Title = "Anti Admin",
+                                Title = "FlameUINT",
                                 Content = "DETECTED: " .. player.Name,
                                 Duration = 3
                             })
                             
                             task.wait(1)
-                            game.Players.LocalPlayer:Kick("High Rank Player Detected. [ " .. player.Name .. " ]")
+                            game.Players.LocalPlayer:Kick("High Rank Player Detected: " .. player.Name .. " ")
                             break
                         end
                     end
@@ -1510,7 +1544,7 @@ local AutoTycoonToggle = Gloves:CreateToggle({
         end
         if _G.AutoTpPlate == true and (not char:FindFirstChild("entered") or #game.Players:GetPlayers() < 7) then
             Rayfield:Notify({
-                Title = "Error",
+                Title = "FlameUINT",
                 Content = "You need have 7 people in the server",
                 Duration = 5
             })
@@ -1519,6 +1553,95 @@ local AutoTycoonToggle = Gloves:CreateToggle({
         end
     end
 })
+
+Gloves:CreateButton({
+    Name = "Auto Win Retro",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local char = player.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+        local finishDoorPart = workspace:WaitForChild("FinishDoor_Retro"):WaitForChild("Part")
+        hrp.CFrame = finishDoorPart.CFrame + Vector3.new(0, 0, 0)
+        Rayfield:Notify({
+            Title = "FlameUINT",
+            Content = "You have reached the finish!",
+            Duration = 3
+        })
+    end
+})
+
+
+Gloves:CreateButton({
+    Name = "Get Swordfighter",
+    Callback = function()
+local teleportFunc = queueonteleport or queue_on_teleport
+if teleportFunc then
+    teleportFunc([[
+        if not game:IsLoaded() then
+            game.Loaded:Wait()
+        end
+        repeat wait() until game.Players.LocalPlayer
+        wait(3)
+if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+if workspace.Map.Components.NPCs.FinalBoss:FindFirstChild("FinalBoss") and workspace.Map.Components.NPCs.FinalBoss.FinalBoss:FindFirstChild("HumanoidRootPart") then
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Map.Components.NPCs.FinalBoss.FinalBoss.HumanoidRootPart.CFrame * CFrame.new(0, 0, -7)
+end
+wait(0.36)
+game:GetService("Players").LocalPlayer.PlayerGui.SkipButton:FindFirstChild("SkipDialogueButton").Position = UDim2.new(0, 0, 0, 0)
+game:GetService("Players").LocalPlayer.PlayerGui.SkipButton:FindFirstChild("SkipDialogueButton").BackgroundTransparency = 0.77
+game:GetService("Players").LocalPlayer.PlayerGui.SkipButton:FindFirstChild("SkipDialogueButton").Size = UDim2.new(1, 0, 1, 0)
+if workspace.Map.Components.NPCs.FinalBoss:FindFirstChild("FinalBoss") and workspace.Map.Components.NPCs.FinalBoss.FinalBoss:FindFirstChild("Head") then
+if fireproximityprompt then
+fireproximityprompt(workspace.Map.Components.NPCs.FinalBoss.FinalBoss.Head:FindFirstChild("ProximityPrompt"))
+end
+end
+repeat task.wait() until game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("FinalBossHealthBar") and game:GetService("Players").LocalPlayer.PlayerGui.FinalBossHealthBar:FindFirstChild("FinalBossHealthBar").Visible == true
+wait(0.5)
+repeat task.wait()
+if workspace.Map.Components.NPCs.FinalBoss:FindFirstChild("FinalBoss") and workspace.Map.Components.NPCs.FinalBoss.FinalBoss:FindFirstChild("HumanoidRootPart") then
+if game.Players.LocalPlayer.Backpack:FindFirstChild("Default") then
+game.Players.LocalPlayer.Backpack:FindFirstChild("Default").Parent = game.Players.LocalPlayer.Character
+end
+workspace.Map.Components.NPCs.FinalBoss.FinalBoss.HumanoidRootPart.Size = Vector3.new(70, 70, 70)
+workspace.Map.Components.NPCs.FinalBoss.FinalBoss.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -5)
+game:GetService("ReplicatedStorage").Remotes.ToolSwingEvent:FireServer()
+end
+until game:GetService("Players").LocalPlayer.PlayerGui.SkipButton:FindFirstChild("SkipDialogueButton").Visible == true or game:GetService("Players").LocalPlayer.PlayerGui.FinalBossHealthBar:FindFirstChild("FinalBossHealthBar").Visible == false or workspace.Map.Components.NPCs.FinalBoss:FindFirstChild("BridgeToGlove").Transparency == 0
+workspace.Map.Components.NPCs.FinalBoss.FinalBoss.HumanoidRootPart.Size = Vector3.new(2, 2, 1)
+repeat task.wait() until workspace.Map.Components.NPCs.FinalBoss:FindFirstChild("BridgeToGlove").Transparency == 0
+wait(1)
+if workspace.Map.Components:FindFirstChild("GloveIsland") and workspace.Map.Components.GloveIsland:FindFirstChild("ClaimGlove") then
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Map.Components.GloveIsland.ClaimGlove.CFrame
+wait(1)
+while true do
+wait(0.3)
+if fireproximityprompt then
+fireproximityprompt(workspace.Map.Components.GloveIsland.ClaimGlove:FindFirstChild("ProximityPrompt"))
+end
+end
+end
+end
+    ]])
+end
+if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+if workspace.Arena:FindFirstChild("CannonIsland") and workspace.Arena.CannonIsland:FindFirstChild("Cannon Island [OLD]") then
+for i, v in pairs(workspace.Arena.CannonIsland:FindFirstChild("Cannon Island [OLD]"):GetChildren()) do
+if v.Name == "Model" and v:FindFirstChild("Towers") and v.Towers:FindFirstChild("RevealHitbox") and v.Towers:FindFirstChild("TeleportSFHitbox") then
+repeat task.wait()
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Towers.RevealHitbox.CFrame * CFrame.new(3, 0, 0) * CFrame.Angles(math.rad(0), math.rad(50), math.rad(0))
+wait(0.2)
+game:GetService("ReplicatedStorage").RetroAbility:FireServer("Ban Hammer")
+until v.Towers:FindFirstChild("Ring of Fire") ~= nil
+wait(0.2)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Towers:FindFirstChild("Ring of Fire").CFrame
+end
+end
+end
+end
+    end
+})
+
 
 Gloves:CreateButton({
     Name = "Get Suction",
@@ -1598,7 +1721,7 @@ Gloves:CreateButton({
 
         else
             Rayfield:Notify({
-                Title = "Warning",
+                Title = "FlameUINT",
                 Content = "You have enter Map Abyss",
                 Duration = 5
             })
@@ -1612,7 +1735,7 @@ Gloves:CreateButton({
     Callback = function()
         if not game:GetService("ReplicatedStorage"):FindFirstChild("GRRRRR") then
             Rayfield:Notify({
-                Title = "Error",
+                Title = "FlameUINT",
                 Content = "Remote GRRRRR not found!",
                 Duration = 4
             })
@@ -1705,9 +1828,9 @@ Gloves:CreateButton({
         local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
         char.HumanoidRootPart.CFrame = CFrame.new(-16970.99, 797.60, 4908.73)
             Rayfield:Notify({
-            Title = "CLICK ON GREEN BUTTON",
-            Content = "CLICK ON GREEN BUTTON",
-            Duration = 10
+            Title = "FlameUINT",
+            Content = "Clin on the GREEN BUTTON",
+            Duration = 5
         })
 	end    
 })
@@ -1785,7 +1908,7 @@ Gloves:CreateButton({
             hrp.CFrame = OGL
         else
             Rayfield:Notify({
-                Title = "Error",
+                Title = "FlameUINT",
                 Content = "You don't have Fort equipped, or you have owner badge [ Don't turn on shiftlock ]",
                 Duration = 5,
                 Image = 7733658504
@@ -1834,7 +1957,7 @@ Gloves:CreateButton({
         ]])
         
         Rayfield:Notify({
-            Title = "Teleporting",
+            Title = "FlameUINT",
             Content = "Going to Get FrostBite",
             Duration = 3
         })
@@ -1880,7 +2003,7 @@ Gloves:CreateButton({
             
         else
             Rayfield:Notify({
-                Title = "Error",
+                Title = "FlameUINT",
                 Content = "Your executor doesn't support auto teleport",
                 Duration = 5
             })
@@ -1901,7 +2024,7 @@ Gloves:CreateButton({
             end)
         else
             Rayfield:Notify({
-                Title = "Error",
+                Title = "FlameUINT",
                 Content = "You don't have ZZZZZZZ equipped, or already have Owner badge",
                 Duration = 5
             })
@@ -2146,7 +2269,7 @@ local function teleportToAFKZone()
 
     if Rayfield then
         Rayfield:Notify({
-            Title = "Safe Spot",
+            Title = "FlameUINT",
             Content = "You have been teleported to the Safe Spot!",
             Duration = 3
         })
@@ -2222,7 +2345,7 @@ local function teleportToDUOAFKZone()
 
     if Rayfield then
         Rayfield:Notify({
-            Title = "Safe Spot",
+            Title = "FlameUINT",
             Content = "You have been teleported to the Safe Spot!",
             Duration = 3
         })
@@ -2269,7 +2392,7 @@ for _, sectionData in ipairs(locationsInOrder) do
 
                 TeleportTo(location.position)
                 Rayfield:Notify({
-                    Title = "Teleport",
+                    Title = "FlameUINT",
                     Content = "Teleported to " .. location.name,
                     Duration = 3,
                     Image = 4483362458
@@ -2627,17 +2750,37 @@ Places:CreateButton({
     end
 })
 
+Places:CreateButton({
+    Name = "Elude Maze",
+    Callback = function()
+        game:GetService("TeleportService"):Teleport(11828384869)
+    end
+})
+
+Places:CreateButton({
+    Name = "barzil",
+    Callback = function()
+        game:GetService("TeleportService"):Teleport(7234087065)
+    end
+})
+Places:CreateButton({
+    Name = "Where Guide Resides",
+    Callback = function()
+        game:GetService("TeleportService"):Teleport(18550498098)
+    end
+})
+--[[
+Places:CreateButton({
+    Name = "",
+    Callback = function()
+        game:GetService("TeleportService"):Teleport()
+    end
+})
 
 
 
 
-
-
-
-
-
-
-
+]]
 
 local function LoadModule(url)
     local source = game:HttpGet(url)
@@ -2740,7 +2883,7 @@ local MainTab = Window:CreateTab("Combat", "sword")
 
 do
     Rayfield:Notify({
-        Title = "Guide Boss Script",
+        Title = "FlameUINT",
         Content = "Script successfully loaded!",
         Duration = 5
     })
@@ -2755,7 +2898,7 @@ do
             if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
                 player.Character.HumanoidRootPart.CFrame = CFrame.new(3273, -75, 822)
                 Rayfield:Notify({
-                    Title = "Teleport",
+                    Title = "FlameUINT",
                     Content = "Teleported to boss area!",
                     Duration = 2
                 })
@@ -2782,7 +2925,7 @@ do
                 
                 player.Character.HumanoidRootPart.CFrame = CFrame.new(595, 150, -330)
                 Rayfield:Notify({
-                    Title = "Teleport",
+                    Title = "FlameUINT",
                     Content = "Teleported to safe zone!",
                     Duration = 2
                 })
@@ -2808,7 +2951,7 @@ do
                 ClickConnection = task.spawn(AutoClickLoop)
                 
                 Rayfield:Notify({
-                    Title = "Auto Attack",
+                    Title = "FlameUINT",
                     Content = "Auto attack has been enabled",
                     Duration = 3
                 })
@@ -2823,7 +2966,7 @@ do
                 end
                 
                 Rayfield:Notify({
-                    Title = "Auto Attack",
+                    Title = "FlameUINT",
                     Content = "Auto attack has been disabled",
                     Duration = 3
                 })

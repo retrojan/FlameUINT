@@ -23,7 +23,28 @@ Other:CreateButton({
         loadstring(game:HttpGet('https://raw.githubusercontent.com/MassiveHubs/loadstring/refs/heads/main/DexXenoAndRezware'))()
     end
 })
+Other:CreateButton({
+    Name = "Add Autoexec Button",
+    Callback = function()
+        local teleportFunc = queueonteleport or queue_on_teleport
+        if teleportFunc then
+            teleportFunc([[
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/main.lua"))()
+                        ]])
+                end
+            Rayfield:Notify({
+                Title = "FlameUINT",
+                Content = "Code added to queueonteleport!",
+                Duration = 3
+            })
+        else
+            warn("queueonteleport not found!")
+        end
+    end
+})
 
+    
+    
 local AntiLagButton = Other:CreateButton({
     Name = "Anti Lag",
     Callback = function()
@@ -60,14 +81,14 @@ local AntiLagButton = Other:CreateButton({
         
         if success then
             Rayfield:Notify({
-                Title = "Success",
+                Title = "FlameUINT",
                 Content = "Anti-Lag activated successfully!",
                 Duration = 5,
                 Image = 4483362458
             })
         else
             Rayfield:Notify({
-                Title = "Error",
+                Title = "FlameUINT",
                 Content = "Failed to load FPS Booster: " .. tostring(error),
                 Duration = 5,
                 Image = 4483362458
@@ -103,15 +124,6 @@ Other:CreateButton({
         kill(AntiVoidPlatforms, SafeZones)
         AntiVoidPlatforms = {}
         SafeZones = {}
-
-        Rayfield:Notify({
-            Title = "GUI Destroyed",
-            Content = "Interface has been successfully destroyed",
-            Duration = 2
-        })
-
-        task.wait(1)
-
         Rayfield:Destroy()
     end
 })

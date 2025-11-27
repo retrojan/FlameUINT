@@ -23,25 +23,6 @@ Other:CreateButton({
         loadstring(game:HttpGet('https://raw.githubusercontent.com/MassiveHubs/loadstring/refs/heads/main/DexXenoAndRezware'))()
     end
 })
-Other:CreateButton({
-    Name = "Add in Autoexec",
-    Callback = function()
-        local teleportFunc = queueonteleport or queue_on_teleport
-        if teleportFunc then
-            teleportFunc([[
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/main.lua"))()
-            ]])
-
-            Rayfield:Notify({
-                Title = "FlameUINT",
-                Content = "Code added to queueonteleport!",
-                Duration = 3
-            })
-        else
-            warn("queueonteleport not found!")
-        end
-    end
-})
 
 
     

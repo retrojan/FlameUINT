@@ -1189,7 +1189,6 @@ AntiToggles.AntiSquidToggle = Antis:CreateToggle({
             squidGui.Enabled = not _G.AntiSquid
         end
 
-        -- Подключаем наблюдение за изменением состояния
         if _G.AntiSquid then
             local connection
             connection = game.Players.LocalPlayer.PlayerGui.ChildAdded:Connect(function(child)
@@ -1198,7 +1197,6 @@ AntiToggles.AntiSquidToggle = Antis:CreateToggle({
                 end
             end)
 
-            -- Сохраняем соединение, чтобы отключить его, когда выключаем
             _G.AntiSquidConnection = connection
         else
             if _G.AntiSquidConnection then

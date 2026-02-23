@@ -33,7 +33,6 @@ Some parts of the code are taken from Giang Hub / Articles Hub
 Bypass: https://github.com/Pro666Pro/BypassAntiCheat
 
 
-Happy reading!
 ]]
 
 

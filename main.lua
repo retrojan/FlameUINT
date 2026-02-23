@@ -533,11 +533,12 @@ local function ServerHop()
         TeleportService:TeleportToPlaceInstance(placeId, servers[math.random(1, #servers)], LocalPlayer)
         print("[ServerHop] Перешёл на новый сервер")
     else
-        warn("❌No available servers were found!")
+        warn("No available servers were found!")
     end
 end
 ServerHop()
 ]]
+	
 local function toggleCharacterFreeze(state)
     local character = game.Players.LocalPlayer.Character
     if not character then return end
@@ -895,7 +896,7 @@ local Slappleezz = Main:CreateToggle({
     end
 })
 
---[[ WIP
+--[[ WNIP
 Main:CreateButton({
     Name = "Slapple Server hop",
     Callback = function()

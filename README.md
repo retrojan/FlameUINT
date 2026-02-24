@@ -1,7 +1,4 @@
-> [!CAUTION]
->
-> ### Script Discontinued | Use at ur own risk
->  
+
 
 <div align="center">
 
@@ -28,8 +25,6 @@
 
 https://github.com/retrojan/FlameUINT
 ]]
-
---[[ DISCONTINUED | Use at ur own risk! ]]
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/retrojan/FlameUINT/main/main.lua"))()
 
